@@ -1,0 +1,96 @@
+grammar org.zot.syntax.Zot with org.eclipse.xtext.common.Terminals
+
+generate zot "http://www.zot.org/syntax/Zot"
+
+Model:
+	fma=Formula;
+
+//Formula:
+//	(ap=AP |
+//	('(&&' fa+=Formula+ ')') |
+//	('(||' fo+=Formula+ ')') |
+//	('(' op2=OP2 f1=Formula f2=Formula ')') |
+//	('(' opf=OPF f=Formula ')') |
+//	('(' opfn=OPFN f1=Formula i=INT ')') 
+//	);
+Formula:
+	'(' (
+//		ap=AP | 
+//		arithBool=ArithBool |
+		probF=ProbF |
+		temp=TempF
+	) ')';
+
+ProbF:
+	probOp=PROPOP ((('(zot-p' '(' tempF1=TempF ')' ')') | ('(zot-cp' '(' tempF11=TempF ')' '(' tempF12=TempF ')' ')')) | real1=DataType)
+	((('(zot-p' '(' tempF2=TempF ')' ')') | ('(zot-cp' '(' tempF21=TempF ')' '(' tempF22=TempF ')' ')')) | real2=DataType)
+;
+
+terminal PROPOP:
+	'<' | '<=' | '=' | '>' | '>='
+;
+
+TempF:
+	ap=AP |
+	('&&' fa+=Formula+ ) |
+	('||' fo+=Formula+ ) |
+	('!!' fnot=Formula) |
+	(op2=OP2 f1=Formula f2=Formula ) |
+	(opf=OPF f=Formula ) |
+	(opfn=OPFN f1=Formula i=INT ) 
+;
+
+terminal OP2: //Propositional operators with 2 operands
+	'->' | '<->' | 'until' | 'since' | 'release' | 'trigger'
+;
+
+terminal OPF: //Temporal operators with 1 operands
+	'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp'
+;
+
+//terminal OPFF: //Temporal operators with 2 formula operands
+//	'until' | 'since' | 'release' | 'trigger'
+//;
+
+terminal OPFN: //Temporal operators with 1 formula operand and a number
+	'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted'
+;
+
+AP:
+	'-' ('P' | 'p') '-' name=ID
+;
+
+//AV:
+//	'(-' ('V' | 'v') '-' name=ID ')'
+//;
+//
+//ArithBool:
+//	arithCOP=ARITH_COMPARE_OP arithTerm1=ArithTerm arithTerm2=ArithTerm
+//;
+//
+//ArithTerm:
+//	arithOP=ARITH_OP arithTerm1=ArithTermL arithTerm2=ArithTermL
+//;
+//
+//ArithTermL:
+//	constant=DataType |
+//	av=AV |
+//	'Futr(' arithTermF=ArithTerm ',' intF=INT ')' |
+//	'Past(' arithTermP=ArithTerm ',' intP=INT ')'
+//;
+// 
+DataType:
+	i=INT float=FLOAT?
+;
+
+terminal FLOAT:
+	'.' ('0'..'9')+
+;
+//
+//terminal ARITH_OP:
+//	'+' | '-' | '*' | '/'
+//;
+//
+//terminal ARITH_COMPARE_OP:
+//	'>' | '>=' | '<' | '<=' | '=' | '!='
+//;

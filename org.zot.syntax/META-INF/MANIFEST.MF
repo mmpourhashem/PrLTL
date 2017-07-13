@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.zot.syntax
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.zot.syntax; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib,
+ org.antlr.runtime,
+ org.eclipse.xtext.util,
+ org.eclipse.xtend.lib,
+ org.eclipse.emf.common
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.zot.syntax.zot.impl,
+ org.zot.syntax.zot,
+ org.zot.syntax.serializer,
+ org.zot.syntax.services,
+ org.zot.syntax.zot.util,
+ org.zot.syntax.validation,
+ org.zot.syntax.generator,
+ org.zot.syntax.parser.antlr,
+ org.zot.syntax.scoping,
+ org.zot.syntax.parser.antlr.internal,
+ org.zot.syntax
+Import-Package: org.apache.log4j

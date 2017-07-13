@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: org.zot.syntax.ide
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: org.zot.syntax.ide; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.zot.syntax,
+ org.eclipse.xtext.ide,
+ org.eclipse.xtext.xbase.ide
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.zot.syntax.ide.contentassist.antlr.internal,
+ org.zot.syntax.ide.contentassist.antlr
+

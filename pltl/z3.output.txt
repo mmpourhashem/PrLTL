@@ -1,0 +1,8 @@
+success
+success
+success
+success
+(error "line 6058 column 1: Sort mismatch at argument #83 for function (declare-fun and (Bool Bool) Bool) supplied sort is Int")
+sat
+(model 
+)

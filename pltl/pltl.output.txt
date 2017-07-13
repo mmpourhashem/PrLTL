@@ -1,0 +1,4 @@
+(&& (= (zot-p (-P- head)) 0.5) (= (zot-p (next (-P- head))) 0.5) (= (zot-p (next (next (-P- head)))) 0.5) (= (zot-cp (-P- head) (next (-P- head))) (zot-p (-P- head))) (= (zot-cp (next (-P- head)) (next (next (-P- head)))) (zot-p (next (-P- head)))) (= (zot-cp (-P- head) (next (next (-P- head)))) (zot-p (-P- head))))
+--- time 0 ---
+--- time 1 ---
+--- time 2 ---
