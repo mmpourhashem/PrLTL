@@ -10,7 +10,7 @@ public class Alw implements BooleanFormulae{
         this.f = f;
     }
 
-    public BooleanFormulae getFormula1(){
+    public BooleanFormulae getFormula(){
 		return f;
 	}
     

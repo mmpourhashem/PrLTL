@@ -16,20 +16,23 @@ public class InternalZotLexer extends Lexer {
     public static final int RULE_SL_COMMENT=13;
     public static final int T__19=19;
     public static final int T__16=16;
-    public static final int RULE_OP2=5;
+    public static final int RULE_OP2=8;
     public static final int T__17=17;
     public static final int T__18=18;
     public static final int EOF=-1;
     public static final int RULE_ID=9;
-    public static final int RULE_PROPOP=4;
+    public static final int RULE_PROPOP=7;
     public static final int RULE_WS=14;
-    public static final int RULE_OPFN=7;
+    public static final int RULE_OPFN=5;
     public static final int RULE_ANY_OTHER=15;
-    public static final int RULE_INT=8;
+    public static final int T__26=26;
+    public static final int T__27=27;
+    public static final int T__28=28;
+    public static final int RULE_INT=6;
     public static final int T__22=22;
     public static final int RULE_ML_COMMENT=12;
     public static final int T__23=23;
-    public static final int RULE_OPF=6;
+    public static final int RULE_OPF=4;
     public static final int RULE_FLOAT=10;
     public static final int T__24=24;
     public static final int T__25=25;
@@ -94,10 +97,11 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = T__18;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:13:7: ( '(' )
-            // InternalZot.g:13:9: '('
+            // InternalZot.g:13:7: ( 'DEPENDENCIES:' )
+            // InternalZot.g:13:9: 'DEPENDENCIES:'
             {
-            match('('); 
+            match("DEPENDENCIES:"); 
+
 
             }
 
@@ -114,10 +118,11 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = T__19;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:14:7: ( ')' )
-            // InternalZot.g:14:9: ')'
+            // InternalZot.g:14:7: ( 'FORMULA:' )
+            // InternalZot.g:14:9: 'FORMULA:'
             {
-            match(')'); 
+            match("FORMULA:"); 
+
 
             }
 
@@ -134,11 +139,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = T__20;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:15:7: ( '(zot-p' )
-            // InternalZot.g:15:9: '(zot-p'
+            // InternalZot.g:15:7: ( '(' )
+            // InternalZot.g:15:9: '('
             {
-            match("(zot-p"); 
-
+            match('('); 
 
             }
 
@@ -155,10 +159,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = T__21;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:16:7: ( '(zot-cp' )
-            // InternalZot.g:16:9: '(zot-cp'
+            // InternalZot.g:16:7: ( 'dep' )
+            // InternalZot.g:16:9: 'dep'
             {
-            match("(zot-cp"); 
+            match("dep"); 
 
 
             }
@@ -176,11 +180,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = T__22;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:17:7: ( '&&' )
-            // InternalZot.g:17:9: '&&'
+            // InternalZot.g:17:7: ( ')' )
+            // InternalZot.g:17:9: ')'
             {
-            match("&&"); 
-
+            match(')'); 
 
             }
 
@@ -197,10 +200,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = T__23;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:18:7: ( '||' )
-            // InternalZot.g:18:9: '||'
+            // InternalZot.g:18:7: ( '&&' )
+            // InternalZot.g:18:9: '&&'
             {
-            match("||"); 
+            match("&&"); 
 
 
             }
@@ -218,10 +221,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = T__24;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:19:7: ( '!!' )
-            // InternalZot.g:19:9: '!!'
+            // InternalZot.g:19:7: ( '(zot-p' )
+            // InternalZot.g:19:9: '(zot-p'
             {
-            match("!!"); 
+            match("(zot-p"); 
 
 
             }
@@ -239,10 +242,11 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = T__25;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:20:7: ( '-' )
-            // InternalZot.g:20:9: '-'
+            // InternalZot.g:20:7: ( '(zot-cp' )
+            // InternalZot.g:20:9: '(zot-cp'
             {
-            match('-'); 
+            match("(zot-cp"); 
+
 
             }
 
@@ -254,15 +258,77 @@ public class InternalZotLexer extends Lexer {
     }
     // $ANTLR end "T__25"
 
+    // $ANTLR start "T__26"
+    public final void mT__26() throws RecognitionException {
+        try {
+            int _type = T__26;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // InternalZot.g:21:7: ( '||' )
+            // InternalZot.g:21:9: '||'
+            {
+            match("||"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__26"
+
+    // $ANTLR start "T__27"
+    public final void mT__27() throws RecognitionException {
+        try {
+            int _type = T__27;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // InternalZot.g:22:7: ( '!!' )
+            // InternalZot.g:22:9: '!!'
+            {
+            match("!!"); 
+
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__27"
+
+    // $ANTLR start "T__28"
+    public final void mT__28() throws RecognitionException {
+        try {
+            int _type = T__28;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // InternalZot.g:23:7: ( '-' )
+            // InternalZot.g:23:9: '-'
+            {
+            match('-'); 
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "T__28"
+
     // $ANTLR start "RULE_PROPOP"
     public final void mRULE_PROPOP() throws RecognitionException {
         try {
             int _type = RULE_PROPOP;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2202:13: ( ( '<' | '<=' | '=' | '>' | '>=' ) )
-            // InternalZot.g:2202:15: ( '<' | '<=' | '=' | '>' | '>=' )
+            // InternalZot.g:3003:13: ( ( '<' | '<=' | '=' | '>' | '>=' ) )
+            // InternalZot.g:3003:15: ( '<' | '<=' | '=' | '>' | '>=' )
             {
-            // InternalZot.g:2202:15: ( '<' | '<=' | '=' | '>' | '>=' )
+            // InternalZot.g:3003:15: ( '<' | '<=' | '=' | '>' | '>=' )
             int alt1=5;
             switch ( input.LA(1) ) {
             case '<':
@@ -301,14 +367,14 @@ public class InternalZotLexer extends Lexer {
 
             switch (alt1) {
                 case 1 :
-                    // InternalZot.g:2202:16: '<'
+                    // InternalZot.g:3003:16: '<'
                     {
                     match('<'); 
 
                     }
                     break;
                 case 2 :
-                    // InternalZot.g:2202:20: '<='
+                    // InternalZot.g:3003:20: '<='
                     {
                     match("<="); 
 
@@ -316,21 +382,21 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // InternalZot.g:2202:25: '='
+                    // InternalZot.g:3003:25: '='
                     {
                     match('='); 
 
                     }
                     break;
                 case 4 :
-                    // InternalZot.g:2202:29: '>'
+                    // InternalZot.g:3003:29: '>'
                     {
                     match('>'); 
 
                     }
                     break;
                 case 5 :
-                    // InternalZot.g:2202:33: '>='
+                    // InternalZot.g:3003:33: '>='
                     {
                     match(">="); 
 
@@ -356,10 +422,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_OP2;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2204:10: ( ( '->' | '<->' | 'until' | 'since' | 'release' | 'trigger' ) )
-            // InternalZot.g:2204:12: ( '->' | '<->' | 'until' | 'since' | 'release' | 'trigger' )
+            // InternalZot.g:3005:10: ( ( '->' | '<->' | 'until' | 'since' | 'release' | 'trigger' ) )
+            // InternalZot.g:3005:12: ( '->' | '<->' | 'until' | 'since' | 'release' | 'trigger' )
             {
-            // InternalZot.g:2204:12: ( '->' | '<->' | 'until' | 'since' | 'release' | 'trigger' )
+            // InternalZot.g:3005:12: ( '->' | '<->' | 'until' | 'since' | 'release' | 'trigger' )
             int alt2=6;
             switch ( input.LA(1) ) {
             case '-':
@@ -401,7 +467,7 @@ public class InternalZotLexer extends Lexer {
 
             switch (alt2) {
                 case 1 :
-                    // InternalZot.g:2204:13: '->'
+                    // InternalZot.g:3005:13: '->'
                     {
                     match("->"); 
 
@@ -409,7 +475,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // InternalZot.g:2204:18: '<->'
+                    // InternalZot.g:3005:18: '<->'
                     {
                     match("<->"); 
 
@@ -417,7 +483,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // InternalZot.g:2204:24: 'until'
+                    // InternalZot.g:3005:24: 'until'
                     {
                     match("until"); 
 
@@ -425,7 +491,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 4 :
-                    // InternalZot.g:2204:32: 'since'
+                    // InternalZot.g:3005:32: 'since'
                     {
                     match("since"); 
 
@@ -433,7 +499,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 5 :
-                    // InternalZot.g:2204:40: 'release'
+                    // InternalZot.g:3005:40: 'release'
                     {
                     match("release"); 
 
@@ -441,7 +507,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 6 :
-                    // InternalZot.g:2204:50: 'trigger'
+                    // InternalZot.g:3005:50: 'trigger'
                     {
                     match("trigger"); 
 
@@ -467,15 +533,15 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_OPF;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2206:10: ( ( 'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp' ) )
-            // InternalZot.g:2206:12: ( 'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp' )
+            // InternalZot.g:3007:10: ( ( 'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp' ) )
+            // InternalZot.g:3007:12: ( 'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp' )
             {
-            // InternalZot.g:2206:12: ( 'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp' )
+            // InternalZot.g:3007:12: ( 'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp' )
             int alt3=8;
             alt3 = dfa3.predict(input);
             switch (alt3) {
                 case 1 :
-                    // InternalZot.g:2206:13: 'next'
+                    // InternalZot.g:3007:13: 'next'
                     {
                     match("next"); 
 
@@ -483,7 +549,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // InternalZot.g:2206:20: 'yesterday'
+                    // InternalZot.g:3007:20: 'yesterday'
                     {
                     match("yesterday"); 
 
@@ -491,7 +557,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // InternalZot.g:2206:32: 'alw'
+                    // InternalZot.g:3007:32: 'alw'
                     {
                     match("alw"); 
 
@@ -499,7 +565,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 4 :
-                    // InternalZot.g:2206:38: 'som'
+                    // InternalZot.g:3007:38: 'som'
                     {
                     match("som"); 
 
@@ -507,7 +573,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 5 :
-                    // InternalZot.g:2206:44: 'alwf'
+                    // InternalZot.g:3007:44: 'alwf'
                     {
                     match("alwf"); 
 
@@ -515,7 +581,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 6 :
-                    // InternalZot.g:2206:51: 'somf'
+                    // InternalZot.g:3007:51: 'somf'
                     {
                     match("somf"); 
 
@@ -523,7 +589,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 7 :
-                    // InternalZot.g:2206:58: 'alwp'
+                    // InternalZot.g:3007:58: 'alwp'
                     {
                     match("alwp"); 
 
@@ -531,7 +597,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 8 :
-                    // InternalZot.g:2206:65: 'somp'
+                    // InternalZot.g:3007:65: 'somp'
                     {
                     match("somp"); 
 
@@ -557,15 +623,15 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_OPFN;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2208:11: ( ( 'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted' ) )
-            // InternalZot.g:2208:13: ( 'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted' )
+            // InternalZot.g:3009:11: ( ( 'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted' ) )
+            // InternalZot.g:3009:13: ( 'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted' )
             {
-            // InternalZot.g:2208:13: ( 'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted' )
+            // InternalZot.g:3009:13: ( 'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted' )
             int alt4=6;
             alt4 = dfa4.predict(input);
             switch (alt4) {
                 case 1 :
-                    // InternalZot.g:2208:14: 'futr'
+                    // InternalZot.g:3009:14: 'futr'
                     {
                     match("futr"); 
 
@@ -573,7 +639,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // InternalZot.g:2208:21: 'past'
+                    // InternalZot.g:3009:21: 'past'
                     {
                     match("past"); 
 
@@ -581,7 +647,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // InternalZot.g:2208:28: 'withinf'
+                    // InternalZot.g:3009:28: 'withinf'
                     {
                     match("withinf"); 
 
@@ -589,7 +655,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 4 :
-                    // InternalZot.g:2208:38: 'withinp'
+                    // InternalZot.g:3009:38: 'withinp'
                     {
                     match("withinp"); 
 
@@ -597,7 +663,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 5 :
-                    // InternalZot.g:2208:48: 'lasts'
+                    // InternalZot.g:3009:48: 'lasts'
                     {
                     match("lasts"); 
 
@@ -605,7 +671,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 6 :
-                    // InternalZot.g:2208:56: 'lasted'
+                    // InternalZot.g:3009:56: 'lasted'
                     {
                     match("lasted"); 
 
@@ -631,11 +697,11 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_FLOAT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2210:12: ( '.' ( '0' .. '9' )+ )
-            // InternalZot.g:2210:14: '.' ( '0' .. '9' )+
+            // InternalZot.g:3011:12: ( '.' ( '0' .. '9' )+ )
+            // InternalZot.g:3011:14: '.' ( '0' .. '9' )+
             {
             match('.'); 
-            // InternalZot.g:2210:18: ( '0' .. '9' )+
+            // InternalZot.g:3011:18: ( '0' .. '9' )+
             int cnt5=0;
             loop5:
             do {
@@ -649,7 +715,7 @@ public class InternalZotLexer extends Lexer {
 
                 switch (alt5) {
             	case 1 :
-            	    // InternalZot.g:2210:19: '0' .. '9'
+            	    // InternalZot.g:3011:19: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -681,10 +747,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2212:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
-            // InternalZot.g:2212:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // InternalZot.g:3013:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
+            // InternalZot.g:3013:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             {
-            // InternalZot.g:2212:11: ( '^' )?
+            // InternalZot.g:3013:11: ( '^' )?
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -693,7 +759,7 @@ public class InternalZotLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // InternalZot.g:2212:11: '^'
+                    // InternalZot.g:3013:11: '^'
                     {
                     match('^'); 
 
@@ -711,7 +777,7 @@ public class InternalZotLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // InternalZot.g:2212:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // InternalZot.g:3013:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             loop7:
             do {
                 int alt7=2;
@@ -760,10 +826,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2214:10: ( ( '0' .. '9' )+ )
-            // InternalZot.g:2214:12: ( '0' .. '9' )+
+            // InternalZot.g:3015:10: ( ( '0' .. '9' )+ )
+            // InternalZot.g:3015:12: ( '0' .. '9' )+
             {
-            // InternalZot.g:2214:12: ( '0' .. '9' )+
+            // InternalZot.g:3015:12: ( '0' .. '9' )+
             int cnt8=0;
             loop8:
             do {
@@ -777,7 +843,7 @@ public class InternalZotLexer extends Lexer {
 
                 switch (alt8) {
             	case 1 :
-            	    // InternalZot.g:2214:13: '0' .. '9'
+            	    // InternalZot.g:3015:13: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -809,10 +875,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2216:13: ( ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
-            // InternalZot.g:2216:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // InternalZot.g:3017:13: ( ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
+            // InternalZot.g:3017:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             {
-            // InternalZot.g:2216:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // InternalZot.g:3017:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             int alt11=2;
             int LA11_0 = input.LA(1);
 
@@ -830,10 +896,10 @@ public class InternalZotLexer extends Lexer {
             }
             switch (alt11) {
                 case 1 :
-                    // InternalZot.g:2216:16: '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
+                    // InternalZot.g:3017:16: '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
                     {
                     match('\"'); 
-                    // InternalZot.g:2216:20: ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )*
+                    // InternalZot.g:3017:20: ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )*
                     loop9:
                     do {
                         int alt9=3;
@@ -849,7 +915,7 @@ public class InternalZotLexer extends Lexer {
 
                         switch (alt9) {
                     	case 1 :
-                    	    // InternalZot.g:2216:21: '\\\\' .
+                    	    // InternalZot.g:3017:21: '\\\\' .
                     	    {
                     	    match('\\'); 
                     	    matchAny(); 
@@ -857,7 +923,7 @@ public class InternalZotLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // InternalZot.g:2216:28: ~ ( ( '\\\\' | '\"' ) )
+                    	    // InternalZot.g:3017:28: ~ ( ( '\\\\' | '\"' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -882,10 +948,10 @@ public class InternalZotLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // InternalZot.g:2216:48: '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
+                    // InternalZot.g:3017:48: '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
                     {
                     match('\''); 
-                    // InternalZot.g:2216:53: ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )*
+                    // InternalZot.g:3017:53: ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )*
                     loop10:
                     do {
                         int alt10=3;
@@ -901,7 +967,7 @@ public class InternalZotLexer extends Lexer {
 
                         switch (alt10) {
                     	case 1 :
-                    	    // InternalZot.g:2216:54: '\\\\' .
+                    	    // InternalZot.g:3017:54: '\\\\' .
                     	    {
                     	    match('\\'); 
                     	    matchAny(); 
@@ -909,7 +975,7 @@ public class InternalZotLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // InternalZot.g:2216:61: ~ ( ( '\\\\' | '\\'' ) )
+                    	    // InternalZot.g:3017:61: ~ ( ( '\\\\' | '\\'' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -952,12 +1018,12 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_ML_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2218:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // InternalZot.g:2218:19: '/*' ( options {greedy=false; } : . )* '*/'
+            // InternalZot.g:3019:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // InternalZot.g:3019:19: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); 
 
-            // InternalZot.g:2218:24: ( options {greedy=false; } : . )*
+            // InternalZot.g:3019:24: ( options {greedy=false; } : . )*
             loop12:
             do {
                 int alt12=2;
@@ -982,7 +1048,7 @@ public class InternalZotLexer extends Lexer {
 
                 switch (alt12) {
             	case 1 :
-            	    // InternalZot.g:2218:52: .
+            	    // InternalZot.g:3019:52: .
             	    {
             	    matchAny(); 
 
@@ -1012,12 +1078,12 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2220:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
-            // InternalZot.g:2220:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
+            // InternalZot.g:3021:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
+            // InternalZot.g:3021:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
             {
             match("//"); 
 
-            // InternalZot.g:2220:24: (~ ( ( '\\n' | '\\r' ) ) )*
+            // InternalZot.g:3021:24: (~ ( ( '\\n' | '\\r' ) ) )*
             loop13:
             do {
                 int alt13=2;
@@ -1030,7 +1096,7 @@ public class InternalZotLexer extends Lexer {
 
                 switch (alt13) {
             	case 1 :
-            	    // InternalZot.g:2220:24: ~ ( ( '\\n' | '\\r' ) )
+            	    // InternalZot.g:3021:24: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -1050,7 +1116,7 @@ public class InternalZotLexer extends Lexer {
                 }
             } while (true);
 
-            // InternalZot.g:2220:40: ( ( '\\r' )? '\\n' )?
+            // InternalZot.g:3021:40: ( ( '\\r' )? '\\n' )?
             int alt15=2;
             int LA15_0 = input.LA(1);
 
@@ -1059,9 +1125,9 @@ public class InternalZotLexer extends Lexer {
             }
             switch (alt15) {
                 case 1 :
-                    // InternalZot.g:2220:41: ( '\\r' )? '\\n'
+                    // InternalZot.g:3021:41: ( '\\r' )? '\\n'
                     {
-                    // InternalZot.g:2220:41: ( '\\r' )?
+                    // InternalZot.g:3021:41: ( '\\r' )?
                     int alt14=2;
                     int LA14_0 = input.LA(1);
 
@@ -1070,7 +1136,7 @@ public class InternalZotLexer extends Lexer {
                     }
                     switch (alt14) {
                         case 1 :
-                            // InternalZot.g:2220:41: '\\r'
+                            // InternalZot.g:3021:41: '\\r'
                             {
                             match('\r'); 
 
@@ -1102,10 +1168,10 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2222:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
-            // InternalZot.g:2222:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // InternalZot.g:3023:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
+            // InternalZot.g:3023:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             {
-            // InternalZot.g:2222:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // InternalZot.g:3023:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             int cnt16=0;
             loop16:
             do {
@@ -1159,8 +1225,8 @@ public class InternalZotLexer extends Lexer {
         try {
             int _type = RULE_ANY_OTHER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalZot.g:2224:16: ( . )
-            // InternalZot.g:2224:18: .
+            // InternalZot.g:3025:16: ( . )
+            // InternalZot.g:3025:18: .
             {
             matchAny(); 
 
@@ -1175,8 +1241,8 @@ public class InternalZotLexer extends Lexer {
     // $ANTLR end "RULE_ANY_OTHER"
 
     public void mTokens() throws RecognitionException {
-        // InternalZot.g:1:8: ( T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | RULE_PROPOP | RULE_OP2 | RULE_OPF | RULE_OPFN | RULE_FLOAT | RULE_ID | RULE_INT | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER )
-        int alt17=22;
+        // InternalZot.g:1:8: ( T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | RULE_PROPOP | RULE_OP2 | RULE_OPF | RULE_OPFN | RULE_FLOAT | RULE_ID | RULE_INT | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER )
+        int alt17=25;
         alt17 = dfa17.predict(input);
         switch (alt17) {
             case 1 :
@@ -1250,84 +1316,105 @@ public class InternalZotLexer extends Lexer {
                 }
                 break;
             case 11 :
-                // InternalZot.g:1:70: RULE_PROPOP
+                // InternalZot.g:1:70: T__26
+                {
+                mT__26(); 
+
+                }
+                break;
+            case 12 :
+                // InternalZot.g:1:76: T__27
+                {
+                mT__27(); 
+
+                }
+                break;
+            case 13 :
+                // InternalZot.g:1:82: T__28
+                {
+                mT__28(); 
+
+                }
+                break;
+            case 14 :
+                // InternalZot.g:1:88: RULE_PROPOP
                 {
                 mRULE_PROPOP(); 
 
                 }
                 break;
-            case 12 :
-                // InternalZot.g:1:82: RULE_OP2
+            case 15 :
+                // InternalZot.g:1:100: RULE_OP2
                 {
                 mRULE_OP2(); 
 
                 }
                 break;
-            case 13 :
-                // InternalZot.g:1:91: RULE_OPF
+            case 16 :
+                // InternalZot.g:1:109: RULE_OPF
                 {
                 mRULE_OPF(); 
 
                 }
                 break;
-            case 14 :
-                // InternalZot.g:1:100: RULE_OPFN
+            case 17 :
+                // InternalZot.g:1:118: RULE_OPFN
                 {
                 mRULE_OPFN(); 
 
                 }
                 break;
-            case 15 :
-                // InternalZot.g:1:110: RULE_FLOAT
+            case 18 :
+                // InternalZot.g:1:128: RULE_FLOAT
                 {
                 mRULE_FLOAT(); 
 
                 }
                 break;
-            case 16 :
-                // InternalZot.g:1:121: RULE_ID
+            case 19 :
+                // InternalZot.g:1:139: RULE_ID
                 {
                 mRULE_ID(); 
 
                 }
                 break;
-            case 17 :
-                // InternalZot.g:1:129: RULE_INT
+            case 20 :
+                // InternalZot.g:1:147: RULE_INT
                 {
                 mRULE_INT(); 
 
                 }
                 break;
-            case 18 :
-                // InternalZot.g:1:138: RULE_STRING
+            case 21 :
+                // InternalZot.g:1:156: RULE_STRING
                 {
                 mRULE_STRING(); 
 
                 }
                 break;
-            case 19 :
-                // InternalZot.g:1:150: RULE_ML_COMMENT
+            case 22 :
+                // InternalZot.g:1:168: RULE_ML_COMMENT
                 {
                 mRULE_ML_COMMENT(); 
 
                 }
                 break;
-            case 20 :
-                // InternalZot.g:1:166: RULE_SL_COMMENT
+            case 23 :
+                // InternalZot.g:1:184: RULE_SL_COMMENT
                 {
                 mRULE_SL_COMMENT(); 
 
                 }
                 break;
-            case 21 :
-                // InternalZot.g:1:182: RULE_WS
+            case 24 :
+                // InternalZot.g:1:200: RULE_WS
                 {
                 mRULE_WS(); 
 
                 }
                 break;
-            case 22 :
-                // InternalZot.g:1:190: RULE_ANY_OTHER
+            case 25 :
+                // InternalZot.g:1:208: RULE_ANY_OTHER
                 {
                 mRULE_ANY_OTHER(); 
 
@@ -1402,7 +1489,7 @@ public class InternalZotLexer extends Lexer {
             this.transition = DFA3_transition;
         }
         public String getDescription() {
-            return "2206:12: ( 'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp' )";
+            return "3007:12: ( 'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp' )";
         }
     }
     static final String DFA4_eotS =
@@ -1467,136 +1554,161 @@ public class InternalZotLexer extends Lexer {
             this.transition = DFA4_transition;
         }
         public String getDescription() {
-            return "2208:13: ( 'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted' )";
+            return "3009:13: ( 'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted' )";
         }
     }
     static final String DFA17_eotS =
-        "\1\uffff\1\37\1\42\1\44\1\uffff\3\36\1\52\1\53\2\uffff\12\40\2\36\2\uffff\3\36\4\uffff\1\40\12\uffff\13\40\6\uffff\1\40\1\uffff\2\40\1\120\4\40\1\120\3\40\1\132\1\uffff\2\40\2\120\1\uffff\2\40\1\120\1\40\2\120\1\132\2\40\2\uffff\2\51\4\40\1\132\1\40\2\uffff\4\40\1\132\2\51\1\40\2\132\1\40\1\120";
+        "\1\uffff\1\42\1\45\2\43\1\51\1\43\1\uffff\3\41\1\60\1\61\2\uffff\12\43\2\41\2\uffff\3\41\4\uffff\1\43\1\uffff\2\43\2\uffff\1\43\7\uffff\13\43\6\uffff\3\43\1\uffff\1\127\2\43\1\134\4\43\1\134\3\43\1\146\2\43\2\uffff\2\43\2\134\1\uffff\2\43\1\134\1\43\2\134\1\146\2\43\1\uffff\2\43\1\uffff\2\57\4\43\1\146\3\43\2\uffff\4\43\1\146\2\43\2\57\1\43\2\146\1\43\1\uffff\2\43\1\134\3\43\1\uffff";
     static final String DFA17_eofS =
-        "\162\uffff";
+        "\u008b\uffff";
     static final String DFA17_minS =
-        "\1\0\2\60\1\172\1\uffff\1\46\1\174\1\41\1\76\1\55\2\uffff\1\156\1\151\1\145\1\162\2\145\1\154\1\165\1\151\1\141\1\60\1\101\2\uffff\2\0\1\52\4\uffff\1\163\1\uffff\1\157\10\uffff\1\164\1\156\1\155\1\154\1\151\1\170\1\163\1\167\2\164\1\163\6\uffff\2\164\1\151\1\143\1\60\1\145\1\147\2\164\1\60\1\162\1\150\1\164\1\60\1\55\1\154\1\145\2\60\1\uffff\1\141\1\147\1\60\1\145\3\60\1\151\1\145\1\uffff\1\143\2\60\1\163\1\145\1\162\1\156\1\60\1\144\2\uffff\1\145\1\162\1\144\1\146\3\60\1\141\2\60\1\171\1\60";
+        "\1\0\2\60\1\105\1\117\1\172\1\145\1\uffff\1\46\1\174\1\41\1\76\1\55\2\uffff\1\156\1\151\1\145\1\162\2\145\1\154\1\165\1\151\1\141\1\60\1\101\2\uffff\2\0\1\52\4\uffff\1\163\1\uffff\1\120\1\122\1\157\1\uffff\1\160\7\uffff\1\164\1\156\1\155\1\154\1\151\1\170\1\163\1\167\2\164\1\163\6\uffff\1\164\1\105\1\115\1\164\1\60\1\151\1\143\1\60\1\145\1\147\2\164\1\60\1\162\1\150\1\164\1\60\1\116\1\125\1\55\1\uffff\1\154\1\145\2\60\1\uffff\1\141\1\147\1\60\1\145\3\60\1\151\1\145\1\uffff\1\104\1\114\1\143\2\60\1\163\1\145\1\162\1\156\1\60\1\144\1\105\1\101\2\uffff\1\145\1\162\1\144\1\146\1\60\1\116\1\72\2\60\1\141\2\60\1\103\1\uffff\1\171\1\111\1\60\1\105\1\123\1\72\1\uffff";
     static final String DFA17_maxS =
-        "\1\uffff\3\172\1\uffff\1\46\1\174\1\41\1\76\1\55\2\uffff\1\156\1\157\1\145\1\162\2\145\1\154\1\165\1\151\1\141\1\71\1\172\2\uffff\2\uffff\1\57\4\uffff\1\163\1\uffff\1\157\10\uffff\1\164\1\156\1\155\1\154\1\151\1\170\1\163\1\167\2\164\1\163\6\uffff\2\164\1\151\1\143\1\172\1\145\1\147\2\164\1\172\1\162\1\150\1\164\1\172\1\55\1\154\1\145\2\172\1\uffff\1\141\1\147\1\172\1\145\3\172\1\151\1\163\1\uffff\1\160\2\172\1\163\1\145\1\162\1\156\1\172\1\144\2\uffff\1\145\1\162\1\144\1\160\3\172\1\141\2\172\1\171\1\172";
+        "\1\uffff\2\172\1\105\1\117\1\172\1\145\1\uffff\1\46\1\174\1\41\1\76\1\55\2\uffff\1\156\1\157\1\145\1\162\2\145\1\154\1\165\1\151\1\141\1\71\1\172\2\uffff\2\uffff\1\57\4\uffff\1\163\1\uffff\1\120\1\122\1\157\1\uffff\1\160\7\uffff\1\164\1\156\1\155\1\154\1\151\1\170\1\163\1\167\2\164\1\163\6\uffff\1\164\1\105\1\115\1\164\1\172\1\151\1\143\1\172\1\145\1\147\2\164\1\172\1\162\1\150\1\164\1\172\1\116\1\125\1\55\1\uffff\1\154\1\145\2\172\1\uffff\1\141\1\147\1\172\1\145\3\172\1\151\1\163\1\uffff\1\104\1\114\1\160\2\172\1\163\1\145\1\162\1\156\1\172\1\144\1\105\1\101\2\uffff\1\145\1\162\1\144\1\160\1\172\1\116\1\72\2\172\1\141\2\172\1\103\1\uffff\1\171\1\111\1\172\1\105\1\123\1\72\1\uffff";
     static final String DFA17_acceptS =
-        "\4\uffff\1\4\5\uffff\2\13\14\uffff\1\20\1\21\3\uffff\1\25\1\26\1\1\1\20\1\uffff\1\2\1\uffff\1\3\1\4\1\7\1\10\1\11\1\14\1\12\1\13\13\uffff\1\17\1\21\1\22\1\23\1\24\1\25\23\uffff\1\15\11\uffff\1\16\11\uffff\1\5\1\6\14\uffff";
+        "\7\uffff\1\7\5\uffff\2\16\14\uffff\1\23\1\24\3\uffff\1\30\1\31\1\1\1\23\1\uffff\1\2\3\uffff\1\5\1\uffff\1\7\1\10\1\13\1\14\1\17\1\15\1\16\13\uffff\1\22\1\24\1\25\1\26\1\27\1\30\24\uffff\1\6\4\uffff\1\20\11\uffff\1\21\15\uffff\1\11\1\12\15\uffff\1\4\6\uffff\1\3";
     static final String DFA17_specialS =
-        "\1\1\31\uffff\1\0\1\2\126\uffff}>";
+        "\1\0\34\uffff\1\2\1\1\154\uffff}>";
     static final String[] DFA17_transitionS = {
-            "\11\36\2\35\2\36\1\35\22\36\1\35\1\7\1\32\3\36\1\5\1\33\1\3\1\4\3\36\1\10\1\26\1\34\12\31\2\36\1\11\1\12\1\13\2\36\17\30\1\1\12\30\3\36\1\27\1\30\1\36\1\22\4\30\1\23\5\30\1\25\1\30\1\20\1\30\1\2\1\30\1\16\1\15\1\17\1\14\1\30\1\24\1\30\1\21\1\30\1\36\1\6\uff83\36",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\1\41\31\40",
-            "\1\43",
-            "",
+            "\11\41\2\40\2\41\1\40\22\41\1\40\1\12\1\35\3\41\1\10\1\36\1\5\1\7\3\41\1\13\1\31\1\37\12\34\2\41\1\14\1\15\1\16\2\41\3\33\1\3\1\33\1\4\11\33\1\1\12\33\3\41\1\32\1\33\1\41\1\25\2\33\1\6\1\33\1\26\5\33\1\30\1\33\1\23\1\33\1\2\1\33\1\21\1\20\1\22\1\17\1\33\1\27\1\33\1\24\1\33\1\41\1\11\uff83\41",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\1\44\31\43",
             "\1\46",
             "\1\47",
             "\1\50",
-            "\1\51",
-            "\1\51",
-            "",
+            "\1\52",
             "",
             "\1\54",
-            "\1\55\5\uffff\1\56",
+            "\1\55",
+            "\1\56",
             "\1\57",
-            "\1\60",
-            "\1\61",
+            "\1\57",
+            "",
+            "",
             "\1\62",
-            "\1\63",
-            "\1\64",
+            "\1\63\5\uffff\1\64",
             "\1\65",
             "\1\66",
-            "\12\67",
-            "\32\40\4\uffff\1\40\1\uffff\32\40",
+            "\1\67",
+            "\1\70",
+            "\1\71",
+            "\1\72",
+            "\1\73",
+            "\1\74",
+            "\12\75",
+            "\32\43\4\uffff\1\43\1\uffff\32\43",
             "",
             "",
-            "\0\71",
-            "\0\71",
-            "\1\72\4\uffff\1\73",
-            "",
-            "",
-            "",
-            "",
-            "\1\75",
-            "",
-            "\1\76",
-            "",
-            "",
+            "\0\77",
+            "\0\77",
+            "\1\100\4\uffff\1\101",
             "",
             "",
             "",
             "",
-            "",
-            "",
-            "\1\77",
-            "\1\100",
-            "\1\101",
-            "\1\102",
             "\1\103",
+            "",
             "\1\104",
             "\1\105",
             "\1\106",
+            "",
             "\1\107",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "\1\110",
             "\1\111",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
             "\1\112",
             "\1\113",
             "\1\114",
             "\1\115",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\5\40\1\116\11\40\1\117\12\40",
+            "\1\116",
+            "\1\117",
+            "\1\120",
             "\1\121",
             "\1\122",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
             "\1\123",
             "\1\124",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\5\40\1\125\11\40\1\126\12\40",
-            "\1\127",
+            "\1\125",
+            "\1\126",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
             "\1\130",
             "\1\131",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\1\133",
-            "\1\134",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\5\43\1\132\11\43\1\133\12\43",
             "\1\135",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "",
             "\1\136",
             "\1\137",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
             "\1\140",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\1\141",
-            "\1\143\15\uffff\1\142",
-            "",
-            "\1\145\14\uffff\1\144",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\1\146",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\5\43\1\141\11\43\1\142\12\43",
+            "\1\143",
+            "\1\144",
+            "\1\145",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
             "\1\147",
             "\1\150",
             "\1\151",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
+            "",
             "\1\152",
-            "",
-            "",
             "\1\153",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "",
             "\1\154",
             "\1\155",
-            "\1\156\11\uffff\1\157",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\1\160",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40",
-            "\1\161",
-            "\12\40\7\uffff\32\40\4\uffff\1\40\1\uffff\32\40"
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\1\156",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\1\157",
+            "\1\161\15\uffff\1\160",
+            "",
+            "\1\162",
+            "\1\163",
+            "\1\165\14\uffff\1\164",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\1\166",
+            "\1\167",
+            "\1\170",
+            "\1\171",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\1\172",
+            "\1\173",
+            "\1\174",
+            "",
+            "",
+            "\1\175",
+            "\1\176",
+            "\1\177",
+            "\1\u0080\11\uffff\1\u0081",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\1\u0082",
+            "\1\u0083",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\1\u0084",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\1\u0085",
+            "",
+            "\1\u0086",
+            "\1\u0087",
+            "\12\43\7\uffff\32\43\4\uffff\1\43\1\uffff\32\43",
+            "\1\u0088",
+            "\1\u0089",
+            "\1\u008a",
+            ""
     };
 
     static final short[] DFA17_eot = DFA.unpackEncodedString(DFA17_eotS);
@@ -1629,23 +1741,13 @@ public class InternalZotLexer extends Lexer {
             this.transition = DFA17_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | RULE_PROPOP | RULE_OP2 | RULE_OPF | RULE_OPFN | RULE_FLOAT | RULE_ID | RULE_INT | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER );";
+            return "1:1: Tokens : ( T__16 | T__17 | T__18 | T__19 | T__20 | T__21 | T__22 | T__23 | T__24 | T__25 | T__26 | T__27 | T__28 | RULE_PROPOP | RULE_OP2 | RULE_OPF | RULE_OPFN | RULE_FLOAT | RULE_ID | RULE_INT | RULE_STRING | RULE_ML_COMMENT | RULE_SL_COMMENT | RULE_WS | RULE_ANY_OTHER );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA17_26 = input.LA(1);
-
-                        s = -1;
-                        if ( ((LA17_26>='\u0000' && LA17_26<='\uFFFF')) ) {s = 57;}
-
-                        else s = 30;
-
-                        if ( s>=0 ) return s;
-                        break;
-                    case 1 : 
                         int LA17_0 = input.LA(1);
 
                         s = -1;
@@ -1653,71 +1755,87 @@ public class InternalZotLexer extends Lexer {
 
                         else if ( (LA17_0=='p') ) {s = 2;}
 
-                        else if ( (LA17_0=='(') ) {s = 3;}
+                        else if ( (LA17_0=='D') ) {s = 3;}
 
-                        else if ( (LA17_0==')') ) {s = 4;}
+                        else if ( (LA17_0=='F') ) {s = 4;}
 
-                        else if ( (LA17_0=='&') ) {s = 5;}
+                        else if ( (LA17_0=='(') ) {s = 5;}
 
-                        else if ( (LA17_0=='|') ) {s = 6;}
+                        else if ( (LA17_0=='d') ) {s = 6;}
 
-                        else if ( (LA17_0=='!') ) {s = 7;}
+                        else if ( (LA17_0==')') ) {s = 7;}
 
-                        else if ( (LA17_0=='-') ) {s = 8;}
+                        else if ( (LA17_0=='&') ) {s = 8;}
 
-                        else if ( (LA17_0=='<') ) {s = 9;}
+                        else if ( (LA17_0=='|') ) {s = 9;}
 
-                        else if ( (LA17_0=='=') ) {s = 10;}
+                        else if ( (LA17_0=='!') ) {s = 10;}
 
-                        else if ( (LA17_0=='>') ) {s = 11;}
+                        else if ( (LA17_0=='-') ) {s = 11;}
 
-                        else if ( (LA17_0=='u') ) {s = 12;}
+                        else if ( (LA17_0=='<') ) {s = 12;}
 
-                        else if ( (LA17_0=='s') ) {s = 13;}
+                        else if ( (LA17_0=='=') ) {s = 13;}
 
-                        else if ( (LA17_0=='r') ) {s = 14;}
+                        else if ( (LA17_0=='>') ) {s = 14;}
 
-                        else if ( (LA17_0=='t') ) {s = 15;}
+                        else if ( (LA17_0=='u') ) {s = 15;}
 
-                        else if ( (LA17_0=='n') ) {s = 16;}
+                        else if ( (LA17_0=='s') ) {s = 16;}
 
-                        else if ( (LA17_0=='y') ) {s = 17;}
+                        else if ( (LA17_0=='r') ) {s = 17;}
 
-                        else if ( (LA17_0=='a') ) {s = 18;}
+                        else if ( (LA17_0=='t') ) {s = 18;}
 
-                        else if ( (LA17_0=='f') ) {s = 19;}
+                        else if ( (LA17_0=='n') ) {s = 19;}
 
-                        else if ( (LA17_0=='w') ) {s = 20;}
+                        else if ( (LA17_0=='y') ) {s = 20;}
 
-                        else if ( (LA17_0=='l') ) {s = 21;}
+                        else if ( (LA17_0=='a') ) {s = 21;}
 
-                        else if ( (LA17_0=='.') ) {s = 22;}
+                        else if ( (LA17_0=='f') ) {s = 22;}
 
-                        else if ( (LA17_0=='^') ) {s = 23;}
+                        else if ( (LA17_0=='w') ) {s = 23;}
 
-                        else if ( ((LA17_0>='A' && LA17_0<='O')||(LA17_0>='Q' && LA17_0<='Z')||LA17_0=='_'||(LA17_0>='b' && LA17_0<='e')||(LA17_0>='g' && LA17_0<='k')||LA17_0=='m'||LA17_0=='o'||LA17_0=='q'||LA17_0=='v'||LA17_0=='x'||LA17_0=='z') ) {s = 24;}
+                        else if ( (LA17_0=='l') ) {s = 24;}
 
-                        else if ( ((LA17_0>='0' && LA17_0<='9')) ) {s = 25;}
+                        else if ( (LA17_0=='.') ) {s = 25;}
 
-                        else if ( (LA17_0=='\"') ) {s = 26;}
+                        else if ( (LA17_0=='^') ) {s = 26;}
 
-                        else if ( (LA17_0=='\'') ) {s = 27;}
+                        else if ( ((LA17_0>='A' && LA17_0<='C')||LA17_0=='E'||(LA17_0>='G' && LA17_0<='O')||(LA17_0>='Q' && LA17_0<='Z')||LA17_0=='_'||(LA17_0>='b' && LA17_0<='c')||LA17_0=='e'||(LA17_0>='g' && LA17_0<='k')||LA17_0=='m'||LA17_0=='o'||LA17_0=='q'||LA17_0=='v'||LA17_0=='x'||LA17_0=='z') ) {s = 27;}
 
-                        else if ( (LA17_0=='/') ) {s = 28;}
+                        else if ( ((LA17_0>='0' && LA17_0<='9')) ) {s = 28;}
 
-                        else if ( ((LA17_0>='\t' && LA17_0<='\n')||LA17_0=='\r'||LA17_0==' ') ) {s = 29;}
+                        else if ( (LA17_0=='\"') ) {s = 29;}
 
-                        else if ( ((LA17_0>='\u0000' && LA17_0<='\b')||(LA17_0>='\u000B' && LA17_0<='\f')||(LA17_0>='\u000E' && LA17_0<='\u001F')||(LA17_0>='#' && LA17_0<='%')||(LA17_0>='*' && LA17_0<=',')||(LA17_0>=':' && LA17_0<=';')||(LA17_0>='?' && LA17_0<='@')||(LA17_0>='[' && LA17_0<=']')||LA17_0=='`'||LA17_0=='{'||(LA17_0>='}' && LA17_0<='\uFFFF')) ) {s = 30;}
+                        else if ( (LA17_0=='\'') ) {s = 30;}
+
+                        else if ( (LA17_0=='/') ) {s = 31;}
+
+                        else if ( ((LA17_0>='\t' && LA17_0<='\n')||LA17_0=='\r'||LA17_0==' ') ) {s = 32;}
+
+                        else if ( ((LA17_0>='\u0000' && LA17_0<='\b')||(LA17_0>='\u000B' && LA17_0<='\f')||(LA17_0>='\u000E' && LA17_0<='\u001F')||(LA17_0>='#' && LA17_0<='%')||(LA17_0>='*' && LA17_0<=',')||(LA17_0>=':' && LA17_0<=';')||(LA17_0>='?' && LA17_0<='@')||(LA17_0>='[' && LA17_0<=']')||LA17_0=='`'||LA17_0=='{'||(LA17_0>='}' && LA17_0<='\uFFFF')) ) {s = 33;}
+
+                        if ( s>=0 ) return s;
+                        break;
+                    case 1 : 
+                        int LA17_30 = input.LA(1);
+
+                        s = -1;
+                        if ( ((LA17_30>='\u0000' && LA17_30<='\uFFFF')) ) {s = 63;}
+
+                        else s = 33;
 
                         if ( s>=0 ) return s;
                         break;
                     case 2 : 
-                        int LA17_27 = input.LA(1);
+                        int LA17_29 = input.LA(1);
 
                         s = -1;
-                        if ( ((LA17_27>='\u0000' && LA17_27<='\uFFFF')) ) {s = 57;}
+                        if ( ((LA17_29>='\u0000' && LA17_29<='\uFFFF')) ) {s = 63;}
 
-                        else s = 30;
+                        else s = 33;
 
                         if ( s>=0 ) return s;
                         break;

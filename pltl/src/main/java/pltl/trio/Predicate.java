@@ -1,73 +1,68 @@
 package pltl.trio;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
+import pltl.PltlFormula;
+import pltl.Probability;
+import pltl.TimeIndex;
 import pltl.bool.Atom;
+import pltl.bool.BooleanFormulae;
 
 public class Predicate implements Atom{
 
     public static HashSet<Predicate> instances=new HashSet<Predicate>();
     
     String predicatename;
-
-    /**
-     * Creates the predicate without setting the actual name
-     * This has been done for state diagrams in particular
-     * where the predicates of the states should have the prefix
-     * of the object involved
-     */
-    public Predicate(){
-      // since the predicate name is necessary to compute the hash value of the
-      // object, this statement cannot be executed in this constructor, but only
-      // when the predicate name is set (hence in method setPredicateName)
-        // this.instances.add(this);
+    public Predicate() {
     }
 
-    /**
-     * Creates the predicate and sets the name
-     * @param name
-     * the name of the predicate
-     */
-    public Predicate(String predicatename){
+    public Predicate(String predicatename) {
         this.predicatename=predicatename;
         instances.add(this);
     }
 
-    /**
-     * Sets the name of the predicate
-     * @param name
-     * The name of the predicate
-     */
-    public void setPredicateName(String predicatename){
+    public void setPredicateName(String predicatename) {
         this.predicatename=predicatename;
         instances.add(this);
     }
 
-    /**
-     * Returns the name of the predicate
-     * @return
-     * the name of the predicate
-     */
-    public String getPredicateName(){
+    public String getPredicateName() {
         return predicatename;
     }
 
-    @Override
+    public String getSemantics() {
+    	//ProbSemantics:
+    	String s = ";" + this.toString() + "\n";
+    	for (int time = 0; time <= PltlFormula.bound; time++){
+    		s += getProbSemantics(time);
+    	}
+    	return s;
+    }
+    private String getProbSemantics(int time) {
+    	String s = "";
+    	TimeIndex ti = new TimeIndex(time, PltlFormula.add(this));
+    	ArrayList<TimeIndex> parents = ti.getParents();
+    	for (BooleanFormulae f:Probability.populate(parents) )
+		return s;
+	}
+
+	@Override
     public String toString() {
     	return "(-P- " +predicatename+ ")";
     }
     
     @Override
-	public boolean equals(Object o){
-        if(o instanceof Predicate){
+	public boolean equals(Object o) {
+        if(o instanceof Predicate) {
             return ((Predicate)o).predicatename.toUpperCase().equals(predicatename.toUpperCase());
         }
         return false;
     }    
 
     @Override
-	public int hashCode(){
+	public int hashCode() {
       try {
 		return this.predicatename.toUpperCase().hashCode();
 	} catch (Exception e) {

@@ -2,8 +2,24 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="zot" nsURI="http://www.zot.org/syntax/Zot" nsPrefix="zot">
   <eClassifiers xsi:type="ecore:EClass" name="Model">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="tempDep" eType="#//TempDep"
+        containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="fma" eType="#//Formula"
         containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TempDep">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fd" eType="#//Formula"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fps" upperBound="-1" eType="#//Formula"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="fa" upperBound="-1" eType="#//TempDep"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="opf" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="f" eType="#//TempDep" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="opfn" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="f1" eType="#//TempDep"
+        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="i" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Formula">
     <eStructuralFeatures xsi:type="ecore:EReference" name="probF" eType="#//ProbF"

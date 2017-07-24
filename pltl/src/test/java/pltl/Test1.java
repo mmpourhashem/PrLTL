@@ -4,15 +4,27 @@ public class Test1 {
 
 	public static void main(String[] args) {
 		String s = "";// check tautologies............
-		s = "(&& "
-				+ "(= (zot-p (-p- head)) 0.5)"
-				+ "(= (zot-p (next (-p- head))) 0.5)"
-				+ "(= (zot-p (next (next (-p- head)))) 0.5)"
-				+ "(= (zot-cp (-p- head) (next (-p- head))) (zot-p (-p- head)))"//independent
-				+ "(= (zot-cp (next (-p- head)) (next (next (-p- head)))) (zot-p (next (-p- head))))"//independent
-				+ "(= (zot-cp (-p- head) (next (next (-p- head)))) (zot-p (-p- head)))"//independent
-//				+ "(!! (= 0.125 (zot-p (&& (-p- head) (next (-p- head)) (next (next (-p- head)))))))"
-				+ ")";
+		//test if (dep !a b) is considered from (dep a b)***************************************************
+
+//TODO
+//		s = "(&& (alw(dep (-p- a) (-p- b)))"
+//				+ ")"
+//				+ "FORMULA:\n"
+//				+ "(&&"
+//				+ " (= 0.2 (zot-p (-p- b))) (= 0.5 (zot-cp (-p- a) (-p- b))) "
+//				+ "(!! (= 0.1 (zot-p (&& (-p- a) (-p- b)))))"
+//				+ ")"
+//				;
+		
+//		s = "(&& "
+//				+ "(= (zot-p (-p- head)) 0.5)"
+//				+ "(= (zot-p (next (-p- head))) 0.5)"
+//				+ "(= (zot-p (next (next (-p- head)))) 0.5)"
+//				+ "(= (zot-cp (-p- head) (next (-p- head))) (zot-p (-p- head)))"//independent
+//				+ "(= (zot-cp (next (-p- head)) (next (next (-p- head)))) (zot-p (next (-p- head))))"//independent
+//				+ "(= (zot-cp (-p- head) (next (next (-p- head)))) (zot-p (-p- head)))"//independent
+////				+ "(!! (= 0.125 (zot-p (&& (-p- head) (next (-p- head)) (next (next (-p- head)))))))"
+//				+ ")";
 //		s = "(&& (!! (&& (-p- b) (-p- c))) (!! (&& (!!(-p- b)) (!! (-p- c)))) (= (zot-p (-p- b)) 0.9) (= (zot-p (-p- c)) 0.1)" //missing relationship between d and (b,c)
 //				+ "(= (zot-cp (next (-p- d)) (-p- b)) 0.1)"
 //				+ "(= (zot-cp (!! (next (-p- d))) (-p- b)) 0.9)"

@@ -17,6 +17,8 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 
 import java.util.ArrayList;
+
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import com.google.inject.Injector;
 
@@ -25,6 +27,7 @@ import pltl.bool.And;
 import pltl.bool.BooleanFormulae;
 import pltl.bool.Not;
 import pltl.bool.Or;
+import pltl.trio.Alw;
 import pltl.trio.Next;
 import pltl.trio.Predicate;
 
@@ -46,6 +49,8 @@ public class Parser {
 		if (model==null)
 			System.out.println(model + " not recognized");
 		mainFormula = getFormula(model.getFma());
+		if (model.getTempDep() != null)
+			Probability.processDeps(0, 0, getDep(model.getTempDep()));
 		System.out.println(mainFormula.toString());
 		//		mainFormula = getNormalizedFormula(mainFormula);
 		//		mainFormula = removeDuplicateFormulae(mainFormula);
@@ -88,14 +93,52 @@ public class Parser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		return parseOutput();
 	}
 
 
+	
+
+	private BooleanFormulae getDep(TempDep tempDep) {
+		if (tempDep.getFd() != null) {
+			ArrayList<BooleanFormulae> bfs = new ArrayList<BooleanFormulae>();
+			for (Formula f: tempDep.getFps())
+				bfs.add(getFormula(f));
+//			PltlFormula.addDep(new Dep(0, getFormula(tempDep.getFd()), bfs));
+			return new Dep(0, getFormula(tempDep.getFd()), bfs);
+		}
+		else if (tempDep.getFa().size() > 0){
+			ArrayList<BooleanFormulae> deps = new ArrayList<BooleanFormulae>();
+			for (TempDep td: tempDep.getFa())
+				deps.add(getDep(td));
+			return new And(deps);
+		}
+		else if (tempDep.getOpf() != null){
+			return getOpF(tempDep.getOpf(), tempDep.getF());
+		}
+		else if (tempDep.getOpfn() != null){
+		//TODO
+			return null;
+		}
+		
+		return null;
+	}
+
+	private BooleanFormulae getOpF(String opf, TempDep f) {
+		if (opf.equals("next"))
+			return new Next(getDep(f));
+		if (opf.equals("alw"))
+			return new Alw(getDep(f));
+		
+		// TODO yesterday, alwf, alwp, ...
+		return null;
+	}
+
 	private String getIntDec() {
 		return "(declare-fun zot (Int Int) Bool)\n"
 				+ "(declare-fun zot-p (Int Int) Real)\n"
-				+ "(declare-fun zot-cp (Int Int Int) Real)\n";
+				+ "(declare-fun zot-cp (Int Int Int Int) Real)\n";
 	}
 
 	//	private String getBVDec0(int size) {
@@ -112,16 +155,16 @@ public class Parser {
 				//		+ "(declare-fun zot-px (Int " + bv + " " + bv + ") Real)\n"
 				+ "(declare-fun zot-cp (Int " + bv + " " + bv + " " + bv + " " + bv + ") Real)\n";
 
-		for (int i = 0; i < PltlFormula.depCluster.size(); i++){
-			s += ";Cluster" + i + ":\n;";
-			for (int f = 0; f < PltlFormula.depCluster.get(i).size(); f++)
-				s += PltlFormula.depCluster.get(i).get(f).toString() + ", ";
-			s += "\n(define-fun zot-px" + i + " ((time Int) (v (_ BitVec " + PltlFormula.depCluster.get(i).size() + ")) (x (_ BitVec " + PltlFormula.depCluster.get(i).size() + "))) Real (+\n";
-			for (int j = 0; j < Math.pow(2, PltlFormula.depCluster.get(i).size()); j++){
-				s += "(ite (= (bvor (bvand v (_ bv" + j + " " + PltlFormula.depCluster.get(i).size() + ")) x) (bvnot (_ bv0 " + PltlFormula.depCluster.get(i).size() + "))) (zot-p time (_ bv" + j + " " + PltlFormula.depCluster.get(i).size() + ")) 0.0)\n";
-			}
-			s += "))\n";
-		}
+//		for (int i = 0; i < PltlFormula.depCluster.size(); i++){
+//			s += ";Cluster" + i + ":\n;";
+//			for (int f = 0; f < PltlFormula.depCluster.get(i).size(); f++)
+//				s += PltlFormula.depCluster.get(i).get(f).toString() + ", ";
+//			s += "\n(define-fun zot-px" + i + " ((time Int) (v (_ BitVec " + PltlFormula.depCluster.get(i).size() + ")) (x (_ BitVec " + PltlFormula.depCluster.get(i).size() + "))) Real (+\n";
+//			for (int j = 0; j < Math.pow(2, PltlFormula.depCluster.get(i).size()); j++){
+//				s += "(ite (= (bvor (bvand v (_ bv" + j + " " + PltlFormula.depCluster.get(i).size() + ")) x) (bvnot (_ bv0 " + PltlFormula.depCluster.get(i).size() + "))) (zot-p time (_ bv" + j + " " + PltlFormula.depCluster.get(i).size() + ")) 0.0)\n";
+//			}
+//			s += "))\n";
+//		}
 
 		return s;
 	}
@@ -130,18 +173,20 @@ public class Parser {
 		String s = ";<Range constraints>\n";
 		for (int time = 0; time <= PltlFormula.bound; time++)
 			for (int i = 0; i < PltlFormula.instances.size(); i++){
-				s += "(and (>= (zot-p " + time + " " + i + ") 0.0) (<= (zot-p " + time + " " + i + ") 1.0))\n";
-				for (int j = 0; j < PltlFormula.instances.size(); j++){
+				TimeIndex ti =new TimeIndex(time, i);
+//				s += "(and (>= (zot-p " + time + " " + i + ") 0.0) (<= (zot-p " + time + " " + i + ") 1.0))\n";
+				s += Smt2Formula.getOp(">=", ti.toString(), "0.0") + " " + Smt2Formula.getOp("<=", ti.toString(), "1.0") + "\n";
+				for (int j = 0; j < PltlFormula.instances.size(); j++) {
 					if (i == j)
-						s += "(= (zot-cp " + time + " " + i + " " + j + ") 1.0)\n"; //For all fma: G(CP(fma, fma) = 1.0)
+						s += Smt2Formula.getOp("=", Smt2Formula.getzotcp(time, i, time, j), "1.0") + "\n";
 					else {
-						s += "(and (>= (zot-cp " + time + " " + i + " " + j + ") 0.0) (<= (zot-cp " + time + " " + i + " " + j + ") 1.0))\n";
-						s += "(=> (= (zot-p " + time + " " + j + ") 1.0) (= (zot-cp " + time + " " + i + " " + j + ") (zot-p " + time + " " + i + ")))" + "\n";
-						s += "(=> (= (zot-p " + time + " " + i + ") 1.0) (= (zot-cp " + time + " " + j + " " + i + ") (zot-p " + time + " " + j + ")))" + "\n";
+						s += Smt2Formula.getOp(">=", Smt2Formula.getzotcp(time, i, time, j), "0.0") + " " + Smt2Formula.getOp("<=", Smt2Formula.getzotcp(time, i, time, j), "1.0") + "\n";
+						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", Smt2Formula.getzotp(time, j), "1.0"), Smt2Formula.getOp("=", Smt2Formula.getzotcp(time, i, time, j), Smt2Formula.getzotp(time, i))) + "\n";
+						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", Smt2Formula.getzotp(time, i), "1.0"), Smt2Formula.getOp("=", Smt2Formula.getzotcp(time, j, time, i), Smt2Formula.getzotp(time, j))) + "\n";
 					}
 				}
 			}
-
+//TODO Remove range constraints for unused zot-cp
 		return s + ";</Range constraints>\n";
 	}
 

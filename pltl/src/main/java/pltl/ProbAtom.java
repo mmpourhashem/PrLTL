@@ -105,25 +105,22 @@ public class ProbAtom implements BooleanFormulae{
 	
 	public String toSmt2(int time) {
 		String s1 = "", s2 = "";
-		String timeS = "";
-		if (time > -1)
-			timeS = Integer.toString(time) + " ";
 			
 		if (f1 != null)
-			s1 = "(zot-p " + timeS + PltlFormula.add(f1) + ")";
+			s1 = Smt2Formula.getzotp(time, PltlFormula.add(f1));
 		else if (f11 != null && f12 != null)
-			s1 = "(zot-cp " + timeS + PltlFormula.add(f11) + " " + PltlFormula.add(f12) + ")";
+			s1 = Smt2Formula.getzotcp(time, PltlFormula.add(f11), time, PltlFormula.add(f12));
 		else
 			s1 = Float.toString(r1);
 		
 		if (f2 != null)
-			s2 = "(zot-p " + timeS + PltlFormula.add(f2) + ")";
+			s2 = Smt2Formula.getzotp(time, PltlFormula.add(f2));
 		else if (f21 != null && f22 != null)
-			s2 = "(zot-cp " + timeS  + PltlFormula.add(f21) + " " + PltlFormula.add(f22) + ")";
+			s2 = Smt2Formula.getzotcp(time, PltlFormula.add(f21), time, PltlFormula.add(f22));
 		else
 			s2 = Float.toString(r2);
 		
-		return "(" + PltlFormula.probOpToString(probOP) + " " + s1 + " " + s2 + ")";
+		return Smt2Formula.getOp(PltlFormula.probOpToString(probOP), s1, s2);
 	}
 
 }

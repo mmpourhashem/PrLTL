@@ -7,7 +7,18 @@
   <genPackages prefix="Zot" basePackage="org.zot.syntax" disposableProviderFactory="true"
       fileExtensions="zot" ecorePackage="Zot.ecore#/">
     <genClasses ecoreClass="Zot.ecore#//Model">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Zot.ecore#//Model/tempDep"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Zot.ecore#//Model/fma"/>
+    </genClasses>
+    <genClasses ecoreClass="Zot.ecore#//TempDep">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Zot.ecore#//TempDep/fd"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Zot.ecore#//TempDep/fps"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Zot.ecore#//TempDep/fa"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Zot.ecore#//TempDep/opf"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Zot.ecore#//TempDep/f"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Zot.ecore#//TempDep/opfn"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Zot.ecore#//TempDep/f1"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute Zot.ecore#//TempDep/i"/>
     </genClasses>
     <genClasses ecoreClass="Zot.ecore#//Formula">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference Zot.ecore#//Formula/probF"/>

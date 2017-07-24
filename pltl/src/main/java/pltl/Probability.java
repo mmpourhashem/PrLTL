@@ -6,6 +6,7 @@ import pltl.bool.And;
 import pltl.bool.BooleanFormulae;
 import pltl.bool.Not;
 import pltl.bool.Or;
+import pltl.trio.Alw;
 import pltl.trio.Next;
 
 public class Probability {
@@ -85,6 +86,7 @@ public class Probability {
 		for (int i = startI; i <= endI; i++){
 			BooleanFormulae f = PltlFormula.instances.get(i);
 			if (PltlFormula.add(f) == PltlFormula.mainF && f instanceof And){
+				//TODO must be removed.
 				for (BooleanFormulae bf:((And) f).getFormulae())
 					for (int time = 0; time <= PltlFormula.bound; time++)
 						s += Smt2Formula.getOp("=" , "1.0", Smt2Formula.getzotp(time, PltlFormula.add(bf))) + Smt2Formula.getzot(time, PltlFormula.add(bf)) + "\n"; 
@@ -118,5 +120,80 @@ public class Probability {
 		}
 
 		return s;
+	}
+
+	public static void processDeps(int left, int right, BooleanFormulae f) {
+		if (f instanceof And)
+			for (BooleanFormulae bf: ((And) f).getFormulae())
+				processDeps(left, right, bf);
+		else if (f instanceof Alw)
+			processDeps(0, PltlFormula.bound, ((Alw) f).getFormula());
+		else if (f instanceof Next)
+			processDeps(left + 1, right + 1, ((Next) f).getFormula());
+		else if (f instanceof Dep) {
+			Dep d = (Dep) f;
+			for (int time = left; time <= right; time++) {
+				int depFI = PltlFormula.add(d.getDepF());
+				TimeIndex depTI = PltlFormula.getTimeIndex(time, depFI);
+				for (int i = 0; i < d.getParentsF().size(); i++){
+					int parentFI = PltlFormula.add(d.getParentsF().get(i));
+					depTI.addParent(PltlFormula.getTimeIndex(time, parentFI));
+				}
+				PltlFormula.addBayes(depTI);
+			}
+		}
+
+		//TODO yesterday, lasts, lasted, alwf, futr, past, ...		
+
+	}
+
+//	public static ArrayList<BooleanFormulae> populateTI(ArrayList<TimeIndex> formulae) {
+//		int f = formulae.get(0).getIndex();
+//		int notF;
+//		if (PltlFormula.get(formulae.get(0).getIndex()) instanceof Not)
+//			notF = PltlFormula.add(((Not)PltlFormula.get(formulae.get(0).getIndex())).getFormula());
+//		else
+//			notF = PltlFormula.add(new Not(PltlFormula.get(formulae.get(0).getIndex())));
+//		if (formulae.size() == 1) {
+//			formulae.add(new TimeIndex(formulae.get(0).getTime(), notF));
+//
+//			return formulae;
+//		}
+//		else {
+//			formulae.remove(0);
+//			ArrayList<BooleanFormulae> populatedCdr = populate(formulae);
+//			ArrayList<BooleanFormulae> populatedMain = new ArrayList<BooleanFormulae>();
+//			for (int i = 0; i < populatedCdr.size(); i++) {
+//				populatedMain.add(new And(f, populatedCdr.get(i)));
+//				populatedMain.add(new And(notF, populatedCdr.get(i)));
+//			}
+//			
+//			return populatedMain;
+//		}
+//	}
+	
+	public static ArrayList<BooleanFormulae> populate(ArrayList<BooleanFormulae> formulae) {
+		BooleanFormulae f = formulae.get(0);
+		BooleanFormulae notF = null;
+		if (formulae.get(0) instanceof Not)
+			notF = ((Not)formulae.get(0)).getFormula();
+		else
+			notF = new Not(f);
+		if (formulae.size() == 1) {
+			formulae.add(notF);
+
+			return formulae;
+		}
+		else {
+			formulae.remove(0);
+			ArrayList<BooleanFormulae> populatedCdr = populate(formulae);
+			ArrayList<BooleanFormulae> populatedMain = new ArrayList<BooleanFormulae>();
+			for (int i = 0; i < populatedCdr.size(); i++) {
+				populatedMain.add(new And(f, populatedCdr.get(i)));
+				populatedMain.add(new And(notF, populatedCdr.get(i)));
+			}
+			
+			return populatedMain;
+		}
 	}
 }

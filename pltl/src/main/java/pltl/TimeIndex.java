@@ -2,7 +2,9 @@ package pltl;
 
 import java.util.ArrayList;
 
-public class TimeIndex {
+import pltl.bool.BooleanFormulae;
+
+public class TimeIndex implements BooleanFormulae{
 	private int time, index;
 	private ArrayList<TimeIndex> parents = new ArrayList<TimeIndex>();
 
@@ -20,10 +22,16 @@ public class TimeIndex {
 	}
 	
 	public ArrayList<TimeIndex> getParents() {
-		return parents;
+//		return parents;
+		for (TimeIndex ti:PltlFormula.bayesNet) {
+			if (ti.equals(this))
+				return ti.getParents();
+		}
+		
+		return null;
 	}
 
-	public void addParent(TimeIndex p){
+	public void addParent(TimeIndex p) {
 		parents.add(p);
 	}
 	
@@ -31,20 +39,30 @@ public class TimeIndex {
 		parents.addAll(p);
 	}
 	
-	public boolean hasParent(TimeIndex p){
-		return parents.contains(p);
+	public boolean hasParent(TimeIndex p) {
+//		return parents.contains(p);
+		for (TimeIndex ti:PltlFormula.bayesNet) {
+			if (ti.equals(this))
+				return ti.getParents().contains(p);
+		}
+
+		return false;
 	}
 	
-	public String toString(){
+	public BooleanFormulae getFormula() {
+		return PltlFormula.get(index); 
+	}
+	
+	public String toString() {
 		return "(zot-p " + time + " " + index + ")";
 	}
 	
-	public String toSeqString(){
+	public String toSeqString() {
 		return time + " " + index;
 	}
 
 	@Override
-	public boolean equals(Object o){
+	public boolean equals(Object o) {
 		if (o instanceof TimeIndex && ((TimeIndex) o).getTime() == time && ((TimeIndex) o).getIndex() == index)
 			return true;
 		return false;

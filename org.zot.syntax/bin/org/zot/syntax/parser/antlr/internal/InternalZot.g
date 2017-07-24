@@ -77,20 +77,270 @@ ruleModel returns [EObject current=null]
 }:
 	(
 		(
+			otherlv_0='DEPENDENCIES:'
 			{
-				newCompositeNode(grammarAccess.getModelAccess().getFmaFormulaParserRuleCall_0());
+				newLeafNode(otherlv_0, grammarAccess.getModelAccess().getDEPENDENCIESKeyword_0());
 			}
-			lv_fma_0_0=ruleFormula
-			{
-				if ($current==null) {
-					$current = createModelElementForParent(grammarAccess.getModelRule());
+		)?
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getModelAccess().getTempDepTempDepParserRuleCall_1_0());
 				}
-				set(
-					$current,
-					"fma",
-					lv_fma_0_0,
-					"org.zot.syntax.Zot.Formula");
-				afterParserOrEnumRuleCall();
+				lv_tempDep_1_0=ruleTempDep
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getModelRule());
+					}
+					set(
+						$current,
+						"tempDep",
+						lv_tempDep_1_0,
+						"org.zot.syntax.Zot.TempDep");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)?
+		otherlv_2='FORMULA:'
+		{
+			newLeafNode(otherlv_2, grammarAccess.getModelAccess().getFORMULAKeyword_2());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getModelAccess().getFmaFormulaParserRuleCall_3_0());
+				}
+				lv_fma_3_0=ruleFormula
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getModelRule());
+					}
+					set(
+						$current,
+						"fma",
+						lv_fma_3_0,
+						"org.zot.syntax.Zot.Formula");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+	)
+;
+
+// Entry rule entryRuleTempDep
+entryRuleTempDep returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getTempDepRule()); }
+	iv_ruleTempDep=ruleTempDep
+	{ $current=$iv_ruleTempDep.current; }
+	EOF;
+
+// Rule TempDep
+ruleTempDep returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			otherlv_0='('
+			{
+				newLeafNode(otherlv_0, grammarAccess.getTempDepAccess().getLeftParenthesisKeyword_0_0());
+			}
+			otherlv_1='dep'
+			{
+				newLeafNode(otherlv_1, grammarAccess.getTempDepAccess().getDepKeyword_0_1());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getTempDepAccess().getFdFormulaParserRuleCall_0_2_0());
+					}
+					lv_fd_2_0=ruleFormula
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getTempDepRule());
+						}
+						set(
+							$current,
+							"fd",
+							lv_fd_2_0,
+							"org.zot.syntax.Zot.Formula");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getTempDepAccess().getFpsFormulaParserRuleCall_0_3_0());
+					}
+					lv_fps_3_0=ruleFormula
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getTempDepRule());
+						}
+						add(
+							$current,
+							"fps",
+							lv_fps_3_0,
+							"org.zot.syntax.Zot.Formula");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)+
+			otherlv_4=')'
+			{
+				newLeafNode(otherlv_4, grammarAccess.getTempDepAccess().getRightParenthesisKeyword_0_4());
+			}
+		)
+		    |
+		(
+			otherlv_5='('
+			{
+				newLeafNode(otherlv_5, grammarAccess.getTempDepAccess().getLeftParenthesisKeyword_1_0());
+			}
+			otherlv_6='&&'
+			{
+				newLeafNode(otherlv_6, grammarAccess.getTempDepAccess().getAmpersandAmpersandKeyword_1_1());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getTempDepAccess().getFaTempDepParserRuleCall_1_2_0());
+					}
+					lv_fa_7_0=ruleTempDep
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getTempDepRule());
+						}
+						add(
+							$current,
+							"fa",
+							lv_fa_7_0,
+							"org.zot.syntax.Zot.TempDep");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)+
+			otherlv_8=')'
+			{
+				newLeafNode(otherlv_8, grammarAccess.getTempDepAccess().getRightParenthesisKeyword_1_3());
+			}
+		)
+		    |
+		(
+			otherlv_9='('
+			{
+				newLeafNode(otherlv_9, grammarAccess.getTempDepAccess().getLeftParenthesisKeyword_2_0());
+			}
+			(
+				(
+					lv_opf_10_0=RULE_OPF
+					{
+						newLeafNode(lv_opf_10_0, grammarAccess.getTempDepAccess().getOpfOPFTerminalRuleCall_2_1_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getTempDepRule());
+						}
+						setWithLastConsumed(
+							$current,
+							"opf",
+							lv_opf_10_0,
+							"org.zot.syntax.Zot.OPF");
+					}
+				)
+			)
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getTempDepAccess().getFTempDepParserRuleCall_2_2_0());
+					}
+					lv_f_11_0=ruleTempDep
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getTempDepRule());
+						}
+						set(
+							$current,
+							"f",
+							lv_f_11_0,
+							"org.zot.syntax.Zot.TempDep");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+			otherlv_12=')'
+			{
+				newLeafNode(otherlv_12, grammarAccess.getTempDepAccess().getRightParenthesisKeyword_2_3());
+			}
+		)
+		    |
+		(
+			otherlv_13='('
+			{
+				newLeafNode(otherlv_13, grammarAccess.getTempDepAccess().getLeftParenthesisKeyword_3_0());
+			}
+			(
+				(
+					lv_opfn_14_0=RULE_OPFN
+					{
+						newLeafNode(lv_opfn_14_0, grammarAccess.getTempDepAccess().getOpfnOPFNTerminalRuleCall_3_1_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getTempDepRule());
+						}
+						setWithLastConsumed(
+							$current,
+							"opfn",
+							lv_opfn_14_0,
+							"org.zot.syntax.Zot.OPFN");
+					}
+				)
+			)
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getTempDepAccess().getF1TempDepParserRuleCall_3_2_0());
+					}
+					lv_f1_15_0=ruleTempDep
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getTempDepRule());
+						}
+						set(
+							$current,
+							"f1",
+							lv_f1_15_0,
+							"org.zot.syntax.Zot.TempDep");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+			(
+				(
+					lv_i_16_0=RULE_INT
+					{
+						newLeafNode(lv_i_16_0, grammarAccess.getTempDepAccess().getIINTTerminalRuleCall_3_3_0());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getTempDepRule());
+						}
+						setWithLastConsumed(
+							$current,
+							"i",
+							lv_i_16_0,
+							"org.eclipse.xtext.common.Terminals.INT");
+					}
+				)
+			)
+			otherlv_17=')'
+			{
+				newLeafNode(otherlv_17, grammarAccess.getTempDepAccess().getRightParenthesisKeyword_3_4());
 			}
 		)
 	)

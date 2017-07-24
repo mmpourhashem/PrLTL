@@ -3,19 +3,18 @@ grammar org.zot.syntax.Zot with org.eclipse.xtext.common.Terminals
 generate zot "http://www.zot.org/syntax/Zot"
 
 Model:
-	fma=Formula;
+	'DEPENDENCIES:'? tempDep=TempDep? 'FORMULA:' fma=Formula;
+// fma=Formula;
 
-//Formula:
-//	(ap=AP |
-//	('(&&' fa+=Formula+ ')') |
-//	('(||' fo+=Formula+ ')') |
-//	('(' op2=OP2 f1=Formula f2=Formula ')') |
-//	('(' opf=OPF f=Formula ')') |
-//	('(' opfn=OPFN f1=Formula i=INT ')') 
-//	);
+TempDep:
+	'(' 'dep' fd=Formula fps+=Formula+ ')' |
+	('(' '&&' fa+=TempDep+ ')') |
+	('(' opf=OPF f=TempDep ')') |
+	('(' opfn=OPFN f1=TempDep i=INT ')') 
+;
+
 Formula:
 	'(' (
-//		ap=AP | 
 //		arithBool=ArithBool |
 		probF=ProbF |
 		temp=TempF
@@ -23,7 +22,8 @@ Formula:
 
 ProbF:
 	probOp=PROPOP ((('(zot-p' '(' tempF1=TempF ')' ')') | ('(zot-cp' '(' tempF11=TempF ')' '(' tempF12=TempF ')' ')')) | real1=DataType)
-	((('(zot-p' '(' tempF2=TempF ')' ')') | ('(zot-cp' '(' tempF21=TempF ')' '(' tempF22=TempF ')' ')')) | real2=DataType)
+	((('(zot-p' '(' tempF2=TempF ')' ')') | ('(zot-cp' '(' tempF21=TempF ')' '(' tempF22=TempF ')' ')')) | real2=DataType) 
+	//| 'dep' fd=Formula fps+=Formula+
 ;
 
 terminal PROPOP:
@@ -47,10 +47,6 @@ terminal OP2: //Propositional operators with 2 operands
 terminal OPF: //Temporal operators with 1 operands
 	'next' | 'yesterday' | 'alw' | 'som' | 'alwf' | 'somf' | 'alwp' | 'somp'
 ;
-
-//terminal OPFF: //Temporal operators with 2 formula operands
-//	'until' | 'since' | 'release' | 'trigger'
-//;
 
 terminal OPFN: //Temporal operators with 1 formula operand and a number
 	'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted'

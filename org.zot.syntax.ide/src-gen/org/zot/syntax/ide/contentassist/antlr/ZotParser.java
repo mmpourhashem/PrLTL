@@ -35,6 +35,7 @@ public class ZotParser extends AbstractContentAssistParser {
 			nameMappings = new HashMap<AbstractElement, String>() {
 				private static final long serialVersionUID = 1L;
 				{
+					put(grammarAccess.getTempDepAccess().getAlternatives(), "rule__TempDep__Alternatives");
 					put(grammarAccess.getFormulaAccess().getAlternatives_1(), "rule__Formula__Alternatives_1");
 					put(grammarAccess.getProbFAccess().getAlternatives_1(), "rule__ProbF__Alternatives_1");
 					put(grammarAccess.getProbFAccess().getAlternatives_1_0(), "rule__ProbF__Alternatives_1_0");
@@ -42,6 +43,11 @@ public class ZotParser extends AbstractContentAssistParser {
 					put(grammarAccess.getProbFAccess().getAlternatives_2_0(), "rule__ProbF__Alternatives_2_0");
 					put(grammarAccess.getTempFAccess().getAlternatives(), "rule__TempF__Alternatives");
 					put(grammarAccess.getAPAccess().getAlternatives_1(), "rule__AP__Alternatives_1");
+					put(grammarAccess.getModelAccess().getGroup(), "rule__Model__Group__0");
+					put(grammarAccess.getTempDepAccess().getGroup_0(), "rule__TempDep__Group_0__0");
+					put(grammarAccess.getTempDepAccess().getGroup_1(), "rule__TempDep__Group_1__0");
+					put(grammarAccess.getTempDepAccess().getGroup_2(), "rule__TempDep__Group_2__0");
+					put(grammarAccess.getTempDepAccess().getGroup_3(), "rule__TempDep__Group_3__0");
 					put(grammarAccess.getFormulaAccess().getGroup(), "rule__Formula__Group__0");
 					put(grammarAccess.getProbFAccess().getGroup(), "rule__ProbF__Group__0");
 					put(grammarAccess.getProbFAccess().getGroup_1_0_0(), "rule__ProbF__Group_1_0_0__0");
@@ -56,7 +62,16 @@ public class ZotParser extends AbstractContentAssistParser {
 					put(grammarAccess.getTempFAccess().getGroup_6(), "rule__TempF__Group_6__0");
 					put(grammarAccess.getAPAccess().getGroup(), "rule__AP__Group__0");
 					put(grammarAccess.getDataTypeAccess().getGroup(), "rule__DataType__Group__0");
-					put(grammarAccess.getModelAccess().getFmaAssignment(), "rule__Model__FmaAssignment");
+					put(grammarAccess.getModelAccess().getTempDepAssignment_1(), "rule__Model__TempDepAssignment_1");
+					put(grammarAccess.getModelAccess().getFmaAssignment_3(), "rule__Model__FmaAssignment_3");
+					put(grammarAccess.getTempDepAccess().getFdAssignment_0_2(), "rule__TempDep__FdAssignment_0_2");
+					put(grammarAccess.getTempDepAccess().getFpsAssignment_0_3(), "rule__TempDep__FpsAssignment_0_3");
+					put(grammarAccess.getTempDepAccess().getFaAssignment_1_2(), "rule__TempDep__FaAssignment_1_2");
+					put(grammarAccess.getTempDepAccess().getOpfAssignment_2_1(), "rule__TempDep__OpfAssignment_2_1");
+					put(grammarAccess.getTempDepAccess().getFAssignment_2_2(), "rule__TempDep__FAssignment_2_2");
+					put(grammarAccess.getTempDepAccess().getOpfnAssignment_3_1(), "rule__TempDep__OpfnAssignment_3_1");
+					put(grammarAccess.getTempDepAccess().getF1Assignment_3_2(), "rule__TempDep__F1Assignment_3_2");
+					put(grammarAccess.getTempDepAccess().getIAssignment_3_3(), "rule__TempDep__IAssignment_3_3");
 					put(grammarAccess.getFormulaAccess().getProbFAssignment_1_0(), "rule__Formula__ProbFAssignment_1_0");
 					put(grammarAccess.getFormulaAccess().getTempAssignment_1_1(), "rule__Formula__TempAssignment_1_1");
 					put(grammarAccess.getProbFAccess().getProbOpAssignment_0(), "rule__ProbF__ProbOpAssignment_0");

@@ -14,12 +14,12 @@ import pltl.trio.Yesterday;
 public class PltlFormula{
 
 	public static ArrayList<BooleanFormulae> instances = new ArrayList<BooleanFormulae>();
-	public static ArrayList<ArrayList<BooleanFormulae>> depCluster = new ArrayList<ArrayList<BooleanFormulae>>();
-	public static int bound = 2;
+	public static ArrayList<BooleanFormulae> deps = new ArrayList<BooleanFormulae>();
+//	public static ArrayList<ArrayList<BooleanFormulae>> depCluster = new ArrayList<ArrayList<BooleanFormulae>>();
+//	public static ArrayList<ArrayList<Integer>> deps = new ArrayList<ArrayList<Integer>>();
+	public static int bound = 0;
 	public static int mainF = 0;
-
-	public PltlFormula(){
-	}
+	public static ArrayList<TimeIndex> bayesNet = new ArrayList<TimeIndex>();
 
 	public static int add(BooleanFormulae fma){
 		int i = getIndex(fma);
@@ -27,71 +27,84 @@ public class PltlFormula{
 			if (fma instanceof Not && ((Not) fma).getFormula() instanceof Not)
 				return add(((Not) ((Not) fma).getFormula()).getFormula());
 			instances.add(fma);
-			if (fma instanceof ProbAtom){
-				if (((ProbAtom) fma).getF11() != null)
-					addToDepCluster(((ProbAtom) fma).getF11(), ((ProbAtom) fma).getF12());
-				if (((ProbAtom) fma).getF21() != null)
-					addToDepCluster(((ProbAtom) fma).getF21(), ((ProbAtom) fma).getF22());
-			}
+//			if (fma instanceof ProbAtom){
+//				if (((ProbAtom) fma).getF11() != null)
+//					addToDepCluster(((ProbAtom) fma).getF11(), ((ProbAtom) fma).getF12());
+//				if (((ProbAtom) fma).getF21() != null)
+//					addToDepCluster(((ProbAtom) fma).getF21(), ((ProbAtom) fma).getF22());
+//			}
 			return instances.size() - 1;
 		}
 		else
 			return getIndex(fma);
 	}
 	
-	public static String getCode(int time, BooleanFormulae f) {
+//	private static BooleanFormulae pruneDeps(And and){
+//		for (BooleanFormulae f: and.getFormulae())
+//	}
+//	TODO order of conjunction
+	
+	public static TimeIndex getTimeIndex(int time, BooleanFormulae f) {
 		if (f instanceof Next)
-			return getCode(time + 1, ((Next) f).getFormula());
+			return getTimeIndex(time + 1, ((Next) f).getFormula());
 		else if (f instanceof Yesterday)
-			return getCode(time - 1, ((Next) f).getFormula());
+			return getTimeIndex(time - 1, ((Next) f).getFormula());
 		
 		// TODO Futr, Past, ...
 		
-		return time + " " + Integer.toString(add(f));
+		return new TimeIndex(time, add(f));
+	}
+	
+	public static TimeIndex getTimeIndex(int time, int index) {
+		return getTimeIndex(time, PltlFormula.get(index));
+	}
+	
+	public static void addDep(BooleanFormulae f){
+		deps.add(f);
 	}
 
-	private static void addToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
-		ArrayList<BooleanFormulae> bfs = new ArrayList<BooleanFormulae>();
-		bfs.addAll(getAtoms(f1));
-		bfs.addAll(getAtoms(f2));
-		for (int i = 0; i < bfs.size() - 1; i++)
-			addPairToDepCluster(bfs.get(i), bfs.get(i + 1));
-	}
+//	private static void addToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
+//		ArrayList<BooleanFormulae> bfs = new ArrayList<BooleanFormulae>();
+//		bfs.addAll(getAtoms(f1));
+//		bfs.addAll(getAtoms(f2));
+//		for (int i = 0; i < bfs.size() - 1; i++)
+//			addPairToDepCluster(bfs.get(i), bfs.get(i + 1));
+//	}
+//
+//	private static void addPairToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
+//		if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) == -1){
+//			ArrayList<BooleanFormulae> temp = new ArrayList<BooleanFormulae>();
+//			temp.add(f1);
+//			temp.add(f2);
+//			depCluster.add(temp);
+//		}
+//		else if (getDepClusterIndex(f1) > -1 && getDepClusterIndex(f2) == -1){
+//			depCluster.get(getDepClusterIndex(f1)).add(f2);
+//		}
+//		else if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) > -1){
+//			depCluster.get(getDepClusterIndex(f2)).add(f1);
+//		}
+//		else{
+//			int ai = getDepClusterIndex(f1);
+//			int bi = getDepClusterIndex(f2);
+//			if (ai != bi){
+//				for (BooleanFormulae bf: depCluster.get(bi))
+//					depCluster.get(ai).add(bf);
+//				depCluster.remove(bi);
+//			}
+//		}
+//	}
 
-	private static void addPairToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
-		if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) == -1){
-			ArrayList<BooleanFormulae> temp = new ArrayList<BooleanFormulae>();
-			temp.add(f1);
-			temp.add(f2);
-			depCluster.add(temp);
-		}
-		else if (getDepClusterIndex(f1) > -1 && getDepClusterIndex(f2) == -1){
-			depCluster.get(getDepClusterIndex(f1)).add(f2);
-		}
-		else if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) > -1){
-			depCluster.get(getDepClusterIndex(f2)).add(f1);
-		}
-		else{
-			int ai = getDepClusterIndex(f1);
-			int bi = getDepClusterIndex(f2);
-			if (ai != bi){
-				for (BooleanFormulae bf: depCluster.get(bi))
-					depCluster.get(ai).add(bf);
-				depCluster.remove(bi);
-			}
-		}
-	}
-
-	private static int getDepClusterIndex(BooleanFormulae f){
-		for (int i = 0; i < depCluster.size(); i++){
-			for (int j = 0; j < depCluster.get(i).size(); j++){ //It returns f's negation index if it exists. 
-				if (f.equals(depCluster.get(i).get(j)) || (f instanceof Not && ((Not) f).getFormula().equals(depCluster.get(i).get(j))) || new Not(f).equals(depCluster.get(i).get(j)))
-					return i;
-			}
-		}
-
-		return -1;
-	}
+//	private static int getDepClusterIndex(BooleanFormulae f){
+//		for (int i = 0; i < depCluster.size(); i++){
+//			for (int j = 0; j < depCluster.get(i).size(); j++){ //It returns f's negation index if it exists. 
+//				if (f.equals(depCluster.get(i).get(j)) || (f instanceof Not && ((Not) f).getFormula().equals(depCluster.get(i).get(j))) || new Not(f).equals(depCluster.get(i).get(j)))
+//					return i;
+//			}
+//		}
+//
+//		return -1;
+//	}
 
 	private static ArrayList<BooleanFormulae> getAtoms(BooleanFormulae f){
 		ArrayList<BooleanFormulae> bfs = new ArrayList<BooleanFormulae>();
@@ -216,6 +229,23 @@ public class PltlFormula{
 			if (f instanceof Predicate)
 				p.add((Predicate) f);
 		return p;
+	}
+
+	public static void addBayes(TimeIndex depTI) {
+		for (TimeIndex ti: bayesNet)
+			if (ti.equals(depTI)) {
+				ti.addParent(depTI.getParents());
+				return;
+			}
+		bayesNet.add(depTI);
+	}
+	
+	public static boolean isParentOf(TimeIndex parent, TimeIndex depF) {
+		for (TimeIndex ti:bayesNet)
+			if (ti.equals(depF) && depF.hasParent(parent))
+				return true;
+		
+		return false;
 	}
 
 	////Returns ture, if it is expressible by zot-px.
