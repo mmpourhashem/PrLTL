@@ -1,13 +1,13 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class Until implements BooleanFormulae {
+public class Until implements Formula {
 
-    public BooleanFormulae f1;
-    public BooleanFormulae f2;
+    public Formula f1;
+    public Formula f2;
 
-    public Until(BooleanFormulae f1, BooleanFormulae f2) {
+    public Until(Formula f1, Formula f2) {
         this.f1 = f1;
         this.f2 = f2;
     }

@@ -1,22 +1,22 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class EQ implements BooleanFormulae{
+public class EQ implements Formula{
 
-    BooleanFormulae a;
-    BooleanFormulae b;
+    Formula a;
+    Formula b;
     
-    public EQ(BooleanFormulae a, BooleanFormulae b){
+    public EQ(Formula a, Formula b){
         this.a=a;
         this.b=b;
     }
     
-    public BooleanFormulae getLeftSide(){
+    public Formula getLeftSide(){
         return a;
     }
     
-    public BooleanFormulae getRightSide(){
+    public Formula getRightSide(){
         return b;
     }
     

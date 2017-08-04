@@ -1,12 +1,12 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class SomF implements BooleanFormulae {
+public class SomF implements Formula {
 
-    BooleanFormulae f;
+    Formula f;
 
-    public SomF(BooleanFormulae f) {
+    public SomF(Formula f) {
         this.f = f;
     }
 

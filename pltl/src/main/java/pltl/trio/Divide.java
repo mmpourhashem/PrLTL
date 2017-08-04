@@ -2,12 +2,12 @@ package pltl.trio;
 
 import pltl.bool.*;
 
-public class Divide implements BooleanFormulae{
+public class Divide implements Formula{
 
-    BooleanFormulae a;
-    BooleanFormulae b;
+    Formula a;
+    Formula b;
 
-    public Divide(BooleanFormulae a, BooleanFormulae b) {
+    public Divide(Formula a, Formula b) {
         this.a=a;
         this.b=b;
     }

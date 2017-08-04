@@ -1,12 +1,12 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class Yesterday implements BooleanFormulae {
+public class Yesterday implements Formula {
 
-    BooleanFormulae f;
+    Formula f;
 
-    public Yesterday(BooleanFormulae f) {
+    public Yesterday(Formula f) {
         this.f = f;
     }
 

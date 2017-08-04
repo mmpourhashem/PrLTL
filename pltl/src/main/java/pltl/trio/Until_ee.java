@@ -1,13 +1,13 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class Until_ee implements BooleanFormulae {
+public class Until_ee implements Formula {
 
-    BooleanFormulae f1;
-    BooleanFormulae f2;
+    Formula f1;
+    Formula f2;
 
-    public Until_ee(BooleanFormulae f1, BooleanFormulae f2) {
+    public Until_ee(Formula f1, Formula f2) {
         this.f1 = f1;
         this.f2 = f2;
     }

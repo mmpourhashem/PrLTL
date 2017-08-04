@@ -19,7 +19,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
-import org.zot.syntax.zot.Formula;
+import org.zot.syntax.zot.TPFormula;
 import org.zot.syntax.zot.TempDep;
 import org.zot.syntax.zot.ZotPackage;
 
@@ -53,7 +53,7 @@ public class TempDepImpl extends MinimalEObjectImpl.Container implements TempDep
    * @generated
    * @ordered
    */
-  protected Formula fd;
+  protected TPFormula fd;
 
   /**
    * The cached value of the '{@link #getFps() <em>Fps</em>}' containment reference list.
@@ -63,7 +63,7 @@ public class TempDepImpl extends MinimalEObjectImpl.Container implements TempDep
    * @generated
    * @ordered
    */
-  protected EList<Formula> fps;
+  protected EList<TPFormula> fps;
 
   /**
    * The cached value of the '{@link #getFa() <em>Fa</em>}' containment reference list.
@@ -181,7 +181,7 @@ public class TempDepImpl extends MinimalEObjectImpl.Container implements TempDep
    * <!-- end-user-doc -->
    * @generated
    */
-  public Formula getFd()
+  public TPFormula getFd()
   {
     return fd;
   }
@@ -191,9 +191,9 @@ public class TempDepImpl extends MinimalEObjectImpl.Container implements TempDep
    * <!-- end-user-doc -->
    * @generated
    */
-  public NotificationChain basicSetFd(Formula newFd, NotificationChain msgs)
+  public NotificationChain basicSetFd(TPFormula newFd, NotificationChain msgs)
   {
-    Formula oldFd = fd;
+    TPFormula oldFd = fd;
     fd = newFd;
     if (eNotificationRequired())
     {
@@ -208,7 +208,7 @@ public class TempDepImpl extends MinimalEObjectImpl.Container implements TempDep
    * <!-- end-user-doc -->
    * @generated
    */
-  public void setFd(Formula newFd)
+  public void setFd(TPFormula newFd)
   {
     if (newFd != fd)
     {
@@ -229,11 +229,11 @@ public class TempDepImpl extends MinimalEObjectImpl.Container implements TempDep
    * <!-- end-user-doc -->
    * @generated
    */
-  public EList<Formula> getFps()
+  public EList<TPFormula> getFps()
   {
     if (fps == null)
     {
-      fps = new EObjectContainmentEList<Formula>(Formula.class, this, ZotPackage.TEMP_DEP__FPS);
+      fps = new EObjectContainmentEList<TPFormula>(TPFormula.class, this, ZotPackage.TEMP_DEP__FPS);
     }
     return fps;
   }
@@ -483,11 +483,11 @@ public class TempDepImpl extends MinimalEObjectImpl.Container implements TempDep
     switch (featureID)
     {
       case ZotPackage.TEMP_DEP__FD:
-        setFd((Formula)newValue);
+        setFd((TPFormula)newValue);
         return;
       case ZotPackage.TEMP_DEP__FPS:
         getFps().clear();
-        getFps().addAll((Collection<? extends Formula>)newValue);
+        getFps().addAll((Collection<? extends TPFormula>)newValue);
         return;
       case ZotPackage.TEMP_DEP__FA:
         getFa().clear();
@@ -523,7 +523,7 @@ public class TempDepImpl extends MinimalEObjectImpl.Container implements TempDep
     switch (featureID)
     {
       case ZotPackage.TEMP_DEP__FD:
-        setFd((Formula)null);
+        setFd((TPFormula)null);
         return;
       case ZotPackage.TEMP_DEP__FPS:
         getFps().clear();

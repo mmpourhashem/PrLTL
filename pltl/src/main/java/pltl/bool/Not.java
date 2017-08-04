@@ -7,15 +7,15 @@ import pltl.trio.Predicate;
 import pltl.trio.Release;
 import pltl.trio.Until;
 
-public class Not implements BooleanFormulae {
+public class Not implements Formula {
 
-	private BooleanFormulae f;
+	private Formula f;
 
-	public Not(BooleanFormulae f) {
+	public Not(Formula f) {
 		this.f = f;
 	}
 
-	public BooleanFormulae getFormula(){
+	public Formula getFormula(){
 		return f;
 	}
 	public String getSemantics(){
@@ -32,7 +32,7 @@ public class Not implements BooleanFormulae {
 		return "";
 	}
 
-	private String getProbSemantics(BooleanFormulae fma) {
+	private String getProbSemantics(Formula fma) {
 		String s = "";
 		int mainF = PltlFormula.add(this);
 		for (int time = 0; time <= PltlFormula.bound; time++)
@@ -41,7 +41,7 @@ public class Not implements BooleanFormulae {
 		return s;
 	}
 
-	public String getPropSemantics(BooleanFormulae fma){
+	public String getPropSemantics(Formula fma){
 		String s = ";" + toString() + "\n";
 		int mainF = PltlFormula.add(this);
 		for (int time = 0; time <= PltlFormula.bound; time++){
@@ -51,23 +51,23 @@ public class Not implements BooleanFormulae {
 		return s;
 	}
 
-	public BooleanFormulae getTheNeg(){
+	public Formula getTheNeg(){
 		if (f instanceof Not)//(!! (!! (zot-p i))) = (zot-p i)// We do not need this, since the semantics are already produced.
 			return f;
 
 		if (f instanceof And){
-			ArrayList<BooleanFormulae> bfa = ((And) f).getFormulae();
+			ArrayList<Formula> bfa = ((And) f).getFormulae();
 			Or or = new Or();
-			for (BooleanFormulae bf:bfa)
-				or.addFormulae(new Not(bf));
+			for (Formula bf:bfa)
+				or.addFormula(new Not(bf));
 			return or;
 		}
 
 		if (f instanceof Or){
-			ArrayList<BooleanFormulae> bfo = ((Or) f).getFormulae();
+			ArrayList<Formula> bfo = ((Or) f).getFormulae();
 			And and = new And();
-			for (BooleanFormulae bf:bfo)
-				and.addFormulae(new Not(bf));
+			for (Formula bf:bfo)
+				and.addFormula(new Not(bf));
 			return and;
 		}
 

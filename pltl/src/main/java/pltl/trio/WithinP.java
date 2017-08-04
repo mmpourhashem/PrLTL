@@ -1,13 +1,13 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class WithinP implements BooleanFormulae{
+public class WithinP implements Formula{
 
-    BooleanFormulae f;
+    Formula f;
     int t;
 
-    public WithinP(BooleanFormulae f, int t) {
+    public WithinP(Formula f, int t) {
         this.f = f;
         this.t = t;
     }

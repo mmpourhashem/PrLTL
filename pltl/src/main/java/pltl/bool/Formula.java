@@ -1,6 +1,6 @@
 package pltl.bool;
 
-public interface BooleanFormulae {
+public interface Formula {
 
     @Override
     public String toString();

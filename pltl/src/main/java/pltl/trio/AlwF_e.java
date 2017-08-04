@@ -5,13 +5,13 @@
  */
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class AlwF_e implements BooleanFormulae {
+public class AlwF_e implements Formula {
 
-    BooleanFormulae f;
+    Formula f;
 
-    public AlwF_e(BooleanFormulae f) {
+    public AlwF_e(Formula f) {
         this.f = f;
     }
 

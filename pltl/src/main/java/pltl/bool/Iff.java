@@ -1,11 +1,11 @@
 package pltl.bool;
 
-public class Iff implements BooleanFormulae{
+public class Iff implements Formula{
 
-	BooleanFormulae f1;
-	BooleanFormulae f2;
+	Formula f1;
+	Formula f2;
 
-	public Iff(BooleanFormulae f1, BooleanFormulae f2){
+	public Iff(Formula f1, Formula f2){
 		this.f1=f1;
 		this.f2=f2;
 	}

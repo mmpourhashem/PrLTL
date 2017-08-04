@@ -1,18 +1,19 @@
 package pltl.trio;
 
 import pltl.PltlFormula;
+import pltl.Prob;
 import pltl.Smt2Formula;
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class Next implements BooleanFormulae{
+public class Next implements Formula{
 
-    private BooleanFormulae f;
+    private Formula f;
 
-    public Next(BooleanFormulae f) {
+    public Next(Formula f) {
         this.f = f;
     }
 
-    public BooleanFormulae getFormula(){ 
+    public Formula getFormula(){ 
     	return f;
     }
     
@@ -22,7 +23,7 @@ public class Next implements BooleanFormulae{
 		int innerF = PltlFormula.add(f);
 		for (int time = 0; time < PltlFormula.bound; time++){
 			s += Smt2Formula.getOp("=" , Smt2Formula.getzot(time, mainF), Smt2Formula.getzot(time + 1, innerF)) + "\n";//prop
-			s += Smt2Formula.getOp("=" , Smt2Formula.getzotp(time, mainF), Smt2Formula.getzotp(time + 1, innerF)) + "\n";//prob
+			s += Smt2Formula.getOp("=" , new Prob(time, mainF).toString(), new Prob(time + 1, innerF).toString()) + "\n";//prob
 		}
 		return s;
 	}

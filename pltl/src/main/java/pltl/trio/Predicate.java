@@ -1,14 +1,11 @@
 package pltl.trio;
 
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import pltl.PltlFormula;
-import pltl.Probability;
-import pltl.TimeIndex;
+import pltl.Prob;
 import pltl.bool.Atom;
-import pltl.bool.BooleanFormulae;
 
 public class Predicate implements Atom{
 
@@ -35,29 +32,25 @@ public class Predicate implements Atom{
     public String getSemantics() {
     	//ProbSemantics:
     	String s = ";" + this.toString() + "\n";
+    	int index = PltlFormula.add(this);
     	for (int time = 0; time <= PltlFormula.bound; time++){
-    		s += getProbSemantics(time);
+    		s += new Prob(time, index).getSemantics(time);
     	}
+    	
     	return s;
     }
-    private String getProbSemantics(int time) {
-    	String s = "";
-    	TimeIndex ti = new TimeIndex(time, PltlFormula.add(this));
-    	ArrayList<TimeIndex> parents = ti.getParents();
-    	for (BooleanFormulae f:Probability.populate(parents) )
-		return s;
-	}
 
 	@Override
     public String toString() {
-    	return "(-P- " +predicatename+ ")";
+    	return "(-P- " + predicatename + ")";
     }
     
     @Override
 	public boolean equals(Object o) {
-        if(o instanceof Predicate) {
-            return ((Predicate)o).predicatename.toUpperCase().equals(predicatename.toUpperCase());
+        if (o instanceof Predicate) {
+            return ((Predicate) o).predicatename.toUpperCase().equals(predicatename.toUpperCase());
         }
+        
         return false;
     }    
 
@@ -68,6 +61,7 @@ public class Predicate implements Atom{
 	} catch (Exception e) {
 		e.printStackTrace();
 	}
+      
       return 0;
     }
 }

@@ -1,13 +1,13 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class LTE implements BooleanFormulae {
+public class LTE implements Formula {
 
-    BooleanFormulae a;
-    BooleanFormulae b;
+    Formula a;
+    Formula b;
     
-    public LTE(BooleanFormulae a, BooleanFormulae b){
+    public LTE(Formula a, Formula b){
         this.a=a;
         this.b=b;
     }  

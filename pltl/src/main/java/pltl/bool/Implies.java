@@ -1,11 +1,11 @@
 package pltl.bool;
 
-public class Implies implements BooleanFormulae{
+public class Implies implements Formula{
 
-    BooleanFormulae f1;
-    BooleanFormulae f2;
+    Formula f1;
+    Formula f2;
 
-    public Implies(BooleanFormulae f1, BooleanFormulae f2){
+    public Implies(Formula f1, Formula f2){
         this.f1=f1;
         this.f2=f2;
     }

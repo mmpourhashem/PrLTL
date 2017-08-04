@@ -2,12 +2,12 @@ package pltl.trio;
 
 import pltl.bool.*;
 
-public class Multiply implements BooleanFormulae{
+public class Multiply implements Formula{
 
-    BooleanFormulae a;
-    BooleanFormulae b;
+    Formula a;
+    Formula b;
 
-    public Multiply(BooleanFormulae a, BooleanFormulae b) {
+    public Multiply(Formula a, Formula b) {
         this.a=a;
         this.b=b;
     }

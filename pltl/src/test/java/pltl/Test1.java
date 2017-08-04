@@ -5,7 +5,20 @@ public class Test1 {
 	public static void main(String[] args) {
 		String s = "";// check tautologies............
 		//test if (dep !a b) is considered from (dep a b)***************************************************
-
+		s = "(&& (dep (-p- a) (-p- b)) (dep (-p- b) (-p- c))"
+//				+ "(dep (!!(-p- a)) (-p- c))"
+				+ ")"
+				+ "FORMULA:"
+				+ "(&& (!!(-p- a)) (-p- b)"
+				+ "(= 0.3 (zot-cp (-p- a) (-p- b)))"
+				+ ")";
+		//s = "(&& (dep (-p- a) (-p- b))"
+//		+ "(dep (-p- a) (-p- c))"
+//		+ ")"
+//		+ "FORMULA:"
+//		+ "(< 0.0 (zot-p (-p- a)))";
+		
+		
 //TODO
 //		s = "(&& (alw(dep (-p- a) (-p- b)))"
 //				+ ")"

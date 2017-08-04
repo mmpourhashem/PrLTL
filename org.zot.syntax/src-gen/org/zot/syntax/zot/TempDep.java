@@ -41,12 +41,12 @@ public interface TempDep extends EObject
    * </p>
    * <!-- end-user-doc -->
    * @return the value of the '<em>Fd</em>' containment reference.
-   * @see #setFd(Formula)
+   * @see #setFd(TPFormula)
    * @see org.zot.syntax.zot.ZotPackage#getTempDep_Fd()
    * @model containment="true"
    * @generated
    */
-  Formula getFd();
+  TPFormula getFd();
 
   /**
    * Sets the value of the '{@link org.zot.syntax.zot.TempDep#getFd <em>Fd</em>}' containment reference.
@@ -56,11 +56,11 @@ public interface TempDep extends EObject
    * @see #getFd()
    * @generated
    */
-  void setFd(Formula value);
+  void setFd(TPFormula value);
 
   /**
    * Returns the value of the '<em><b>Fps</b></em>' containment reference list.
-   * The list contents are of type {@link org.zot.syntax.zot.Formula}.
+   * The list contents are of type {@link org.zot.syntax.zot.TPFormula}.
    * <!-- begin-user-doc -->
    * <p>
    * If the meaning of the '<em>Fps</em>' containment reference list isn't clear,
@@ -72,7 +72,7 @@ public interface TempDep extends EObject
    * @model containment="true"
    * @generated
    */
-  EList<Formula> getFps();
+  EList<TPFormula> getFps();
 
   /**
    * Returns the value of the '<em><b>Fa</b></em>' containment reference list.

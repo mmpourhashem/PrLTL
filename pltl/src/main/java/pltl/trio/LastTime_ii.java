@@ -1,13 +1,13 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class LastTime_ii implements BooleanFormulae {
+public class LastTime_ii implements Formula {
 
-    BooleanFormulae f;
+    Formula f;
     int t;
 
-    public LastTime_ii(BooleanFormulae f, int t) {
+    public LastTime_ii(Formula f, int t) {
         this.f = f;
         this.t = t;
     }

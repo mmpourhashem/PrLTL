@@ -2,12 +2,12 @@ package pltl.trio;
 
 import pltl.bool.*;
 
-public class Minus implements BooleanFormulae{
+public class Minus implements Formula{
 
-	BooleanFormulae a;
-	BooleanFormulae b;
+	Formula a;
+	Formula b;
 
-    public Minus(BooleanFormulae a, BooleanFormulae b) {
+    public Minus(Formula a, Formula b) {
         this.a=a;
         this.b=b;
     }

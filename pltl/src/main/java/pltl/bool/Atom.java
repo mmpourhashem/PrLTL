@@ -1,5 +1,5 @@
 package pltl.bool;
 
-public interface Atom extends BooleanFormulae{
+public interface Atom extends Formula{
 
 }

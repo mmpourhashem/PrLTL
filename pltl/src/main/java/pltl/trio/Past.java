@@ -1,13 +1,13 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class Past implements BooleanFormulae {
+public class Past implements Formula {
 
-    BooleanFormulae f;
+    Formula f;
     int t;
 
-    public Past(BooleanFormulae f, int t) {
+    public Past(Formula f, int t) {
         this.f = f;
         this.t = t;
     }

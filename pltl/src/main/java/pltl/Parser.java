@@ -17,23 +17,25 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import com.google.inject.Injector;
 
-import pltl.PltlFormula.probOp;
+import arith.ArithFormula;
+import arith.Constant;
+import arith.Op;
 import pltl.bool.And;
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 import pltl.bool.Not;
 import pltl.bool.Or;
 import pltl.trio.Alw;
-import pltl.trio.Next;
+import pltl.trio.Futr;
 import pltl.trio.Predicate;
 
 public class Parser {
 	private Model model;
-	private BooleanFormulae mainFormula;
+	private Formula mainFormula;
 	public boolean Parse(String script){
 		String fileName = "z3.input.smt2";
 		Injector injector = new ZotStandaloneSetup().createInjectorAndDoEMFRegistration();
@@ -64,14 +66,23 @@ public class Parser {
 			semantics = "(assert (and (zot 0 " + mainF + ") (= (zot-p 0 " + mainF + ") 1.0) \n" + semantics + "))\n\n";
 		//		if (mainF > -1)//bv zot-px
 		//			semantics = "(assert (and (zot 0 " + mainF + ") "+ Smt2Formula.getSmt2Eq("1.0", PltlFormula.getZotpx(0, mainFormula)) + "\n" + semantics + "))\n\n";
-		String fTable = "";
+		String fTable = ";Formula table:\n";
 		for (int i=0;i<PltlFormula.instances.size();i++)
 			fTable += ";" + i+"\t"+PltlFormula.instances.get(i).toString() + "\n";
+		fTable += ";Conditional probability table:\n";
+		for (int i=0;i<PltlFormula.cProbsTBP.size();i++)
+			fTable += ";" + i+"\t"+PltlFormula.cProbsTBP.get(i).toString() + "\n";
 		String z3Commands = "(check-sat-using qfufnra)\n(get-model)\n";
-				String smt2Model = "(set-option :smtlib2-compliant true)\n" + fTable + "\n" + getIntDec() + "\n" + semantics + z3Commands;
-//				String smt2Model = fTable + "\n" + getBVDec(PltlFormula.instances.size()) + "\n"+ semantics + z3Commands;
-//		String smt2Model = fTable + "\n" + getBVDec(3) + "\n"+ semantics + z3Commands;
+		String smt2Model = "(set-option :smtlib2-compliant true)\n" + fTable + "\n" + getIntDec() + "\n" + semantics + z3Commands;
+		//				String smt2Model = fTable + "\n" + getBVDec(PltlFormula.instances.size()) + "\n"+ semantics + z3Commands;
+		//		String smt2Model = fTable + "\n" + getBVDec(3) + "\n"+ semantics + z3Commands;
 		System.out.println(smt2Model);
+		
+		
+		
+		
+		
+		
 		try {
 			FileWriter smt2 = new FileWriter(fileName);
 			BufferedWriter out = new BufferedWriter(smt2);
@@ -93,23 +104,23 @@ public class Parser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return parseOutput();
 	}
 
 
-	
 
-	private BooleanFormulae getDep(TempDep tempDep) {
+
+	private Formula getDep(TempDep tempDep) {
 		if (tempDep.getFd() != null) {
-			ArrayList<BooleanFormulae> bfs = new ArrayList<BooleanFormulae>();
-			for (Formula f: tempDep.getFps())
+			ArrayList<Formula> bfs = new ArrayList<Formula>();
+			for (TPFormula f: tempDep.getFps())
 				bfs.add(getFormula(f));
-//			PltlFormula.addDep(new Dep(0, getFormula(tempDep.getFd()), bfs));
+			//			PltlFormula.addDep(new Dep(0, getFormula(tempDep.getFd()), bfs));
 			return new Dep(0, getFormula(tempDep.getFd()), bfs);
 		}
 		else if (tempDep.getFa().size() > 0){
-			ArrayList<BooleanFormulae> deps = new ArrayList<BooleanFormulae>();
+			ArrayList<Formula> deps = new ArrayList<Formula>();
 			for (TempDep td: tempDep.getFa())
 				deps.add(getDep(td));
 			return new And(deps);
@@ -118,19 +129,20 @@ public class Parser {
 			return getOpF(tempDep.getOpf(), tempDep.getF());
 		}
 		else if (tempDep.getOpfn() != null){
-		//TODO
+			//TODO
 			return null;
 		}
-		
+
 		return null;
 	}
 
-	private BooleanFormulae getOpF(String opf, TempDep f) {
+	private Formula getOpF(String opf, TempDep f) {
 		if (opf.equals("next"))
-			return new Next(getDep(f));
+			//			return new Next(getDep(f));
+			return new Futr(getDep(f), 1);
 		if (opf.equals("alw"))
 			return new Alw(getDep(f));
-		
+
 		// TODO yesterday, alwf, alwp, ...
 		return null;
 	}
@@ -155,16 +167,16 @@ public class Parser {
 				//		+ "(declare-fun zot-px (Int " + bv + " " + bv + ") Real)\n"
 				+ "(declare-fun zot-cp (Int " + bv + " " + bv + " " + bv + " " + bv + ") Real)\n";
 
-//		for (int i = 0; i < PltlFormula.depCluster.size(); i++){
-//			s += ";Cluster" + i + ":\n;";
-//			for (int f = 0; f < PltlFormula.depCluster.get(i).size(); f++)
-//				s += PltlFormula.depCluster.get(i).get(f).toString() + ", ";
-//			s += "\n(define-fun zot-px" + i + " ((time Int) (v (_ BitVec " + PltlFormula.depCluster.get(i).size() + ")) (x (_ BitVec " + PltlFormula.depCluster.get(i).size() + "))) Real (+\n";
-//			for (int j = 0; j < Math.pow(2, PltlFormula.depCluster.get(i).size()); j++){
-//				s += "(ite (= (bvor (bvand v (_ bv" + j + " " + PltlFormula.depCluster.get(i).size() + ")) x) (bvnot (_ bv0 " + PltlFormula.depCluster.get(i).size() + "))) (zot-p time (_ bv" + j + " " + PltlFormula.depCluster.get(i).size() + ")) 0.0)\n";
-//			}
-//			s += "))\n";
-//		}
+		//		for (int i = 0; i < PltlFormula.depCluster.size(); i++){
+		//			s += ";Cluster" + i + ":\n;";
+		//			for (int f = 0; f < PltlFormula.depCluster.get(i).size(); f++)
+		//				s += PltlFormula.depCluster.get(i).get(f).toString() + ", ";
+		//			s += "\n(define-fun zot-px" + i + " ((time Int) (v (_ BitVec " + PltlFormula.depCluster.get(i).size() + ")) (x (_ BitVec " + PltlFormula.depCluster.get(i).size() + "))) Real (+\n";
+		//			for (int j = 0; j < Math.pow(2, PltlFormula.depCluster.get(i).size()); j++){
+		//				s += "(ite (= (bvor (bvand v (_ bv" + j + " " + PltlFormula.depCluster.get(i).size() + ")) x) (bvnot (_ bv0 " + PltlFormula.depCluster.get(i).size() + "))) (zot-p time (_ bv" + j + " " + PltlFormula.depCluster.get(i).size() + ")) 0.0)\n";
+		//			}
+		//			s += "))\n";
+		//		}
 
 		return s;
 	}
@@ -173,20 +185,20 @@ public class Parser {
 		String s = ";<Range constraints>\n";
 		for (int time = 0; time <= PltlFormula.bound; time++)
 			for (int i = 0; i < PltlFormula.instances.size(); i++){
-				TimeIndex ti =new TimeIndex(time, i);
-//				s += "(and (>= (zot-p " + time + " " + i + ") 0.0) (<= (zot-p " + time + " " + i + ") 1.0))\n";
-				s += Smt2Formula.getOp(">=", ti.toString(), "0.0") + " " + Smt2Formula.getOp("<=", ti.toString(), "1.0") + "\n";
-				for (int j = 0; j < PltlFormula.instances.size(); j++) {
-					if (i == j)
-						s += Smt2Formula.getOp("=", Smt2Formula.getzotcp(time, i, time, j), "1.0") + "\n";
-					else {
-						s += Smt2Formula.getOp(">=", Smt2Formula.getzotcp(time, i, time, j), "0.0") + " " + Smt2Formula.getOp("<=", Smt2Formula.getzotcp(time, i, time, j), "1.0") + "\n";
-						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", Smt2Formula.getzotp(time, j), "1.0"), Smt2Formula.getOp("=", Smt2Formula.getzotcp(time, i, time, j), Smt2Formula.getzotp(time, i))) + "\n";
-						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", Smt2Formula.getzotp(time, i), "1.0"), Smt2Formula.getOp("=", Smt2Formula.getzotcp(time, j, time, i), Smt2Formula.getzotp(time, j))) + "\n";
-					}
-				}
+				Prob p =new Prob(time, i);
+				s += new ArithFormula(false, Op.GTE, p, new Constant(0)).toString() + " " + new ArithFormula(false, Op.LTE, p, new Constant(1)).toString() + "\n";
+//				for (int j = 0; j < PltlFormula.instances.size(); j++) {
+//					if (i == j)
+//						s += new ArithFormula(Op.EQ, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 1.0)).toString() + "\n"; 
+//					else {
+//						s += new ArithFormula(Op.GTE, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 0)).toString() + " "
+//								+ new ArithFormula(Op.LTE, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 1)).toString() + "\n";
+////						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", new Prob(time, j).toString(), "1.0"), Smt2Formula.getOp("=", new CProb(new Prob(time, i), new Prob(time, j)).toString(), new Prob(time, i).toString())) + "\n";
+////						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", new Prob(time, i).toString(), "1.0"), Smt2Formula.getOp("=", new CProb(new Prob(time, j), new Prob(time, i)).toString(), new Prob(time, j).toString())) + "\n";
+//					}
+//				}
 			}
-//TODO Remove range constraints for unused zot-cp
+		//TODO Remove range constraints for unused zot-cp
 		return s + ";</Range constraints>\n";
 	}
 
@@ -196,7 +208,7 @@ public class Parser {
 			BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("./z3.output.txt"), "Cp1252"));         
 			String line;
 			boolean prob = false;
-			
+
 			ArrayList<Row> rows = new ArrayList<Row>();
 			while ((line = br.readLine()) != null) {
 				if (line.equals("unsat")){
@@ -223,6 +235,9 @@ public class Parser {
 					float value = Float.parseFloat(floatNumber) * s;
 					rows.add(new Row(time, fNumber, value));
 				}
+				
+				if (prob && line.indexOf("ite (and") == -1)
+					prob = false;
 			}
 			br.close();
 			try{
@@ -259,7 +274,7 @@ public class Parser {
 		}
 	}
 
-	private BooleanFormulae getFormula(Formula fma) {
+	private Formula getFormula(TPFormula fma) {
 		if (fma.getProbF() != null){
 			return getProbF(fma.getProbF());
 		}
@@ -269,9 +284,9 @@ public class Parser {
 		return null;
 	}
 
-	private BooleanFormulae getProbF(ProbF probF) {
-		probOp pOP = PltlFormula.getProbOp(probF.getProbOp());
-		BooleanFormulae f1 = null, f11 = null, f12 = null, f2 = null, f21 = null, f22 = null;
+	private Formula getProbF(ProbF probF) {
+		Op pOP = PltlFormula.getProbOp(probF.getProbOp());
+		Formula f1 = null, f11 = null, f12 = null, f2 = null, f21 = null, f22 = null;
 		float r1 = -1, r2 = -1;
 		if (probF.getTempF1() != null)
 			f1 = getTemp(probF.getTempF1());
@@ -289,7 +304,7 @@ public class Parser {
 			r1 = getFloat(probF.getReal1());
 		if (probF.getReal2() != null)
 			r2 = getFloat(probF.getReal2());
-		ProbAtom pa = new ProbAtom(pOP, f1, f11, f12, f2, f21, f22, r1, r2);
+		ProbExp pa = new ProbExp(pOP, f1, f11, f12, f2, f21, f22, r1, r2);
 		PltlFormula.add(pa);
 		return pa;
 	}
@@ -298,7 +313,7 @@ public class Parser {
 		return f.getI() + Float.parseFloat("0" + f.getFloat()) ;
 	}
 
-	private BooleanFormulae getTemp(TempF tempF) {
+	private Formula getTemp(TempF tempF) {
 		if (tempF.getAp() != null){
 			Predicate ap = new Predicate(tempF.getAp().getName());
 			PltlFormula.add(ap);
@@ -307,8 +322,8 @@ public class Parser {
 
 		if (tempF.getFa().size() > 0){
 			pltl.bool.And and = new pltl.bool.And(); 
-			for (Formula fma: tempF.getFa())
-				and.addFormulae(getFormula(fma));
+			for (TPFormula fma: tempF.getFa())
+				and.addFormula(getFormula(fma));
 			if (tempF.getFa().size() == 1)
 				return getFormula(tempF.getFa().get(0));
 			else {
@@ -319,8 +334,8 @@ public class Parser {
 
 		if (tempF.getFo().size() > 0){
 			pltl.bool.Or or = new pltl.bool.Or(); 
-			for (Formula fma: tempF.getFo())
-				or.addFormulae(getFormula(fma));
+			for (TPFormula fma: tempF.getFo())
+				or.addFormula(getFormula(fma));
 			if (tempF.getFo().size() == 1)
 				return getFormula(tempF.getFo().get(0));
 			else {
@@ -346,15 +361,16 @@ public class Parser {
 		return null;
 	}
 
-	private BooleanFormulae getOpF(String opf, Formula f) {
+	private Formula getOpF(String opf, TPFormula f) {
 		if (opf.equals("next"))
-			return new Next(getFormula(f));
+			//			return new Next(getFormula(f));
+			return new Futr(getFormula(f), 1);
 		//TODO check completeness.		
 		return null;
 	}
 
 
-	private BooleanFormulae getOp2(String op2, Formula f1, Formula f2) {
+	private Formula getOp2(String op2, TPFormula f1, TPFormula f2) {
 		if (op2.equals("->"))
 			return new Or(new Not(getFormula(f1)), getFormula(f2));
 		if (op2.equals("<->"))
@@ -363,7 +379,7 @@ public class Parser {
 		return null;
 	}
 
-	public static boolean bfArraySubset(ArrayList<BooleanFormulae> a1, ArrayList<BooleanFormulae> a2){
+	public static boolean bfArraySubset(ArrayList<Formula> a1, ArrayList<Formula> a2){
 		for (int i = 0; i < a1.size(); i++)
 			for (int j = 0; j < a2.size(); j++){
 				if (a1.get(i).equals(a2.get(j)))
@@ -374,7 +390,7 @@ public class Parser {
 		return true;
 	}
 
-	public static boolean bfArrayEqual(ArrayList<BooleanFormulae> a1, ArrayList<BooleanFormulae> a2){
+	public static boolean bfArrayEqual(ArrayList<Formula> a1, ArrayList<Formula> a2){
 		return (bfArraySubset(a1, a2) && bfArraySubset(a2, a1));
 	}
 	/*

@@ -1,22 +1,22 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class NEQ implements BooleanFormulae{
+public class NEQ implements Formula{
 
-    BooleanFormulae a;
-    BooleanFormulae b;
+    Formula a;
+    Formula b;
     
-    public NEQ(BooleanFormulae a, BooleanFormulae b){
+    public NEQ(Formula a, Formula b){
         this.a=a;
         this.b=b;
     }
     
-    public BooleanFormulae getLeftSide(){
+    public Formula getLeftSide(){
         return a;
     }
     
-    public BooleanFormulae getRightSide(){
+    public Formula getRightSide(){
         return b;
     }
     

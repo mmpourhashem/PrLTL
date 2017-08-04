@@ -1,13 +1,13 @@
 package pltl.trio;
 
-import pltl.bool.BooleanFormulae;
+import pltl.bool.Formula;
 
-public class Since_ii implements BooleanFormulae {
+public class Since_ii implements Formula {
 
-    BooleanFormulae f1;
-    BooleanFormulae f2;
+    Formula f1;
+    Formula f2;
 
-    public Since_ii(BooleanFormulae f1, BooleanFormulae f2) {
+    public Since_ii(Formula f1, Formula f2) {
         this.f1 = f1;
         this.f2 = f2;
     }
