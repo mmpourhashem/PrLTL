@@ -25,7 +25,7 @@ public class Functions {
 		Formula f2 = new Predicate("b");
 		input.add(new Not(f1));
 		input.add(f2);
-		result = Probability.populate(input);
+		result = Probability.populateFormulae(input);
 		expResult.add(new And(new Not(f1), new Not(f2))); 	//00
 		expResult.add(new And(new Not(f1), f2));			//01
 		expResult.add(new And(f1, new Not(f2)));			//10
@@ -56,12 +56,12 @@ public class Functions {
 	}
 	
 	@Test
-	public void getDNF() {
-//		//input = (&& (-p- z) (|| (-p- a) (-p- b) (|| (-p- c) (-p- d))))
-//		And input = new And(new Predicate("z"), new Or(new Predicate("a"), new Predicate("b"), new Or(new Predicate("c"), new Predicate("d"))));
-//		System.out.println(PltlFormula.getDNF(input));
-//		//result = (|| (&& (-P- z) (-P- a)) (&& (-P- z) (-P- b)) (&& (-P- z) (-P- c)) (&& (-P- z) (-P- d)))
-//		assertTrue(PltlFormula.getDNF(input).equals(new Or(new And(new Predicate("z"), new Predicate("a")), new And(new Predicate("z"), new Predicate("b")), new And(new Predicate("z"), new Predicate("c")), new And(new Predicate("z"), new Predicate("d")))));
+	public void getDNF1() {
+		//input = (&& (-p- z) (|| (-p- a) (-p- b) (|| (-p- c) (-p- d))))
+		And input = new And(new Predicate("z"), new Or(new Predicate("a"), new Predicate("b"), new Or(new Predicate("c"), new Predicate("d"))));
+		System.out.println(PltlFormula.getDNF(input));
+		//result = (|| (&& (-P- z) (-P- a)) (&& (-P- z) (-P- b)) (&& (-P- z) (-P- c)) (&& (-P- z) (-P- d)))
+		assertTrue(PltlFormula.getDNF(input).equals(new Or(new And(new Predicate("z"), new Predicate("a")), new And(new Predicate("z"), new Predicate("b")), new And(new Predicate("z"), new Predicate("c")), new And(new Predicate("z"), new Predicate("d")))));
 		
 		//input = (&& (|| (!! (!! (-P- a))) (!! (!! (!! (-P- b))))) (!! (&& (-P- b) (-P- c))))
 		And input1 = new And(new Or(new Not(new Not(new Predicate("a"))), new Not(new Not(new Not(new Predicate("b"))))), new Not (new And(new Predicate("b"), new Predicate("c"))));
@@ -70,6 +70,26 @@ public class Functions {
 		//result = (|| (&& (-P- a) (!! (-P- b))) (&& (-P- a) (!! (-P- c))) (!! (-P- b)) (&& (!! (-P- b)) (!! (-P- c))))
 		Or result = new Or(new And(new Predicate("a"), new Not(new Predicate("b"))), new And(new Predicate("a"), new Not(new Predicate("c"))), new Not(new Predicate("b")), new And(new Not(new Predicate("b")), new Not(new Predicate("c"))));
 		assertTrue(PltlFormula.getDNF(input1).equals(result));
+	}
+	
+	@Test
+	public void getDNF2() {
+		//input = (&& (|| (-P- a) (-P- b)) (!! (-P- b)))
+		And input = new And(new Or(new Predicate("a"), new Predicate("b")), new Not(new Predicate("b")));
+		System.out.println(input);
+		Or output = (Or) PltlFormula.getDNF(input);
+		System.out.println(output);
+		assertTrue(output.equals(new Or(new And(new Not(new Predicate("b")), new Predicate("a")))));
+	}
+	
+	@Test
+	public void getDNF3() {
+		//input = (&& (|| (-P- a) (!! (-P- a))) (|| (-P- b) (!! (-P- b))))
+		And input = new And(new Or(new Predicate("a"), new Not(new Predicate("a"))), new Or(new Predicate("b"), new Not(new Predicate("b"))));
+		System.out.println(input);
+		Formula output = PltlFormula.getDNF(input);
+		System.out.println(output);
+		assertTrue(output.equals(new PltlFormula.True()));
 	}
 	
 }

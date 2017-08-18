@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
+import arith.ArithFormula;
+import arith.Constant;
 import arith.Op;
 import pltl.bool.And;
 import pltl.bool.Formula;
@@ -23,7 +25,7 @@ public class PltlFormula {
 	public static ArrayList<Formula> deps = new ArrayList<Formula>();
 	//	public static ArrayList<ArrayList<BooleanFormulae>> depCluster = new ArrayList<ArrayList<BooleanFormulae>>();
 	//	public static ArrayList<ArrayList<Integer>> deps = new ArrayList<ArrayList<Integer>>();
-	public static int bound = 0;
+	public static int bound = 1;
 	public static int mainF = 0;
 	public static ArrayList<Prob> bayesNet = new ArrayList<Prob>();
 
@@ -33,7 +35,7 @@ public class PltlFormula {
 			if (fma instanceof Not && ((Not) fma).getFormula() instanceof Not)
 				return add(((Not) ((Not) fma).getFormula()).getFormula());
 			instances.add(fma);
-			//			if (fma instanceof ProbAtom){
+			//			if (fma instanceof ProbAtom) {
 			//				if (((ProbAtom) fma).getF11() != null)
 			//					addToDepCluster(((ProbAtom) fma).getF11(), ((ProbAtom) fma).getF12());
 			//				if (((ProbAtom) fma).getF21() != null)
@@ -57,7 +59,7 @@ public class PltlFormula {
 		cProbsTBP.add(cProb);
 	}
 
-	//	private static BooleanFormulae pruneDeps(And and){
+	//	private static BooleanFormulae pruneDeps(And and) {
 	//		for (BooleanFormulae f: and.getFormulae())
 	//	}
 
@@ -77,11 +79,11 @@ public class PltlFormula {
 		return getProb(time, PltlFormula.get(index));
 	}
 
-	public static void addDep(Formula f){
+	public static void addDep(Formula f) {
 		deps.add(f);
 	}
 
-	private static ArrayList<Formula> getAtoms(Formula f){
+	private static ArrayList<Formula> getAtoms(Formula f) {
 		ArrayList<Formula> bfs = new ArrayList<Formula>();
 		if (f instanceof And)
 			for (Formula bf:((And) f).getFormulae())
@@ -94,7 +96,7 @@ public class PltlFormula {
 		else if (f instanceof Not)
 			bfs.addAll(getAtoms(((Not) f).getFormula()));
 
-		else if (f instanceof Next){
+		else if (f instanceof Next) {
 			bfs.addAll(getAtoms(((Next) f).getFormula()));
 			bfs.add((Next) f);
 		}
@@ -106,18 +108,18 @@ public class PltlFormula {
 		return bfs;
 	}
 
-	public static int getIndex(Formula fma){
+	public static int getIndex(Formula fma) {
 		for (int i = 0; i < instances.size(); i++)
 			if (instances.get(i).equals(fma))
 				return i;
 		return -1;
 	}
 
-	public static Formula get(int index){
+	public static Formula get(int index) {
 		return instances.get(index);
 	}
 
-	public static Op getProbOp(String s){
+	public static Op getProbOp(String s) {
 		if (s.equals("<"))
 			return Op.LT;
 		if (s.equals("<="))
@@ -138,7 +140,7 @@ public class PltlFormula {
 		return null;
 	}
 
-	public static ArrayList<Predicate> getPredicates(){
+	public static ArrayList<Predicate> getPredicates() {
 		ArrayList<Predicate> p = new ArrayList<Predicate>();
 		for (Formula f:instances)
 			if (f instanceof Predicate)
@@ -168,19 +170,23 @@ public class PltlFormula {
 
 	public static Formula getDNF(Formula formula1) {
 		Formula formula = getNNF(getFlatFormula(formula1));
+
 		if (formula instanceof Or) {
 			Or or = (Or) formula;
+			or.prune();
 			Or newOr = new Or();
 
 			for (Formula f: or.getFormulae()) {
 				newOr.addFormula(getDNF(f));
 			}
-
+			
+			newOr.prune();
 			return newOr.getFlatOr();
 		}
 
 		if (formula instanceof And) {
 			And and = (And) formula;
+			and.prune();
 			if (and.getFormulae().size() == 1)
 				return getDNF(and.getFormulae().get(0));
 
@@ -194,11 +200,12 @@ public class PltlFormula {
 			for (int i = 0; i < and.getFormulae().size(); i++)
 				if (i != firstOrIndex)
 					newAnd.addFormula(getDNF(and.getFormulae().get(i)));
-			if (firstOrIndex == -1)
+			if (firstOrIndex == -1) {
+				newAnd.prune();
 				return newAnd.getFlatAnd();
+			}
 			else
 				return getDNF(distributeAnd(and.getFormulae().get(firstOrIndex), newAnd));
-
 		}
 
 		return formula;
@@ -272,7 +279,9 @@ public class PltlFormula {
 			Or newOr = new Or();
 			for (Formula f: ((Or) distribute).getFormulae())
 				newOr.addFormula(distributeAnd(f, context));
-			return newOr.getFlatOr();
+			newOr = newOr.getFlatOr();
+			newOr.prune();
+			return newOr;
 		}
 
 		//		if (distribute instanceof And) {
@@ -281,11 +290,14 @@ public class PltlFormula {
 		//				newAnd.addFormula(distributeAnd(f, context));
 		//			return newAnd.getFlatAnd();
 		//		}
-		assertFalse(distribute instanceof And);
+		//		assertFalse(distribute instanceof And);
 
 		if (context instanceof And) {
-			((And) context).addFormula(distribute);
-			return ((And) context).getFlatAnd();
+			And and = (And) context;
+			and.addFormula(distribute);
+			and = and.getFlatAnd();
+			and.prune();
+			return and;
 		}
 
 		if (context instanceof Or) {
@@ -293,10 +305,13 @@ public class PltlFormula {
 			for (Formula f:((Or) context).getFormulae())
 				newOr.addFormula(distributeAnd(distribute, f));
 
-			return newOr.getFlatOr();
+			newOr = newOr.getFlatOr();
+			newOr.prune();
+			return newOr;
 		}
-
-		return new And(distribute, context).getFlatAnd();
+		And and = new And(distribute, context).getFlatAnd();
+		and.prune();
+		return and;
 	}
 
 	private static Formula getFlatFormula(Formula formula) {
@@ -329,7 +344,54 @@ public class PltlFormula {
 						return false;
 		return true;
 	}
-	
+
+	public static class True implements Formula {
+		public String getSemantics() {
+			String s = "; " + toString() + "\n";
+			for (int time = 0; time <= bound; time++)
+				s += new ArithFormula(Op.EQ, new Prob(time, add(this)), new Constant((float) 1));
+			return s;
+		}
+		
+		public String toString(int time) {
+			return Smt2Formula.getzot(time, -1);
+		}
+
+		@Override
+		public String toString() {
+			return Smt2Formula.getzot(0, -1);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof True;
+		}
+
+	}
+
+	public static class False implements Formula {
+		public String getSemantics() {
+			String s = "; " + toString() + "\n";
+			for (int time = 0; time <= bound; time++)
+				s += new ArithFormula(Op.EQ, new Prob(time, add(this)), new Constant((float) 0));
+			return s;
+		}
+		
+		public String toString(int time) {
+			return Smt2Formula.getzot(time, -2);
+		}
+		
+		@Override
+		public String toString() {
+			return Smt2Formula.getzot(0, -2);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof False;
+		}
+	}
+
 	/*		private static void addToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
 			ArrayList<BooleanFormulae> bfs = new ArrayList<BooleanFormulae>();
 			bfs.addAll(getAtoms(f1));
@@ -339,31 +401,31 @@ public class PltlFormula {
 		}
 
 		private static void addPairToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
-			if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) == -1){
+			if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) == -1) {
 				ArrayList<BooleanFormulae> temp = new ArrayList<BooleanFormulae>();
 				temp.add(f1);
 				temp.add(f2);
 				depCluster.add(temp);
 			}
-			else if (getDepClusterIndex(f1) > -1 && getDepClusterIndex(f2) == -1){
+			else if (getDepClusterIndex(f1) > -1 && getDepClusterIndex(f2) == -1) {
 				depCluster.get(getDepClusterIndex(f1)).add(f2);
 			}
-			else if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) > -1){
+			else if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) > -1) {
 				depCluster.get(getDepClusterIndex(f2)).add(f1);
 			}
 			else{
 				int ai = getDepClusterIndex(f1);
 				int bi = getDepClusterIndex(f2);
-				if (ai != bi){
+				if (ai != bi) {
 					for (BooleanFormulae bf: depCluster.get(bi))
 						depCluster.get(ai).add(bf);
 					depCluster.remove(bi);
 				}
 			}
 		}
-		private static int getDepClusterIndex(BooleanFormulae f){
-			for (int i = 0; i < depCluster.size(); i++){
-				for (int j = 0; j < depCluster.get(i).size(); j++){ //It returns f's negation index if it exists. 
+		private static int getDepClusterIndex(BooleanFormulae f) {
+			for (int i = 0; i < depCluster.size(); i++) {
+				for (int j = 0; j < depCluster.get(i).size(); j++) { //It returns f's negation index if it exists. 
 					if (f.equals(depCluster.get(i).get(j)) || (f instanceof Not && ((Not) f).getFormula().equals(depCluster.get(i).get(j))) || new Not(f).equals(depCluster.get(i).get(j)))
 						return i;
 				}
@@ -372,14 +434,14 @@ public class PltlFormula {
 			return -1;
 		}
 	//Returns ture, if it is expressible by zot-px.
-		public static boolean isSimpleType(BooleanFormulae f){
+		public static boolean isSimpleType(BooleanFormulae f) {
 			return ()
 		}
 		private class FInstance{
 			BooleanFormulae f;
 			boolean probDone;
 			boolean theNegDone;
-			public FInstance(BooleanFormulaeZ){
+			public FInstance(BooleanFormulaeZ) {
 				this.f = f;
 				this.probDone = fNumber;
 				this.value = value;
@@ -390,7 +452,7 @@ public class PltlFormula {
 		String s = "(zot-px " + time + " #b";
 		StringBuilder bv1 = new StringBuilder("");
 		StringBuilder bv2 = new StringBuilder("");
-		for (int ins = instances.size() -1; ins >= 0 ; ins--){
+		for (int ins = instances.size() -1; ins >= 0 ; ins--) {
 			bv1.append("1");
 			bv2.append("1");
 		}
@@ -401,13 +463,13 @@ public class PltlFormula {
 			bv1.setCharAt(n - fIndex - 1, '1');
 			bv2.setCharAt(n - fIndex - 1, '0');
 		}
-		else if (f instanceof And){
+		else if (f instanceof And) {
 			And and = (And) f;
-			for (BooleanFormulae andFF:and.getFormulae()){
+			for (BooleanFormulae andFF:and.getFormulae()) {
 				fIndex = getIndex(andFF);
 				char andFFChar = '1';
-				if (fIndex == -1){
-					if (andFF instanceof Not){
+				if (fIndex == -1) {
+					if (andFF instanceof Not) {
 						fIndex = getIndex(((Not) andFF).f);
 						andFFChar = '0';
 					}
@@ -419,10 +481,10 @@ public class PltlFormula {
 			}
 		}
 
-		else if (f instanceof Or){
+		else if (f instanceof Or) {
 		}
 
-		else if (f instanceof Not){
+		else if (f instanceof Not) {
 
 		}
 

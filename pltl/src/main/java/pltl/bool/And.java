@@ -1,16 +1,9 @@
 package pltl.bool;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.eclipse.xtext.resource.containers.ProjectDescriptionBasedContainerManager;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import arith.ArithFormula;
 import arith.Op;
@@ -19,6 +12,7 @@ import pltl.Parser;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.ProbComparator;
+import pltl.Probability;
 
 public class And implements Formula{
 	ArrayList<Formula> f = new ArrayList<Formula>();
@@ -50,6 +44,7 @@ public class And implements Formula{
 				return;
 		if (fIn != null)
 			f.add(fIn);
+//		prune();
 	}
 
 	public void addProb(Prob pIn) {
@@ -74,9 +69,16 @@ public class And implements Formula{
 				addFormula(bf);
 	}
 
+	public void addAllProbs(ArrayList<Prob> probs) {
+		for (Prob p:probs)
+			if (p != null)
+				addProb(p);
+	}
+
 	public ArrayList<Formula> getFormulae() {
 		return f;
 	}
+
 	/**
 	 * @returns a Prob for a conjunction of Probs. For example, if index of fma is 0, then (&& (zot-p 0 0) (zot-p 0 1) (zot-p 0 2)) is (zot-p 0 1) where 1 is the index of (&& (-p- a) (Futr (-p- a) 1) (Futr (-p- a) 2)) 
 	 */
@@ -102,56 +104,51 @@ public class And implements Formula{
 
 	public String getSemantics() {
 		String s = "";
-		for (int time = 0; time <= PltlFormula.bound; time++)
-			s += getProbSemantics(time);
+		int index = PltlFormula.add(this);
+		for (int time = 0; time <= PltlFormula.bound; time++) {
+			Prob mainF = new Prob(time, index);
+			s += new ArithFormula(Op.EQ, mainF, getSemantics(time)).toString();
+		}
+		
 		Set<Formula> bfSet = new HashSet<Formula>();
 		for (Formula bf: f)
 			bfSet.add(bf);
 		return getPropSemantics() + s;
 	}
 
-	private String getProbSemantics(int time) {
-		Prob mainF = new Prob(time, PltlFormula.add(this));
+	// It is getProbSemantics.
+	public Formula getSemantics(int time) {
 		ArrayList<Prob> probs = new ArrayList<Prob>();
 		for (Formula fma: f)
 			probs.add(new Prob(time, PltlFormula.add(fma)));
 		Collections.sort(probs, new ProbComparator());
-		//		if (size() == 2) {
-		//			Prob prob0 = PltlFormula.getProb(time, f.get(0));
-		//			Prob prob1 = PltlFormula.getProb(time, f.get(1));
-		//			boolean areDep = false;
-		//
-		//			if (PltlFormula.isParentOf(PltlFormula.getProb(time, f.get(0)), PltlFormula.getProb(time, f.get(1))))
-		//				areDep = true;
-		//			else if (PltlFormula.isParentOf(PltlFormula.getProb(time, f.get(1)), PltlFormula.getProb(time, f.get(0)))) {
-		//				prob0 = PltlFormula.getProb(time, f.get(1));
-		//				prob1 = PltlFormula.getProb(time, f.get(0));
-		//				areDep = true;
-		//			}
-		//
-		//			if (areDep) //when there is an edge from prob0 to prob1 in the Bayesian Network:
-		//				return new ArithFormula(Op.EQ, mainF, new ArithFormula(Op.MUL, new CProb(prob1, prob0), prob0)).toString() + "\n";
-		//			else //when prob0 and prob1 are not directly connected in the Bayesian Network:
-		//				return new ArithFormula(Op.EQ, mainF, new ArithFormula(Op.MUL, PltlFormula.getProb(time, f.get(0)), PltlFormula.getProb(time, f.get(1)))).toString() + "\n";
-		//		}
 
-		return new ArithFormula(Op.EQ, mainF, processProbAnd(probs)).toString() + "\n";
+		ArrayList<Prob> cdr = new ArrayList<Prob>();
+		for (Prob p: probs)
+			cdr.add(p);
+		cdr.remove(0);
+		if (probs.get(0).allAreParents(cdr) && probs.get(0).getParents().size() > cdr.size())
+			return new ArithFormula(Op.PLUS, probs.get(0).getToSumWithParentSubset(cdr));
+
+		return processProbAnd(probs);
 	}
-	
+
 	private Formula processProbAnd(ArrayList<Prob> probs) {
 		if (probs.size() == 0)
 			return null;
-		
+
 		if (probs.size() == 1)
 			return probs.get(0);
-		
-		ArrayList<Formula> firstPParents = new ArrayList<Formula>();
+
+		ArrayList<Formula> firstPParents = new ArrayList<Formula>();// The parents of the first Prob.
 		for (Prob p: probs)
 			if (probs.get(0).hasParent(p))
 				firstPParents.add(p);
-		
+
 		Formula left = probs.get(0);
-		if (firstPParents.size() > 0)
+		if (firstPParents.size() == 1)
+			left = new CProb(probs.get(0), (Prob) firstPParents.get(0));
+		else if (firstPParents.size() > 1)
 			left = new CProb(probs.get(0), new And(firstPParents).getProb());
 
 		probs.remove(0);
@@ -175,8 +172,6 @@ public class And implements Formula{
 
 		return s;
 	}
-
-	//	TODO order of conjunction []descending order based on the depth
 
 	/**
 	 * @input
@@ -202,17 +197,67 @@ public class And implements Formula{
 		return flatF;
 	}
 
+	public void prune() {
+		f = getFlatAnd().getFormulae();
+		for (Formula fma1: f)
+			for (Formula fma2: f)
+				if (fma1 instanceof Not) // If both AP and !AP are in the formula list, And collapses to False.
+					if (((Not) fma1).getTheNeg() != null && ((Not) fma1).getTheNeg().equals(fma2)) { 
+					f = new ArrayList<Formula>();
+					f.add(new PltlFormula.False());
+					return;
+				}
+		ArrayList<Formula> newF = new ArrayList<Formula>();
+		for (Formula fma: f) {
+			if (fma instanceof And) {
+				if (((And) fma).collapsedToFalse()) { // If both AP and !AP are in the formula list of an inner And, this And collapses to False.
+					f = new ArrayList<Formula>();
+					f.add(new PltlFormula.False());
+					return;
+				}
+
+				if (! ((And) fma).collapsedToTrue()) // If an inner formula is collapsed to True, it is deleted from the main formula list.
+					newF.add(fma);
+			}
+			else if (fma instanceof Or) {
+				if (((Or) fma).collapsedToFalse()) { // If both AP and !AP are in the formula list of an inner Or, this And collapses to False.
+					f = new ArrayList<Formula>();
+					f.add(new PltlFormula.False());
+					return;
+				}
+
+				if (! ((Or) fma).collapsedToTrue()) // If an inner formula is collapsed to True, it is deleted from the main formula list.
+					newF.add(fma);
+			}
+			else if (! (fma instanceof PltlFormula.True))
+				newF.add(fma);
+		}
+		f = newF;
+		if (f.size() == 0)
+			f.add(new PltlFormula.True());
+	}
+
+	public boolean collapsedToTrue() {
+		prune();
+		return (f.size() == 1 && f.get(0).equals(new PltlFormula.True()));
+	}
+
+	public boolean collapsedToFalse() {
+		prune();
+		return (f.size() == 1 && f.get(0).equals(new PltlFormula.False()));
+	}
+
 	@Override
 	public String toString() {
-		if (f.isEmpty())
+		if (f.isEmpty() && p.isEmpty())
 			return "";
-
-		if (f.size() == 1)
-			return f.get(0).toString();
 
 		String s = "(&&";
 		for (int i = 0; i < f.size(); i++)
 			s = s + " " + f.get(i).toString();
+
+		for (int i = 0; i < p.size(); i++)
+			s = s + " " + p.get(i).toString();
 
 		return s + ")";
 	}

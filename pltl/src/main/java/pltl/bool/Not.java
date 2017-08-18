@@ -2,7 +2,11 @@ package pltl.bool;
 
 import java.util.ArrayList;
 
+import arith.ArithFormula;
+import arith.Constant;
+import arith.Op;
 import pltl.PltlFormula;
+import pltl.Prob;
 import pltl.trio.Predicate;
 import pltl.trio.Release;
 import pltl.trio.Until;
@@ -35,8 +39,9 @@ public class Not implements Formula {
 	private String getProbSemantics(Formula fma) {
 		String s = "";
 		int mainF = PltlFormula.add(this);
+		int innerF = PltlFormula.add(fma);
 		for (int time = 0; time <= PltlFormula.bound; time++)
-			s += "(= 1.0 (+ (zot-p " + time + " " + mainF + ") (zot-p " + time + " " + PltlFormula.add(fma) + ")))\n";
+			s += new ArithFormula(Op.EQ, new Constant((float) 1.0), new ArithFormula(Op.PLUS, new Prob(time, mainF), new Prob(time, innerF))).toString();
 
 		return s;
 	}
@@ -87,7 +92,7 @@ public class Not implements Formula {
 		 */
 
 		if (f instanceof Predicate)
-			return this;//new Not((Predicate) f);
+			return f;//new Not((Predicate) f);
 
 		return null;
 	}
@@ -97,6 +102,7 @@ public class Not implements Formula {
 		return "(!! " + f + ")";
 	}
 
+	@Override
 	public boolean equals(Object o){
 		if (o instanceof Not){
 			Not notO = (Not) o;

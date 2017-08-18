@@ -1,5 +1,8 @@
 package pltl;
 
+import arith.ArithFormula;
+import arith.Constant;
+import arith.Op;
 import pltl.bool.Formula;
 
 public class Smt2Formula{
@@ -30,43 +33,25 @@ public class Smt2Formula{
 		String s = "(" + op;
 		for (Formula f:formulae)
 			s += " " + f.toString();
-		return s + ")";
 
+		return s + ")";
 	}
 	
-//	public static String getSmt2Plus(String... inputs) {
-//		String s = "(+";
-//		for (String s1:inputs)
-//			s += " " + s1;
-//		return s+ ")";
-//	}
+	public static String getRangeConstraints(Formula f) {
+//		return new ArithFormula(false, Op.GTE, f, new Constant((float) 0.0)).toString() + " " + new ArithFormula(false, Op.LTE, f, new Constant((float) 1.0)).toString() + "\n";
+		return "(range " + f + ")\n";
+	}
 	
-//	public static String getSmt2Plus(ArrayList<String> inputs) {
-//		String s = "(+";
-//		for (String s1:inputs)
-//			s += " " + s1;
-//		return s + ")";
-//	}
-
 	public static String getzot(int time, int f) {
 		return "(zot " + time + " " + f + ")";
 	}
 
-//	public static String getzotp(int time, int f) {
-////		return "(zot-p " + time + " " + f + ")";
-////		return "(zot-p " + PltlFormula.getCode(time, PltlFormula.get(f)) + ")";
-//		return new Prob(time, f).toString();
-//	}
-
-//	public static String getzotcp(int time1, int f1, int time2, int f2) {
-////		return "(zot-cp " + PltlFormula.getCode(time1, PltlFormula.get(f1)) + " " + PltlFormula.getCode(time2, PltlFormula.get(f2)) + ")";
-//		return "(zot-cp " + PltlFormula.getTimeIndex(time1, f1).toSeqString() + " " + PltlFormula.getTimeIndex(time1, f2).toSeqString() + ")";
-////		return "(zot-cp " + time + " " + f1 + " " + f2 + ")";
-//	}
-
-//	public static String getzotcp(Prob ti1, Prob ti2) {
-//		return "(zot-cp " + ti1.toSeqString() + " " + ti2.toSeqString() + ")";
-//	}
-
-
+	public static String getRangeConstraints(int formulaIndex) {
+		String s = "";
+		for (int time = 0; time <= PltlFormula.bound; time++)
+			s += getRangeConstraints(new Prob(time, formulaIndex));
+		
+		return s ;
+	}
+	
 }

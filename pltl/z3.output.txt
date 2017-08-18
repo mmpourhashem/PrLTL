@@ -3,46 +3,6 @@ success
 success
 success
 success
-sat
-(model 
-  (define-fun zot ((x!0 Int) (x!1 Int)) Bool
-    (ite (and (= x!0 0) (= x!1 4)) true
-    (ite (and (= x!0 0) (= x!1 0)) false
-    (ite (and (= x!0 0) (= x!1 1)) true
-    (ite (and (= x!0 0) (= x!1 2)) true
-    (ite (and (= x!0 0) (= x!1 3)) true
-    (ite (and (= x!0 0) (= x!1 10)) true
-    (ite (and (= x!0 0) (= x!1 6)) false
-    (ite (and (= x!0 0) (= x!1 7)) false
-    (ite (and (= x!0 0) (= x!1 8)) false
-    (ite (and (= x!0 0) (= x!1 5)) false
-    (ite (and (= x!0 0) (= x!1 9)) true
-    (ite (and (= x!0 0) (= x!1 14)) true
-    (ite (and (= x!0 0) (= x!1 11)) true
-    (ite (and (= x!0 0) (= x!1 12)) false
-    (ite (and (= x!0 0) (= x!1 13)) false
-      true))))))))))))))))
-  (define-fun zot-p ((x!0 Int) (x!1 Int)) Real
-    (ite (and (= x!0 0) (= x!1 4)) 1.0
-    (ite (and (= x!0 0) (= x!1 6)) 0.0
-    (ite (and (= x!0 0) (= x!1 0)) 0.0
-    (ite (and (= x!0 0) (= x!1 8)) 0.5
-    (ite (and (= x!0 0) (= x!1 9)) 0.5
-    (ite (and (= x!0 0) (= x!1 1)) 1.0
-    (ite (and (= x!0 0) (= x!1 2)) 1.0
-    (ite (and (= x!0 0) (= x!1 10)) 0.5
-    (ite (and (= x!0 0) (= x!1 7)) 0.0
-    (ite (and (= x!0 0) (= x!1 5)) 0.5
-    (ite (and (= x!0 0) (= x!1 14)) 0.5
-    (ite (and (= x!0 0) (= x!1 11)) 1.0
-    (ite (and (= x!0 0) (= x!1 12)) 0.0
-    (ite (and (= x!0 0) (= x!1 13)) 0.5
-    (ite (and (= x!0 0) (= x!1 3)) 0.5
-      0.5))))))))))))))))
-  (define-fun zot-cp ((x!0 Int) (x!1 Int) (x!2 Int) (x!3 Int)) Real
-    (ite (and (= x!0 0) (= x!1 0) (= x!2 0) (= x!3 2)) 0.3
-    (ite (and (= x!0 0) (= x!1 1) (= x!2 0) (= x!3 11)) 0.5
-    (ite (and (= x!0 0) (= x!1 0) (= x!2 0) (= x!3 11)) 0.0
-    (ite (and (= x!0 0) (= x!1 2) (= x!2 0) (= x!3 13)) 1.0
-      0.3)))))
-)
+success
+unsat
+(error "line 70 column 10: model is not available")

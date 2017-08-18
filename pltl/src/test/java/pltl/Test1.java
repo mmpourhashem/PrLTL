@@ -5,12 +5,17 @@ public class Test1 {
 	public static void main(String[] args) {
 		String s = "";// check tautologies............
 		//test if (dep !a b) is considered from (dep a b)***************************************************
-		s = "(&& (dep (-p- a) (-p- b)) (dep (-p- b) (-p- c))"
-//				+ "(dep (!!(-p- a)) (-p- c))"
-				+ ")"
+		s = ""
+//				"(&& (dep (-p- a) (-p- b)) "
+//				+ "(dep (-p- a) (-p- c))"
+////				+ "(dep (!!(-p- a)) (-p- c))"
+//				+ ")"
 				+ "FORMULA:"
-				+ "(&& (!!(-p- a)) (-p- b)"
-				+ "(= 0.3 (zot-cp (-p- a) (-p- b)))"
+				+ "(|| (&& (!!(-p- a)) (-p- b)) (&& (-p- c) (-p- d)"
+//				+ "(-p- c)"
+//				+ "(= 1.0 (zot-cp (-p- a) (&& (!! (-p- b)) (-p- z))))"
+//				+ "(|| (-p- c) (-p- d))"
+//				+ "(= 0.3 (zot-cp (-p- a) (-p- b)))"
 				+ ")";
 		//s = "(&& (dep (-p- a) (-p- b))"
 //		+ "(dep (-p- a) (-p- c))"

@@ -4,6 +4,9 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 
+import arith.ArithFormula;
+import arith.Constant;
+import arith.Op;
 import pltl.bool.And;
 import pltl.bool.Formula;
 import pltl.bool.Not;
@@ -19,98 +22,30 @@ public class Probability {
 		String s = "";
 		int mainFSize = 0;
 		int mainCSize = 0;
-		int lastFProcessed = 0;
-		int lastCProcessed = 0;
+		int nextFToProcess = 0;
+		int nextCToProcess = 0;
 		while (mainFSize < PltlFormula.instances.size() || mainCSize < PltlFormula.cProbsTBP.size()) {
 			mainFSize = PltlFormula.instances.size();
 			mainCSize = PltlFormula.cProbsTBP.size();
-			s += getMainSemantics(lastFProcessed, PltlFormula.instances.size() - 1, lastCProcessed, PltlFormula.cProbsTBP.size() - 1);
-			lastFProcessed = mainFSize;
-			lastCProcessed = mainCSize;
-			//		s += ";<TheNeg inferred>\n" + getTheNegInferredSemantics() + ";</TheNeg inferred>\n";
-			//		s += ";<Inferred analysis>\n" + getMainSemantics(mainSize, PltlFormula.instances.size() - 1) + ";<Inferred analysis>\n";
-			//		s += ";<Formulae map>\n" + getExhaustivePredicateFormuale() + ";</Formulae map>\n";
-			s += getMainSemantics(lastFProcessed, PltlFormula.instances.size() - 1, lastCProcessed, PltlFormula.cProbsTBP.size() - 1);
+			s += getMainSemantics(nextFToProcess, PltlFormula.instances.size() - 1, nextCToProcess, PltlFormula.cProbsTBP.size() - 1);
+			nextFToProcess = mainFSize;
+			nextCToProcess = mainCSize;
 		}
+
 		return s;
 	}
 
-	//	private static String getExhaustivePredicateFormuale() {//SMT solvers cannot handle this.
-	//		String s = "";
-	//		ArrayList<Predicate> ps = PltlFormula.getPredicates();
-	//		ArrayList<BooleanFormulae> newfs = new ArrayList<BooleanFormulae>();
-	//		if (ps.size() < 2)
-	//			return "";
-	//		newfs.add(ps.get(0));
-	//		for (int i = 1; i < ps.size(); i++) {
-	//			int newfsSize = newfs.size();
-	//			for (int j = 0; j < newfsSize; j++) {
-	//				BooleanFormulae f = getFusion(ps.get(i), newfs.get(j));
-	//				newfs.add(f);
-	//				s += getFusionSemantics(f);
-	//
-	//				f = getFusion(ps.get(i), new Not(newfs.get(j)));
-	//				newfs.add(f);
-	//				s += getFusionSemantics(f);
-	//				
-	//				f = getFusion(new Not(ps.get(i)), newfs.get(j));
-	//				newfs.add(f);
-	//				s += getFusionSemantics(f);
-	//				
-	//				f = getFusion(new Not(ps.get(i)), new Not(newfs.get(j)));
-	//				newfs.add(f);
-	//				s += getFusionSemantics(f);
-	//			}
-	//		}
-	//
-	//		return s;
-	//	}
-
-	//	private static String getFusionSemantics(Formula f) {
-	//		String s = "";
-	//		int index = PltlFormula.add(f);
-	//		if (index != -1)
-	//			s += getMainSemantics(index);
-	//
-	//		return s;
-	//	}
-	//
-	//	private static Formula getFusion(Formula f1, Formula f2) {
-	//		Formula f = null;
-	//		if (f2 instanceof And) {//In order to avoid (&& (-p- c) (&& (-p- b) (-p- a))), and have (&& (-p- c) (-p- b) (-p- a)) instead.
-	//			ArrayList<Formula> newAndFs = ((And) f2).getFormulae();
-	//			newAndFs.add(f1);
-	//			f = new And(newAndFs);
-	//		}
-	//		else{
-	//			f = new And(f1, f2);
-	//		}
-	//
-	//		return f;
-	//	}
-
 	public static String getMainSemantics(int fStartI, int fEndI, int cStartI, int cEndI) {
 		String s = "";
-		for (int i = fStartI; i <= fEndI; i++) {
-			Formula f = PltlFormula.instances.get(i);
-			if (PltlFormula.add(f) == PltlFormula.mainF && f instanceof And) {
-				And newAnd = new And();
-				for (Formula bf:((And) f).getFormulae())
-					for (int time = 0; time <= PltlFormula.bound; time++) {
-						s += Smt2Formula.getzot(time, PltlFormula.add(bf)) + "\n";
-						if (! (bf instanceof ProbExp)) {
-							s += Smt2Formula.getOp("=" , "1.0", new Prob(time, PltlFormula.add(bf)).toString());
-							newAnd.addFormula(bf);
-						}
-					}
-				s += newAnd.getSemantics();
-				continue;
-			}
+		for (int formulaIndex = fStartI; formulaIndex <= fEndI; formulaIndex++) {
+			Formula f = PltlFormula.instances.get(formulaIndex);
+
 			if (f instanceof And) {
 				boolean hasProbExp = false;
 				for (Formula fma: ((And) f).getFormulae())
 					if (fma instanceof ProbExp)
 						hasProbExp = true;
+				// PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
 				assertFalse(hasProbExp);
 				s += ((And) f).getSemantics();
 			}
@@ -119,6 +54,7 @@ public class Probability {
 				for (Formula fma: ((Or) f).getFormulae())
 					if (fma instanceof ProbExp)
 						hasProbExp = true;
+				// PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
 				assertFalse(hasProbExp);
 				s += ((Or) f).getSemantics();
 			}
@@ -130,16 +66,20 @@ public class Probability {
 				s += ((Next) f).getSemantics();
 			else if (f instanceof Predicate)
 				s += ((Predicate) f).getSemantics();
+			else if (f instanceof PltlFormula.True)
+				s += ((PltlFormula.True) f).getSemantics();
+			else if (f instanceof PltlFormula.False)
+				s += ((PltlFormula.False) f).getSemantics();
 			else
-				s += "Not Recognized!";
-		}
+				s += f.toString() + " <Not Recognized!>";
 
-		for (int i = cStartI; i <= cEndI; i++) {
-			CProb c = PltlFormula.cProbsTBP.get(i);
-			s += c.getSemantics();
-			//FIXME Process conditional probability
-			//				TAKE CARE OF RANGE CONSTRAINT WHILE PROCESSING.
-			// while processing a|b = r add also !a|b = 1-r
+			if (! (f instanceof ProbExp))
+				s += Smt2Formula.getRangeConstraints(formulaIndex) + "\n";
+		}
+		//		s += "\n";
+		for (int formulaIndex = cStartI; formulaIndex <= cEndI; formulaIndex++) {
+			CProb c = PltlFormula.cProbsTBP.get(formulaIndex);
+			s += c.getSemantics() + "\n";
 		}
 
 		return s;
@@ -149,17 +89,17 @@ public class Probability {
 	//		return getMainSemantics(index, index);
 	//	}
 
-	public static String getTheNegInferredSemantics() {
-		String s = "";
-		//If fma is a formula then simplified (!! fma) is added to the formula instances.
-		int n = PltlFormula.instances.size();
-		for (int i=0; i < n; i++) {
-			Formula f = PltlFormula.instances.get(i);
-			s += new Not(f).getTheNegSemantics();
-		}
-
-		return s;
-	}
+	//	public static String getTheNegInferredSemantics() {
+	//		String s = "";
+	//		//If fma is a formula then simplified (!! fma) is added to the formula instances.
+	//		int n = PltlFormula.instances.size();
+	//		for (int i=0; i < n; i++) {
+	//			Formula f = PltlFormula.instances.get(i);
+	//			s += new Not(f).getTheNegSemantics();
+	//		}
+	//
+	//		return s;
+	//	}
 
 	public static void processDeps(int left, int right, Formula f) {
 		if (f instanceof And)
@@ -188,32 +128,17 @@ public class Probability {
 
 	}
 
-	//	public static ArrayList<BooleanFormulae> populateTI(ArrayList<TimeIndex> formulae) {
-	//		int f = formulae.get(0).getIndex();
-	//		int notF;
-	//		if (PltlFormula.get(formulae.get(0).getIndex()) instanceof Not)
-	//			notF = PltlFormula.add(((Not)PltlFormula.get(formulae.get(0).getIndex())).getFormula());
-	//		else
-	//			notF = PltlFormula.add(new Not(PltlFormula.get(formulae.get(0).getIndex())));
-	//		if (formulae.size() == 1) {
-	//			formulae.add(new TimeIndex(formulae.get(0).getTime(), notF));
-	//
-	//			return formulae;
-	//		}
-	//		else {
-	//			formulae.remove(0);
-	//			ArrayList<BooleanFormulae> populatedCdr = populate(formulae);
-	//			ArrayList<BooleanFormulae> populatedMain = new ArrayList<BooleanFormulae>();
-	//			for (int i = 0; i < populatedCdr.size(); i++) {
-	//				populatedMain.add(new And(f, populatedCdr.get(i)));
-	//				populatedMain.add(new And(notF, populatedCdr.get(i)));
-	//			}
-	//			
-	//			return populatedMain;
-	//		}
-	//	}
-
-	public static ArrayList<Formula> populate(ArrayList<Formula> formulae) {
+	/**
+	 * @param formulae
+	 * An atomic formula followed by a subset of its parents.
+	 * @return
+	 * Breaks down to analyzable formulae.
+	 * For example, if (-p- a) depends on (-p- b) and (-p- c) and formulae = {(-p- a) (-p- b)} it returns
+	 * (&& (-p- a) (-p- b) (-p- c)) (&& (-p- a) (-p- b) (!! (-p- c)))
+	 * It essentially there to infer the following:
+	 * P((&& (-p- a) (-p- b))) = P((&& (-p- a) (-p- b) (-p- c))) + P((&& (-p- a) (-p- b) (!! (-p- c))))
+	 */
+	public static ArrayList<Formula> populateFormulae(ArrayList<Formula> formulae) {
 		Formula f = formulae.get(0);
 		Formula notF = null;
 
@@ -229,7 +154,7 @@ public class Probability {
 		}
 		else {
 			formulae.remove(0);
-			ArrayList<Formula> populatedCdr = populate(formulae);
+			ArrayList<Formula> populatedCdr = populateFormulae(formulae);
 			ArrayList<Formula> populatedMain = new ArrayList<Formula>();
 			for (int i = 0; i < populatedCdr.size(); i++) {
 				populatedMain.add(new And(f, populatedCdr.get(i)).getFlatAnd());
@@ -238,5 +163,48 @@ public class Probability {
 
 			return populatedMain;
 		}
+	}
+
+	public static ArrayList<Prob> populateProbs(ArrayList<Prob> probs) {
+		ArrayList<Prob> result = new ArrayList<Prob>();
+		int baseTime = probs.get(0).getTime();
+		ArrayList<Formula> formulae = new ArrayList<Formula>();
+		for (Prob p: probs)
+			formulae.add(p.getFormula(p.getTime()));
+		formulae = populateFormulae(formulae);
+		for (Formula f: formulae)
+			result.add(new Prob(baseTime, PltlFormula.add(f)));
+		//TODO test with Ya -> a, Xa -> a
+
+		return result;
+	}
+
+	public static Prob processMainF(Formula f) {
+		if (f instanceof And) {
+			And newAnd = new And();
+			for (Formula fma: ((And) f).getFormulae())
+				if (! (fma instanceof ProbExp))
+					newAnd.addFormula(fma);
+				else
+					PltlFormula.add(fma);
+			if (newAnd.size() > 0) {
+				Formula dnf = PltlFormula.getDNF(newAnd);
+				return new Prob(0, PltlFormula.add(dnf));
+				}
+			else
+				return null;
+		}
+		else if (f instanceof Or) {
+			Or newOr = new Or();
+			for (Formula bf:((Or) f).getFormulae()) {
+				assertFalse(bf instanceof ProbExp);
+				newOr.addFormula(PltlFormula.getDNF(bf));
+			}
+
+			Formula dnf = PltlFormula.getDNF(newOr);
+			return new Prob(0, PltlFormula.add(dnf));
+		}
+		else
+			return processMainF(new And(f));
 	}
 }

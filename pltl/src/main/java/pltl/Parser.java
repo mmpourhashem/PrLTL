@@ -17,7 +17,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.xtext.resource.XtextResourceSet;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import org.eclipse.emf.common.util.URI;
 import com.google.inject.Injector;
@@ -58,31 +57,39 @@ public class Parser {
 		//		mainFormula = removeDuplicateFormulae(mainFormula);
 		//		System.out.println(mainFormula.toString());
 
-		int mainF = PltlFormula.add(mainFormula);
-		PltlFormula.mainF = mainF;
-		String semantics = Probability.getProbFormulae();
-		semantics += getRangeConstraints();////////////////////////////
-		if (mainF > -1)
-			semantics = "(assert (and (zot 0 " + mainF + ") (= (zot-p 0 " + mainF + ") 1.0) \n" + semantics + "))\n\n";
-		//		if (mainF > -1)//bv zot-px
-		//			semantics = "(assert (and (zot 0 " + mainF + ") "+ Smt2Formula.getSmt2Eq("1.0", PltlFormula.getZotpx(0, mainFormula)) + "\n" + semantics + "))\n\n";
+		//		int mainF = PltlFormula.add(mainFormula);
+		String probExpsAtT0 = assertProbExps(mainFormula);
+		Prob mainProb = Probability.processMainF(mainFormula);
+
+		//		semantics += getRangeConstraints();////////////////////////////
+		String trueFalseSemantics = "";
+		for (int time = 0; time <= PltlFormula.bound; time++)
+		trueFalseSemantics += new PltlFormula.True().toString(time) + " " + new ArithFormula(Op.EQ, new Prob(time, -1), new Constant((float) 1)).toString() + " (not " + new PltlFormula.False().toString(time) + ") " + new ArithFormula(Op.EQ, new Prob(time, -2), new Constant((float) 0)).toString() + " ";
+		String semantics = "(assert (and " + trueFalseSemantics + probExpsAtT0;
+		//		if (PltlFormula.mainF > -1)
+		if (mainProb != null) {
+			PltlFormula.mainF = mainProb.getIndex();
+			semantics += Smt2Formula.getzot(0, mainProb.getIndex()) + " " + new ArithFormula(Op.EQ, new Constant((float) 1.0), mainProb) + "\n";
+		}
+		//			semantics += "true ";
+
+		semantics += Probability.getProbFormulae();
 		String fTable = ";Formula table:\n";
-		for (int i=0;i<PltlFormula.instances.size();i++)
+		for (int i = 0; i < PltlFormula.instances.size(); i++)
 			fTable += ";" + i+"\t"+PltlFormula.instances.get(i).toString() + "\n";
 		fTable += ";Conditional probability table:\n";
-		for (int i=0;i<PltlFormula.cProbsTBP.size();i++)
+		for (int i = 0; i < PltlFormula.cProbsTBP.size(); i++)
 			fTable += ";" + i+"\t"+PltlFormula.cProbsTBP.get(i).toString() + "\n";
-		String z3Commands = "(check-sat-using qfufnra)\n(get-model)\n";
+		String z3Commands = "))\n(check-sat-using qfufnra)\n(get-model)\n";
 		String smt2Model = "(set-option :smtlib2-compliant true)\n" + fTable + "\n" + getIntDec() + "\n" + semantics + z3Commands;
 		//				String smt2Model = fTable + "\n" + getBVDec(PltlFormula.instances.size()) + "\n"+ semantics + z3Commands;
 		//		String smt2Model = fTable + "\n" + getBVDec(3) + "\n"+ semantics + z3Commands;
 		System.out.println(smt2Model);
-		
-		
-		
-		
-		
-		
+
+
+
+
+
 		try {
 			FileWriter smt2 = new FileWriter(fileName);
 			BufferedWriter out = new BufferedWriter(smt2);
@@ -108,8 +115,17 @@ public class Parser {
 		return parseOutput();
 	}
 
-
-
+	private String assertProbExps(Formula f) {
+		String s = "";
+		if (f instanceof And) {
+			for (Formula fma: ((And) f).getFormulae())
+				if (fma instanceof ProbExp)
+					s += Smt2Formula.getzot(0, PltlFormula.add(fma)) + " ";
+		}
+		else if (f instanceof ProbExp)
+			s += Smt2Formula.getzot(0, PltlFormula.add(f)) + " ";
+		return s;
+	}
 
 	private Formula getDep(TempDep tempDep) {
 		if (tempDep.getFd() != null) {
@@ -150,7 +166,9 @@ public class Parser {
 	private String getIntDec() {
 		return "(declare-fun zot (Int Int) Bool)\n"
 				+ "(declare-fun zot-p (Int Int) Real)\n"
-				+ "(declare-fun zot-cp (Int Int Int Int) Real)\n";
+				+ "(declare-fun zot-cp (Int Int Int Int) Real)\n"
+				+ "(define-fun range ((probability Real)) Bool\n"
+				+ "\t(and (>= probability 0.0) (<= probability 1.0)))\n";
 	}
 
 	//	private String getBVDec0(int size) {
@@ -187,16 +205,16 @@ public class Parser {
 			for (int i = 0; i < PltlFormula.instances.size(); i++){
 				Prob p =new Prob(time, i);
 				s += new ArithFormula(false, Op.GTE, p, new Constant(0)).toString() + " " + new ArithFormula(false, Op.LTE, p, new Constant(1)).toString() + "\n";
-//				for (int j = 0; j < PltlFormula.instances.size(); j++) {
-//					if (i == j)
-//						s += new ArithFormula(Op.EQ, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 1.0)).toString() + "\n"; 
-//					else {
-//						s += new ArithFormula(Op.GTE, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 0)).toString() + " "
-//								+ new ArithFormula(Op.LTE, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 1)).toString() + "\n";
-////						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", new Prob(time, j).toString(), "1.0"), Smt2Formula.getOp("=", new CProb(new Prob(time, i), new Prob(time, j)).toString(), new Prob(time, i).toString())) + "\n";
-////						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", new Prob(time, i).toString(), "1.0"), Smt2Formula.getOp("=", new CProb(new Prob(time, j), new Prob(time, i)).toString(), new Prob(time, j).toString())) + "\n";
-//					}
-//				}
+				//				for (int j = 0; j < PltlFormula.instances.size(); j++) {
+				//					if (i == j)
+				//						s += new ArithFormula(Op.EQ, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 1.0)).toString() + "\n"; 
+				//					else {
+				//						s += new ArithFormula(Op.GTE, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 0)).toString() + " "
+				//								+ new ArithFormula(Op.LTE, new CProb(new Prob(time, i), new Prob(time, j)), new Constant((float) 1)).toString() + "\n";
+				////						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", new Prob(time, j).toString(), "1.0"), Smt2Formula.getOp("=", new CProb(new Prob(time, i), new Prob(time, j)).toString(), new Prob(time, i).toString())) + "\n";
+				////						s += Smt2Formula.getOp("=>", Smt2Formula.getOp("=", new Prob(time, i).toString(), "1.0"), Smt2Formula.getOp("=", new CProb(new Prob(time, j), new Prob(time, i)).toString(), new Prob(time, j).toString())) + "\n";
+				//					}
+				//				}
 			}
 		//TODO Remove range constraints for unused zot-cp
 		return s + ";</Range constraints>\n";
@@ -223,19 +241,36 @@ public class Parser {
 					String [] ss= line.split("!0");
 					int time = Integer.parseInt(ss[1].substring(0, ss[1].indexOf(")")).trim());
 					ss = line.split("!1");
-					int fNumber = Integer.parseInt(ss[1].substring(0, ss[1].indexOf(")")).trim());
-					String floatNumber = ss[1].substring(ss[1].indexOf("))") + 2, ss[1].length());
+					String sfNumber = ss[1].substring(0, ss[1].indexOf(")")).trim();
+					//					if (sfNumber.indexOf("(") > -1)
+					//						sfNumber = sfNumber.substring(1, sfNumber.length());
+					//					int fNumber = Integer.parseInt(ss[1].substring(0, ss[1].indexOf(")")).trim());
+					int sI = 1;
+					if (sfNumber.indexOf("-") != -1){
+						sfNumber = sfNumber.substring(2, sfNumber.length());
+						sI = -1;
+					}
+					
+					int fNumber = Integer.parseInt(sfNumber.trim()) * sI;
+
+					String floatNumber = "";
+					if (ss[1].indexOf(")))") > -1)
+						floatNumber = ss[1].substring(ss[1].indexOf(")))") + 3, ss[1].length());
+					else
+						floatNumber = ss[1].substring(ss[1].indexOf("))") + 2, ss[1].length());
+					
 					int s = 1;
+					
 					if (floatNumber.indexOf("-") != -1){
-						floatNumber = floatNumber.substring(3, floatNumber.length()-1);
+						floatNumber = floatNumber.substring(3, floatNumber.length() - 1);
 						s = -1;
 					}
-					if (floatNumber.substring(floatNumber.length()-1).equals("?"))
+					if (floatNumber.substring(floatNumber.length() - 1).equals("?"))
 						floatNumber = floatNumber.substring(0, floatNumber.length() -1);
 					float value = Float.parseFloat(floatNumber) * s;
 					rows.add(new Row(time, fNumber, value));
 				}
-				
+
 				if (prob && line.indexOf("ite (and") == -1)
 					prob = false;
 			}
@@ -249,7 +284,7 @@ public class Parser {
 					for (int time = 0; time <= PltlFormula.bound; time++){
 						writer.println("--- time " + time + " ---");
 						for (Row r: rows)
-							if (r.time == time)
+							if (r.time == time && r.fNumber >= 0)
 								writer.println(r.value + " = P(" + PltlFormula.get(r.fNumber).toString() + ")");
 					}
 				}
@@ -305,7 +340,7 @@ public class Parser {
 		if (probF.getReal2() != null)
 			r2 = getFloat(probF.getReal2());
 		ProbExp pa = new ProbExp(pOP, f1, f11, f12, f2, f21, f22, r1, r2);
-		PltlFormula.add(pa);
+		//		PltlFormula.add(pa);
 		return pa;
 	}
 
@@ -316,7 +351,7 @@ public class Parser {
 	private Formula getTemp(TempF tempF) {
 		if (tempF.getAp() != null){
 			Predicate ap = new Predicate(tempF.getAp().getName());
-			PltlFormula.add(ap);
+			//			PltlFormula.add(ap);
 			return ap;
 		}
 
@@ -327,7 +362,7 @@ public class Parser {
 			if (tempF.getFa().size() == 1)
 				return getFormula(tempF.getFa().get(0));
 			else {
-				PltlFormula.add(and);
+				//				PltlFormula.add(and);
 				return and;
 			}
 		}
@@ -339,14 +374,14 @@ public class Parser {
 			if (tempF.getFo().size() == 1)
 				return getFormula(tempF.getFo().get(0));
 			else {
-				PltlFormula.add(or);
+				//				PltlFormula.add(or);
 				return or;
 			}
 		}
 
 		if (tempF.getFnot() != null){
 			Not not = new Not(getFormula(tempF.getFnot()));
-			PltlFormula.add(not);
+			//			PltlFormula.add(not);
 			return not;
 		}
 
