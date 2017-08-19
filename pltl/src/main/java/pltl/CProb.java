@@ -96,6 +96,9 @@ public class CProb implements Formula {
 	 */
 	private String getComplementarySemantics() {
 		Formula prob1NotF = new Not(prob1.getPlainFormula());
+		if (((Not) prob1NotF).getFormula() instanceof Not) // To avoid (!! (!! (-p- a))) and look for (-p- a) instead.
+			prob1NotF = ((Not) ((Not) prob1NotF).getFormula()).getFormula();
+		
 		int prob1NotFIndex = PltlFormula.getIndex(prob1NotF);
 		if ( prob1NotFIndex > -1) {
 			Prob prob1Not = new Prob(prob1.getTime(), prob1NotFIndex);

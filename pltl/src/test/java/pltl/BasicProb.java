@@ -77,10 +77,10 @@ public class BasicProb {
 	
 	@Test
 	public void test4() {
-		String s = "FORMULA:(&&"
+		String s = "FORMULA:"
+				+ "(&&"
 				+ "(<-> (-p- a) (-p- b))"
-				+ "(!! (= (zot-p (-p- a))"
-				+ "(zot-p (-p- b))))"
+				+ "(!! (= (zot-p (-p- a)) (zot-p (-p- b))))"
 				+ ")";
 		Parser p = new Parser();
 		boolean result = p.Parse(s);
@@ -90,19 +90,10 @@ public class BasicProb {
 	
 	@Test
 	public void test5() {
-		String s = "FORMULA:(&& (-p- a) (<-> (-p- a) (-p- b)) (!! (= (zot-p (-p- a)) (zot-p (-p- b)))))";
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT
-		assertTrue(result);
-	}
-	
-	@Test
-	public void test6() {
-		String s = "FORMULA:(&& "
+		String s = "FORMULA:"
+				+ "(&& "
 				+ "(= (zot-p (-p- head)) 0.5)"
 				+ "(= (zot-p (next (-p- head))) 0.5)"
-				+ "(= (zot-cp (-p- head) (next (-p- head))) (zot-p (-p- head)))"//independent
 				+ "(!! (= 0.25 (zot-p (&& (-p- head) (next (-p- head))))))"
 				+ ")";
 		
@@ -111,5 +102,41 @@ public class BasicProb {
 		//must be UNSAT
 		assertTrue(result);
 	}
+	
+	@Test
+	public void factorGraph() {
+		String s = "(&&"
+				+ "(dep (-p- c) (-p- a))"
+				+ "(dep (-p- c) (-p- b))"
+				+ ")"
+				+ "FORMULA:"
+				+ "(&&"
+				+ "(= (zot-p (-p- a)) 0.5)"
+				+ "(= (zot-p (-p- b)) 0.6)"
+				+ "(= (zot-cp (-p- c) (&& (-p- a) (-p- b))) 0.9)"
+				+ "(= (zot-cp (-p- c) (&& (-p- a) (!! (-p- b)))) 0.8)"
+				+ "(!! (= (zot-p (&& (-p- a) (!! (-p- c)))) 0.07))"
+				+ ")";
+		
+		Parser p = new Parser();
+		boolean result = p.Parse(s);
+		//must be UNSAT
+		assertTrue(result);
+	}
+
+	@Test
+	public void yesterday() {
+		String s = "FORMULA:"
+				+ "(&&"
+//				+ "(yesterday (-p- a))"
++ "(next (-p- a))"
+				+ ")";
+		
+		Parser p = new Parser();
+		boolean result = p.Parse(s);
+		//must be UNSAT
+		assertTrue(result);
+	}
+
 	
 }

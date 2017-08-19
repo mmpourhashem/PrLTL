@@ -1,17 +1,46 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
+import pltl.Prob;
+import pltl.Smt2Formula;
 import pltl.bool.Formula;
 
+@Deprecated
 public class Yesterday implements Formula {
 
-    Formula f;
+	Formula f;
 
-    public Yesterday(Formula f) {
-        this.f = f;
-    }
+	public Yesterday(Formula f) {
+		this.f = f;
+	}
 
-    @Override
-    public String toString() {
-        return "(yesterday " + f + ")";     
-    }
+	public Formula getFormula(){ 
+		return f;
+	}
+
+	public String getSemantics() {
+		String s = ";" + this.toString() + "\n";
+		int mainF = PltlFormula.add(this);
+		int innerF = PltlFormula.add(f);
+		for (int time = 0; time < PltlFormula.bound; time++){
+			s += Smt2Formula.getOp("=" , Smt2Formula.getzot(time, mainF), Smt2Formula.getzot(time - 1, innerF)) + "\n";//prop
+			s += Smt2Formula.getOp("=" , new Prob(time, mainF).toString(), new Prob(time - 1, innerF).toString()) + "\n";//prob
+		}
+		return s;
+	}
+
+	@Override
+	public String toString() {
+		return "(yesterday " + f + ")";     
+	}
+
+	@Override
+	public boolean equals(Object o){
+		if (o instanceof Yesterday){
+			return f.equals(((Yesterday) o).getFormula());
+		}
+
+		return false;
+	}
+
 }

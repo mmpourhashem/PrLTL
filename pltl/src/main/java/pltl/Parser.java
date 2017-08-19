@@ -30,6 +30,7 @@ import pltl.bool.Not;
 import pltl.bool.Or;
 import pltl.trio.Alw;
 import pltl.trio.Futr;
+import pltl.trio.Past;
 import pltl.trio.Predicate;
 
 public class Parser {
@@ -64,12 +65,12 @@ public class Parser {
 		//		semantics += getRangeConstraints();////////////////////////////
 		String trueFalseSemantics = "";
 		for (int time = 0; time <= PltlFormula.bound; time++)
-		trueFalseSemantics += new PltlFormula.True().toString(time) + " " + new ArithFormula(Op.EQ, new Prob(time, -1), new Constant((float) 1)).toString() + " (not " + new PltlFormula.False().toString(time) + ") " + new ArithFormula(Op.EQ, new Prob(time, -2), new Constant((float) 0)).toString() + " ";
+			trueFalseSemantics += new PltlFormula.True().toString(time) + " " + new ArithFormula(Op.EQ, new Prob(time, -1), new Constant((float) 1)).toString() + " (not " + new PltlFormula.False().toString(time) + ") " + new ArithFormula(Op.EQ, new Prob(time, -2), new Constant((float) 0)).toString() + " ";
 		String semantics = "(assert (and " + trueFalseSemantics + probExpsAtT0;
 		//		if (PltlFormula.mainF > -1)
 		if (mainProb != null) {
 			PltlFormula.mainF = mainProb.getIndex();
-			semantics += Smt2Formula.getzot(0, mainProb.getIndex()) + " " + new ArithFormula(Op.EQ, new Constant((float) 1.0), mainProb) + "\n";
+			semantics += Smt2Formula.getzot(0, mainProb.getIndex()) + " " + new ArithFormula(Op.EQ, mainProb,new Constant((float) 1.0)) + "\n";
 		}
 		//			semantics += "true ";
 
@@ -82,8 +83,6 @@ public class Parser {
 			fTable += ";" + i+"\t"+PltlFormula.cProbsTBP.get(i).toString() + "\n";
 		String z3Commands = "))\n(check-sat-using qfufnra)\n(get-model)\n";
 		String smt2Model = "(set-option :smtlib2-compliant true)\n" + fTable + "\n" + getIntDec() + "\n" + semantics + z3Commands;
-		//				String smt2Model = fTable + "\n" + getBVDec(PltlFormula.instances.size()) + "\n"+ semantics + z3Commands;
-		//		String smt2Model = fTable + "\n" + getBVDec(3) + "\n"+ semantics + z3Commands;
 		System.out.println(smt2Model);
 
 
@@ -119,10 +118,12 @@ public class Parser {
 		String s = "";
 		if (f instanceof And) {
 			for (Formula fma: ((And) f).getFormulae())
-				if (fma instanceof ProbExp)
+//				if (fma instanceof ProbExp)
+				if (Probability.hasProbExp(fma))
 					s += Smt2Formula.getzot(0, PltlFormula.add(fma)) + " ";
 		}
-		else if (f instanceof ProbExp)
+//		else if (f instanceof ProbExp)
+		else if (Probability.hasProbExp(f))
 			s += Smt2Formula.getzot(0, PltlFormula.add(f)) + " ";
 		return s;
 	}
@@ -154,8 +155,9 @@ public class Parser {
 
 	private Formula getOpF(String opf, TempDep f) {
 		if (opf.equals("next"))
-			//			return new Next(getDep(f));
 			return new Futr(getDep(f), 1);
+		if (opf.equals("yesterday"))
+			return new Past(getDep(f), 1);
 		if (opf.equals("alw"))
 			return new Alw(getDep(f));
 
@@ -171,13 +173,7 @@ public class Parser {
 				+ "\t(and (>= probability 0.0) (<= probability 1.0)))\n";
 	}
 
-	//	private String getBVDec0(int size) {
-	//		String bv = "(_ BitVec " + size + ")";
-	//		return "(declare-fun zot (Int " + bv + ") Bool)\n"
-	//		+ "(declare-fun zot-p (Int " + bv + " " + bv + ") Real)\n"
-	//		+ "(declare-fun zot-cp (Int " + bv + " " + bv + " " + bv + " " + bv + ") Real)\n";
-	//	}
-
+	@Deprecated
 	private String getBVDec(int size) {
 		String bv = "(_ BitVec " + size + ")";
 		String s = "(declare-fun zot (Int Int) Bool)\n"
@@ -199,6 +195,7 @@ public class Parser {
 		return s;
 	}
 
+	@Deprecated
 	private String getRangeConstraints() {
 		String s = ";<Range constraints>\n";
 		for (int time = 0; time <= PltlFormula.bound; time++)
@@ -250,7 +247,7 @@ public class Parser {
 						sfNumber = sfNumber.substring(2, sfNumber.length());
 						sI = -1;
 					}
-					
+
 					int fNumber = Integer.parseInt(sfNumber.trim()) * sI;
 
 					String floatNumber = "";
@@ -258,9 +255,9 @@ public class Parser {
 						floatNumber = ss[1].substring(ss[1].indexOf(")))") + 3, ss[1].length());
 					else
 						floatNumber = ss[1].substring(ss[1].indexOf("))") + 2, ss[1].length());
-					
+
 					int s = 1;
-					
+
 					if (floatNumber.indexOf("-") != -1){
 						floatNumber = floatNumber.substring(3, floatNumber.length() - 1);
 						s = -1;
@@ -398,8 +395,9 @@ public class Parser {
 
 	private Formula getOpF(String opf, TPFormula f) {
 		if (opf.equals("next"))
-			//			return new Next(getFormula(f));
 			return new Futr(getFormula(f), 1);
+		if (opf.equals("yesterday"))
+			return new Past(getFormula(f), 1);
 		//TODO check completeness.		
 		return null;
 	}

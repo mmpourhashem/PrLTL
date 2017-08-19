@@ -15,6 +15,7 @@ import pltl.trio.Alw;
 import pltl.trio.Futr;
 import pltl.trio.Next;
 import pltl.trio.Predicate;
+import pltl.trio.Yesterday;
 
 public class Probability {
 
@@ -41,29 +42,23 @@ public class Probability {
 			Formula f = PltlFormula.instances.get(formulaIndex);
 
 			if (f instanceof And) {
-				boolean hasProbExp = false;
 				for (Formula fma: ((And) f).getFormulae())
-					if (fma instanceof ProbExp)
-						hasProbExp = true;
-				// PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
-				assertFalse(hasProbExp);
+					assertFalse(hasProbExp(fma)); // PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
 				s += ((And) f).getSemantics();
 			}
 			else if (f instanceof Or) {
-				boolean hasProbExp = false;
 				for (Formula fma: ((Or) f).getFormulae())
-					if (fma instanceof ProbExp)
-						hasProbExp = true;
-				// PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
-				assertFalse(hasProbExp);
+					assertFalse(hasProbExp(fma)); // PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
 				s += ((Or) f).getSemantics();
 			}
 			else if (f instanceof ProbExp)
 				s += ((ProbExp) f).getSemantics();
 			else if (f instanceof Not)
 				s += ((Not) f).getSemantics();
-			else if (f instanceof Next)
-				s += ((Next) f).getSemantics();
+//			else if (f instanceof Next)
+//				s += ((Next) f).getSemantics();
+//			else if (f instanceof Yesterday)
+//				s += ((Yesterday) f).getSemantics();
 			else if (f instanceof Predicate)
 				s += ((Predicate) f).getSemantics();
 			else if (f instanceof PltlFormula.True)
@@ -73,7 +68,7 @@ public class Probability {
 			else
 				s += f.toString() + " <Not Recognized!>";
 
-			if (! (f instanceof ProbExp))
+			if (! hasProbExp(f))
 				s += Smt2Formula.getRangeConstraints(formulaIndex) + "\n";
 		}
 		//		s += "\n";
@@ -85,22 +80,6 @@ public class Probability {
 		return s;
 	}
 
-	//	public static String getMainSemantics(int index) {
-	//		return getMainSemantics(index, index);
-	//	}
-
-	//	public static String getTheNegInferredSemantics() {
-	//		String s = "";
-	//		//If fma is a formula then simplified (!! fma) is added to the formula instances.
-	//		int n = PltlFormula.instances.size();
-	//		for (int i=0; i < n; i++) {
-	//			Formula f = PltlFormula.instances.get(i);
-	//			s += new Not(f).getTheNegSemantics();
-	//		}
-	//
-	//		return s;
-	//	}
-
 	public static void processDeps(int left, int right, Formula f) {
 		if (f instanceof And)
 			for (Formula bf: ((And) f).getFormulae())
@@ -109,6 +88,8 @@ public class Probability {
 			processDeps(0, PltlFormula.bound, ((Alw) f).getFormula());
 		else if (f instanceof Next)
 			processDeps(left + 1, right + 1, ((Next) f).getFormula());
+		else if (f instanceof Yesterday)
+			processDeps(left - 1, right - 1, ((Yesterday) f).getFormula());
 		else if (f instanceof Futr)
 			processDeps(left + ((Futr) f).getInt(), right + ((Futr) f).getInt(), ((Futr) f).getFormula());
 		else if (f instanceof Dep) {
@@ -183,7 +164,7 @@ public class Probability {
 		if (f instanceof And) {
 			And newAnd = new And();
 			for (Formula fma: ((And) f).getFormulae())
-				if (! (fma instanceof ProbExp))
+				if (! hasProbExp(fma))
 					newAnd.addFormula(fma);
 				else
 					PltlFormula.add(fma);
@@ -197,7 +178,7 @@ public class Probability {
 		else if (f instanceof Or) {
 			Or newOr = new Or();
 			for (Formula bf:((Or) f).getFormulae()) {
-				assertFalse(bf instanceof ProbExp);
+				assertFalse(hasProbExp(bf));
 				newOr.addFormula(PltlFormula.getDNF(bf));
 			}
 
@@ -206,5 +187,16 @@ public class Probability {
 		}
 		else
 			return processMainF(new And(f));
+	}
+
+	public static boolean hasProbExp(Formula fma) {
+		if (fma instanceof ProbExp)
+			return true;
+		if (fma instanceof Not)
+			return hasProbExp(((Not) fma).getFormula());
+		if (fma instanceof Next)
+			return hasProbExp(((Next) fma).getFormula());
+		//TODO yesterday, future, past, alw, ..., all Temporal Operators
+		return false;
 	}
 }

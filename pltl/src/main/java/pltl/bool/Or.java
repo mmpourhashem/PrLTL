@@ -162,6 +162,7 @@ public class Or implements Formula{
 		return s;
 	}
 
+	@Deprecated
 	private String getBinaryProbSemantics(int f1, int f2) {
 		int mainF = PltlFormula.add(this);
 		int f1f2 = PltlFormula.add(new And (PltlFormula.get(f1), PltlFormula.get(f2)));
@@ -192,7 +193,10 @@ public class Or implements Formula{
 			Or f1cdr = new Or();
 			for (int i = 1; i < ((Or) formula).getFormulae().size(); i++) {
 				cdr.addFormula(((Or) formula).getFormulae().get(i));
-				f1cdr.addFormula(new And(f1, ((Or) formula).getFormulae().get(i)).getFlatAnd());
+				And tempAnd = new And(f1, ((Or) formula).getFormulae().get(i));
+				tempAnd.prune();
+//				f1cdr.addFormula(new And(f1, ((Or) formula).getFormulae().get(i)).getFlatAnd());
+				f1cdr.addFormula(tempAnd.getFlatAnd());
 			}
 
 			return new ArithFormula(Op.PLUS, getRecOr(f1, time), new ArithFormula(Op.MINUS, getRecOr(cdr, time), getRecOr(f1cdr, time)));
@@ -233,6 +237,7 @@ public class Or implements Formula{
 					f.add(new PltlFormula.True());
 					return;
 				}
+		
 		ArrayList<Formula> newF = new ArrayList<Formula>();
 		for (Formula fma: f) {
 			if (fma instanceof And) {

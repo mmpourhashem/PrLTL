@@ -5,6 +5,7 @@ import pltl.Prob;
 import pltl.Smt2Formula;
 import pltl.bool.Formula;
 
+@Deprecated
 public class Next implements Formula{
 
     private Formula f;

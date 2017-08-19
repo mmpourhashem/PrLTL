@@ -7,6 +7,7 @@ import arith.Constant;
 import arith.Op;
 import pltl.PltlFormula;
 import pltl.Prob;
+import pltl.Probability;
 import pltl.trio.Predicate;
 import pltl.trio.Release;
 import pltl.trio.Until;
@@ -23,14 +24,20 @@ public class Not implements Formula {
 		return f;
 	}
 	public String getSemantics(){
-		return getPropSemantics(f) + getProbSemantics(f);
+//		return getPropSemantics(f) + getProbSemantics(f);
+		
+		//TODO Do the same for all other operators (not to produce probability semantics for ProbExps.
+		String s = getPropSemantics(f);
+		if (! Probability.hasProbExp(f))
+			s += getProbSemantics(f);
+		return s;
 	}
 
 	public String getTheNegSemantics(){
 		if (getTheNeg() != null){
 			if (getTheNeg().equals(this))
 				return getSemantics();
-			else if (PltlFormula.add(getTheNeg()) == -1 )
+			else if (PltlFormula.add(getTheNeg()) == -1)
 				return getPropSemantics(getTheNeg()) + getProbSemantics(getTheNeg());
 		}
 		return "";
