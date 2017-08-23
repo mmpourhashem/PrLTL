@@ -12,6 +12,14 @@ public class Lasted implements Formula{
         this.t = t;
     }
 
+    public Formula getFormula() {
+    	return f;
+    }
+    
+    public int getInt() {
+    	return t;
+    }
+    
     @Override
     public String toString() {
         return "(lasted " + f + " " + t + ")";

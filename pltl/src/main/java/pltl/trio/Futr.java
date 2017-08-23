@@ -12,11 +12,11 @@ public class Futr implements Formula {
         this.t = t;
     }
 
-    public Formula getFormula(){ 
+    public Formula getFormula() { 
     	return f;
     }
     
-    public int getInt(){ 
+    public int getInt() { 
     	return t;
     }
     
@@ -24,4 +24,13 @@ public class Futr implements Formula {
     public String toString() {
         return "(futr " + f + " " + t + ")";
     }
+    
+    @Override
+	public boolean equals(Object o) {
+		if (o instanceof Futr)
+			return (f.equals(((Futr) o).getFormula()) && t == ((Futr) o).getInt());
+		
+		return false;
+	}
+    
 }

@@ -1,17 +1,12 @@
 package pltl.bool;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 import arith.ArithFormula;
 import arith.Constant;
 import arith.Op;
 import pltl.Parser;
 import pltl.PltlFormula;
 import pltl.Prob;
-import pltl.Smt2Formula;
-import pltl.trio.Predicate;
 
 public class Or implements Formula{
 	ArrayList<Formula> f = new ArrayList<Formula>();

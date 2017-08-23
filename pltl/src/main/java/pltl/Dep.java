@@ -25,7 +25,6 @@ public class Dep implements Formula{
 		this.depF = depF;
 		this.parentsF = parentsF;		
 	}
-
 	
 	public Formula getDepF() {
 		return depF;

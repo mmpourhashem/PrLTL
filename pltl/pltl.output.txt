@@ -1,3 +1,19 @@
-(futr (-P- a) 1)
+(&& (withinf (-P- a) 2) (> (zot-p (next (-P- a))) 0.5))
 --- time 0 ---
+1.0 = P((|| (dist (-P- a) 1) (dist (-P- a) 2)))
+1.0 = P((next (-P- a)))
+1.0 = P((dist (-P- a) 1))
+0.75 = P((dist (-P- a) 2))
+0.5 = P((-P- a))
 --- time 1 ---
+0.75 = P((next (-P- a)))
+0.75 = P((dist (-P- a) 1))
+0.75 = P((dist (-P- a) 2))
+0.9375 = P((|| (dist (-P- a) 1) (dist (-P- a) 2)))
+1.0 = P((-P- a))
+--- time 2 ---
+0.75 = P((next (-P- a)))
+0.75 = P((dist (-P- a) 1))
+0.5 = P((dist (-P- a) 2))
+0.875 = P((|| (dist (-P- a) 1) (dist (-P- a) 2)))
+0.75 = P((-P- a))

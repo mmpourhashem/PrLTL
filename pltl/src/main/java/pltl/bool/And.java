@@ -12,7 +12,6 @@ import pltl.Parser;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.ProbComparator;
-import pltl.Probability;
 
 public class And implements Formula{
 	ArrayList<Formula> f = new ArrayList<Formula>();
@@ -117,6 +116,7 @@ public class And implements Formula{
 	}
 
 	// It is getProbSemantics.
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Formula getSemantics(int time) {
 		ArrayList<Prob> probs = new ArrayList<Prob>();
 		for (Formula fma: f)

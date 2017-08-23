@@ -1,9 +1,6 @@
 package pltl;
 
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 
 import arith.ArithFormula;
@@ -13,28 +10,39 @@ import pltl.bool.And;
 import pltl.bool.Formula;
 import pltl.bool.Not;
 import pltl.bool.Or;
-import pltl.trio.Next;
+import pltl.trio.Dist;
 import pltl.trio.Predicate;
-import pltl.trio.Yesterday;
 
 public class PltlFormula {
 
 	public static ArrayList<Formula> instances = new ArrayList<Formula>();
+	// To keep formulae's main string before simplifications. See Parser.java.<Simplification rationale>
+	private static ArrayList<String> instancesString = new ArrayList<String>();
 	public static ArrayList<CProb> cProbsTBP = new ArrayList<CProb>();
 	//	public static ArrayList<Boolean> processed = new ArrayList<Boolean>();
 	public static ArrayList<Formula> deps = new ArrayList<Formula>();
 	//	public static ArrayList<ArrayList<BooleanFormulae>> depCluster = new ArrayList<ArrayList<BooleanFormulae>>();
 	//	public static ArrayList<ArrayList<Integer>> deps = new ArrayList<ArrayList<Integer>>();
-	public static int bound = 1;
+	public static int bound = 2;
 	public static int mainF = 0;
 	public static ArrayList<Prob> bayesNet = new ArrayList<Prob>();
 
 	public static int add(Formula fma) {
+		// <!-- To avoid (dist (dist (-p- a) i) j) and have (dist (-p- a) i+j) instead. 
+		if (fma instanceof Dist && ((Dist) fma).getFormula() instanceof Dist)
+			while (((Dist) fma).getFormula() instanceof Dist)
+				fma = new Dist(((Dist) ((Dist) fma).getFormula()).getFormula(), ((Dist) fma).getOffset() + ((Dist) ((Dist) fma).getFormula()).getOffset());
+		//-->
+		// <!-- To avoid (dist (-p- a) 0) and have (-p- a) instead.
+		if (fma instanceof Dist && ((Dist) fma).getOffset() == 0)
+			fma = ((Dist) fma).getFormula();
+		//-->
 		int i = getIndex(fma);
 		if (i == -1) {
 			if (fma instanceof Not && ((Not) fma).getFormula() instanceof Not)
 				return add(((Not) ((Not) fma).getFormula()).getFormula());
 			instances.add(fma);
+			instancesString.add("");
 			//			if (fma instanceof ProbAtom) {
 			//				if (((ProbAtom) fma).getF11() != null)
 			//					addToDepCluster(((ProbAtom) fma).getF11(), ((ProbAtom) fma).getF12());
@@ -59,16 +67,26 @@ public class PltlFormula {
 		cProbsTBP.add(cProb);
 	}
 
-	//	private static BooleanFormulae pruneDeps(And and) {
-	//		for (BooleanFormulae f: and.getFormulae())
-	//	}
+	public static void setFormulaString(Formula f, String s) {
+		int index = add(f);
+		instancesString.set(index, s);
+	}
 
+	public static String getFormulaString(int index) {
+		return instancesString.get(index);
+	}
 
 	public static Prob getProb(int time, Formula f) {
-		if (f instanceof Next)
-			return getProb(time + 1, ((Next) f).getFormula());
-		else if (f instanceof Yesterday)
-			return getProb(time - 1, ((Next) f).getFormula());
+		//		if (f instanceof Next)
+		//			return getProb(time + 1, ((Next) f).getFormula());
+		//		else if (f instanceof Yesterday)
+		//			return getProb(time - 1, ((Next) f).getFormula());
+		//		if (f instanceof Futr)
+		//			return getProb(time + ((Futr) f).getInt(), ((Futr) f).getFormula());
+		//		if (f instanceof Past)
+		//			return getProb(time - ((Past) f).getInt(), ((Past) f).getFormula());
+		if (f instanceof Dist)
+			return getProb(time + ((Dist) f).getOffset(), ((Dist) f).getFormula());
 
 		// TODO Futr, Past, ...
 
@@ -83,30 +101,40 @@ public class PltlFormula {
 		deps.add(f);
 	}
 
-	private static ArrayList<Formula> getAtoms(Formula f) {
-		ArrayList<Formula> bfs = new ArrayList<Formula>();
-		if (f instanceof And)
-			for (Formula bf:((And) f).getFormulae())
-				bfs.addAll(getAtoms(bf));
-
-		else if (f instanceof Or)
-			for (Formula bf:((Or) f).getFormulae())
-				bfs.addAll(getAtoms(bf));
-
-		else if (f instanceof Not)
-			bfs.addAll(getAtoms(((Not) f).getFormula()));
-
-		else if (f instanceof Next) {
-			bfs.addAll(getAtoms(((Next) f).getFormula()));
-			bfs.add((Next) f);
-		}
-
-		else if (f instanceof Predicate)
-			bfs.add((Predicate) f);
-		//TODO until, since, ...
-
-		return bfs;
-	}
+	//	@Deprecated
+	//	private static ArrayList<Formula> getAtoms(Formula f) {
+	//		ArrayList<Formula> bfs = new ArrayList<Formula>();
+	//		if (f instanceof And)
+	//			for (Formula bf:((And) f).getFormulae())
+	//				bfs.addAll(getAtoms(bf));
+	//
+	//		else if (f instanceof Or)
+	//			for (Formula bf:((Or) f).getFormulae())
+	//				bfs.addAll(getAtoms(bf));
+	//
+	//		else if (f instanceof Not)
+	//			bfs.addAll(getAtoms(((Not) f).getFormula()));
+	//
+	////		else if (f instanceof Next) {
+	////			bfs.addAll(getAtoms(((Next) f).getFormula()));
+	////			bfs.add((Next) f);
+	////		}
+	//		else if (f instanceof Futr) {
+	//			bfs.addAll(getAtoms(((Futr) f).getFormula()));
+	//			bfs.add((Futr) f);
+	//		}
+	//		
+	//		else if (f instanceof Past) {
+	//			bfs.addAll(getAtoms(((Past) f).getFormula()));
+	//			bfs.add((Past) f);
+	//		}
+	//
+	//		else if (f instanceof Predicate)
+	//			bfs.add((Predicate) f);
+	//		//TODO until, since, ...
+	//
+	//		return bfs;
+	//	}
 
 	public static int getIndex(Formula fma) {
 		for (int i = 0; i < instances.size(); i++)
@@ -179,7 +207,7 @@ public class PltlFormula {
 			for (Formula f: or.getFormulae()) {
 				newOr.addFormula(getDNF(f));
 			}
-			
+
 			newOr.prune();
 			return newOr.getFlatOr();
 		}
@@ -352,7 +380,7 @@ public class PltlFormula {
 				s += new ArithFormula(Op.EQ, new Prob(time, add(this)), new Constant((float) 1));
 			return s;
 		}
-		
+
 		public String toString(int time) {
 			return Smt2Formula.getzot(time, -1);
 		}
@@ -376,11 +404,11 @@ public class PltlFormula {
 				s += new ArithFormula(Op.EQ, new Prob(time, add(this)), new Constant((float) 0));
 			return s;
 		}
-		
+
 		public String toString(int time) {
 			return Smt2Formula.getzot(time, -2);
 		}
-		
+
 		@Override
 		public String toString() {
 			return Smt2Formula.getzot(0, -2);

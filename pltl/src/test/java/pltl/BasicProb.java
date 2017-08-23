@@ -12,10 +12,7 @@ public class BasicProb {
 				+ "(&& "
 				+ "(> (zot-p (&& (-p- a) (-p- b))) (zot-p (-p- a)))"
 				+ ")";
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT, result = true means UNSAT.
-		assertTrue(result);
+		mustBeUNSAT(s);
 	}
 	
 	@Test
@@ -26,10 +23,7 @@ public class BasicProb {
 				+ "(= (zot-cp (-p- a) (-p- b)) 0.3)"
 				+ "(!! (= 0.7 (zot-cp (!! (-p- a)) (-p- b))))"
 				+ ")";
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT
-		assertTrue(result);
+		mustBeUNSAT(s);
 	}
 	
 	@Test
@@ -43,10 +37,7 @@ public class BasicProb {
 				+ "(<-> (-p- d) (&& (-p- b) (!! (-p- c))))"
 				+ "(= (zot-p (&& (-p- b) (-p- c) )) 0.1) "
 				+ ")";
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT
-		assertTrue(result);
+		mustBeUNSAT(s);
 	}
 	
 	@Test
@@ -56,10 +47,7 @@ public class BasicProb {
 				+ "(-p- a) "
 				+ "(!! (-p- a))"
 				+ "))";
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT
-		assertTrue(result);
+		mustBeUNSAT(s);
 	}
 	
 	@Test
@@ -69,10 +57,7 @@ public class BasicProb {
 				+ "(-p- a) "
 				+ "(!! (-p- a))"
 				+ ")";
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT
-		assertTrue(result);
+		mustBeUNSAT(s);
 	}
 	
 	@Test
@@ -82,10 +67,7 @@ public class BasicProb {
 				+ "(<-> (-p- a) (-p- b))"
 				+ "(!! (= (zot-p (-p- a)) (zot-p (-p- b))))"
 				+ ")";
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT
-		assertTrue(result);
+		mustBeUNSAT(s);
 	}
 	
 	@Test
@@ -97,10 +79,7 @@ public class BasicProb {
 				+ "(!! (= 0.25 (zot-p (&& (-p- head) (next (-p- head))))))"
 				+ ")";
 		
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT
-		assertTrue(result);
+		mustBeUNSAT(s);
 	}
 	
 	@Test
@@ -118,25 +97,53 @@ public class BasicProb {
 				+ "(!! (= (zot-p (&& (-p- a) (!! (-p- c)))) 0.07))"
 				+ ")";
 		
-		Parser p = new Parser();
-		boolean result = p.Parse(s);
-		//must be UNSAT
-		assertTrue(result);
+		mustBeUNSAT(s);
 	}
 
+//TODO Take care of dist dists while preprocessing formulae for LTL transformations (lasts (-p- a) 2) => (&& (futr (-p- a) 1) (futr (-p- a) 2))
 	@Test
 	public void yesterday() {
 		String s = "FORMULA:"
 				+ "(&&"
-//				+ "(yesterday (-p- a))"
-+ "(next (-p- a))"
+				+ "(|| (yesterday (next (yesterday (|| (!! (-p- a)) (-p- a)))))"
+				+ "(-p- b))"
+				+ "(!! (= (zot-p (-p- b)) 1.0))"
 				+ ")";
 		
+		mustBeUNSAT(s);
+	}
+	
+	@Test
+	public void yesterdayDep() {/////////////////////////////////////////////////fix
+		String s = "(alw (dep (-p- a) (yesterday (-p- a))))"
+				+ "FORMULA:"
+				+ "(&&"//there must be an alw here
+				+ "(alw (= (zot-cp (-p- a) (yesterday (-p- a))) 0.4))"
+				+ "(alw (= (zot-cp (-p- a) (!! (yesterday (-p- a)))) 0.9))"
+//				+ "(!! (= (zot-p (-p- a)) 0.9))"
+				+ ")";
+		
+		mustBeUNSAT(s);
+	}
+	
+	@Test
+	public void withinF() {
+		String s = "FORMULA:"
+				+ "(&&"//there must be an alw here
+				+ "(withinf (-p- a) 2)"
+//				+ "(> (zot-p (withinf (-p- a) 2)) 0.5)"
+				+ "(> (zot-p (next (-p- a)) 0.5))"
+////				+ "(!! (= (zot-p (-p- a)) 0.9))"
+				+ ")";
+
+		mustBeUNSAT(s);
+	}
+
+	private void mustBeUNSAT(String s) {
 		Parser p = new Parser();
 		boolean result = p.Parse(s);
 		//must be UNSAT
 		assertTrue(result);
 	}
-
 	
 }

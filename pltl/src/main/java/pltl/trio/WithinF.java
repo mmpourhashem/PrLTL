@@ -4,13 +4,21 @@ import pltl.bool.Formula;
 
 public class WithinF implements Formula{
 
-    Formula f;
-    int t;
+	Formula f;
+	int t;
+	
+	public WithinF(Formula f, int t) {
+		this.f = f;
+		this.t = t;
+	}
+	
+    public Formula getFormula() {
+		return f;
+	}
 
-    public WithinF(Formula f, int t) {
-        this.f = f;
-        this.t = t;
-    }
+	public int getInt() {
+		return t;
+	}
 
     @Override
     public String toString() {

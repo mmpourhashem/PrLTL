@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 import pltl.PltlFormula;
 import pltl.Prob;
-import pltl.Smt2Formula;
 import pltl.bool.Atom;
 
 public class Predicate implements Atom{

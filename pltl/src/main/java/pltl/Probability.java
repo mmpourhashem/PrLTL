@@ -4,18 +4,12 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 
+import com.sun.org.glassfish.external.probe.provider.annotations.Probe;
+
 import arith.ArithFormula;
-import arith.Constant;
 import arith.Op;
-import pltl.bool.And;
-import pltl.bool.Formula;
-import pltl.bool.Not;
-import pltl.bool.Or;
-import pltl.trio.Alw;
-import pltl.trio.Futr;
-import pltl.trio.Next;
-import pltl.trio.Predicate;
-import pltl.trio.Yesterday;
+import pltl.bool.*;
+import pltl.trio.*;
 
 public class Probability {
 
@@ -41,6 +35,16 @@ public class Probability {
 		for (int formulaIndex = fStartI; formulaIndex <= fEndI; formulaIndex++) {
 			Formula f = PltlFormula.instances.get(formulaIndex);
 
+			//If the formula is an inner formula of a ProbExp, it means that it is not processed nor converted to DNF. <!-- "processed" : this.process, "converted to DNF: PltlFormula.getDNF"-->
+			if (PltlFormula.getFormulaString(formulaIndex).length() > 0) {
+				Formula newF = PltlFormula.getDNF(process(f));
+				int newFIndex = PltlFormula.add(newF);
+				if (newFIndex != formulaIndex) {
+					s += getEqualitySemantics(formulaIndex, newFIndex);
+					continue;
+				}
+			}
+
 			if (f instanceof And) {
 				for (Formula fma: ((And) f).getFormulae())
 					assertFalse(hasProbExp(fma)); // PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
@@ -51,20 +55,20 @@ public class Probability {
 					assertFalse(hasProbExp(fma)); // PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
 				s += ((Or) f).getSemantics();
 			}
-			else if (f instanceof ProbExp)
-				s += ((ProbExp) f).getSemantics();
+			else if (f instanceof ProbExp) {// ProbExps' simplifications are postponed in order to Parser.java.<Simplification rationale>.
+				ProbExp probExp = new ProbExp(((ProbExp) f).getOp(), process(((ProbExp) f).getF1()), process(((ProbExp) f).getF11()), process(((ProbExp) f).getF12()), process(((ProbExp) f).getF2()), process(((ProbExp) f).getF21()), process(((ProbExp) f).getF22()), ((ProbExp) f).getR1(), ((ProbExp) f).getR2(), ((ProbExp) f).toString());
+				s += probExp.getSemantics();
+			}
 			else if (f instanceof Not)
 				s += ((Not) f).getSemantics();
-//			else if (f instanceof Next)
-//				s += ((Next) f).getSemantics();
-//			else if (f instanceof Yesterday)
-//				s += ((Yesterday) f).getSemantics();
 			else if (f instanceof Predicate)
 				s += ((Predicate) f).getSemantics();
 			else if (f instanceof PltlFormula.True)
 				s += ((PltlFormula.True) f).getSemantics();
 			else if (f instanceof PltlFormula.False)
 				s += ((PltlFormula.False) f).getSemantics();
+			else if (f instanceof Dist)
+				s += ((Dist) f).getSemantics();
 			else
 				s += f.toString() + " <Not Recognized!>";
 
@@ -80,18 +84,35 @@ public class Probability {
 		return s;
 	}
 
+	private static String getEqualitySemantics(int i1, int i2) {
+		String s = ";" + PltlFormula.get(i1).toString() + " = " + PltlFormula.get(i2).toString() + "\n";
+		for (int time = 0; time <= PltlFormula.bound; time++) {
+			s += "(= " + Smt2Formula.getzot(time, i1) + " " + Smt2Formula.getzot(time, i2) + " ) " + new ArithFormula(Op.EQ, new Prob(time, i1), new Prob(time, i2)) + " ";
+		}
+		
+		return s;
+	}
+
 	public static void processDeps(int left, int right, Formula f) {
 		if (f instanceof And)
 			for (Formula bf: ((And) f).getFormulae())
 				processDeps(left, right, bf);
 		else if (f instanceof Alw)
 			processDeps(0, PltlFormula.bound, ((Alw) f).getFormula());
+		else if (f instanceof AlwF)
+			processDeps(left, PltlFormula.bound, ((AlwF) f).getFormula());
+		else if (f instanceof AlwP)
+			processDeps(0, right, ((AlwP) f).getFormula());
 		else if (f instanceof Next)
 			processDeps(left + 1, right + 1, ((Next) f).getFormula());
 		else if (f instanceof Yesterday)
 			processDeps(left - 1, right - 1, ((Yesterday) f).getFormula());
 		else if (f instanceof Futr)
 			processDeps(left + ((Futr) f).getInt(), right + ((Futr) f).getInt(), ((Futr) f).getFormula());
+		else if (f instanceof Past)
+			processDeps(left - ((Past) f).getInt(), right - ((Past) f).getInt(), ((Past) f).getFormula());
+		else if (f instanceof Dist)
+			processDeps(left + ((Dist) f).getOffset(), right + ((Dist) f).getOffset(), f);
 		else if (f instanceof Dep) {
 			Dep d = (Dep) f;
 			for (int time = left; time <= right; time++) {
@@ -104,9 +125,6 @@ public class Probability {
 				PltlFormula.addBayes(depTI);
 			}
 		}
-
-		//TODO yesterday, past, lasts, lasted, alwf, futr, past, ...		
-
 	}
 
 	/**
@@ -155,7 +173,6 @@ public class Probability {
 		formulae = populateFormulae(formulae);
 		for (Formula f: formulae)
 			result.add(new Prob(baseTime, PltlFormula.add(f)));
-		//TODO test with Ya -> a, Xa -> a
 
 		return result;
 	}
@@ -165,13 +182,13 @@ public class Probability {
 			And newAnd = new And();
 			for (Formula fma: ((And) f).getFormulae())
 				if (! hasProbExp(fma))
-					newAnd.addFormula(fma);
+					newAnd.addFormula(process(fma));
 				else
 					PltlFormula.add(fma);
 			if (newAnd.size() > 0) {
 				Formula dnf = PltlFormula.getDNF(newAnd);
 				return new Prob(0, PltlFormula.add(dnf));
-				}
+			}
 			else
 				return null;
 		}
@@ -189,6 +206,87 @@ public class Probability {
 			return processMainF(new And(f));
 	}
 
+	/**
+	 * @param f
+	 * @return
+	 * Returns simplified formula. E.g. (|| (next (-p- a)) (next (next (-p- a)))) is returned for (withinf (-p- a) 2).
+	 */
+	private static Formula process(Formula f) {
+		if (f instanceof Next)
+			return new Dist(process(((Next) f).getFormula()), 1);
+		
+		if (f instanceof Yesterday)
+			return new Dist(process(((Yesterday) f).getFormula()), -1);
+		
+		if (f instanceof Futr)
+			return new Dist(process(((Futr) f).getFormula()), ((Futr) f).getInt());
+
+		if (f instanceof Past)
+			return new Dist(process(((Past) f).getFormula()), -((Past) f).getInt());
+
+		if (f instanceof WithinF) {
+			assertFalse(((WithinF) f).getInt() < 1);
+			Or or = new Or();
+			for (int window = 1; window <= ((WithinF) f).getInt(); window++)
+				or.addFormula(new Dist(process(((WithinF) f).getFormula()), window));
+			return or;
+		}
+
+		if (f instanceof WithinP) {
+			assertFalse(((WithinP) f).getInt() < 1);
+			Or or = new Or();
+			for (int window = 1; window <= ((WithinP) f).getInt(); window++)
+				or.addFormula(new Dist(process(((WithinP) f).getFormula()), -window));
+			return or;
+		}
+
+		if (f instanceof Lasts) {
+			assertFalse(((Lasts) f).getInt() < 1);
+			And and = new And();
+			for (int window = 1; window <= ((Lasts) f).getInt(); window++)
+				and.addFormula(new Dist(process(((Lasts) f).getFormula()), window));
+			return and;
+		}
+
+		if (f instanceof Lasted) {
+			assertFalse(((Lasted) f).getInt() < 1);
+			And and = new And();
+			for (int window = 1; window <= ((Lasted) f).getInt(); window++)
+				and.addFormula(new Dist(process(((Lasted) f).getFormula()), -window));
+			return and;
+		}
+
+		if (f instanceof Not)
+			return new Not(process(((Not) f).getFormula()));
+
+		if (f instanceof And) {
+			And and = new And();
+			for (Formula fma:((And) f).getFormulae())
+				and.addFormula(process(fma));
+		}
+
+		if (f instanceof Or) {
+			Or or = new Or();
+			for (Formula fma:((Or) f).getFormulae())
+				or.addFormula(process(fma));
+		}
+
+		if (f instanceof Until)
+			return new Until(process(((Until) f).getFormula1()), process(((Until) f).getFormula2()));
+
+		if (f instanceof Release)
+			return new Release(process(((Release) f).getFormula1()), process(((Release) f).getFormula2()));
+
+		if (f instanceof Since)
+			return new Since(process(((Since) f).getFormula1()), process(((Since) f).getFormula2()));
+
+		if (f instanceof Trigger)
+			return new Trigger(process(((Trigger) f).getFormula1()), process(((Trigger) f).getFormula2()));
+
+
+		return f;
+	}
+
 	public static boolean hasProbExp(Formula fma) {
 		if (fma instanceof ProbExp)
 			return true;
@@ -196,7 +294,35 @@ public class Probability {
 			return hasProbExp(((Not) fma).getFormula());
 		if (fma instanceof Next)
 			return hasProbExp(((Next) fma).getFormula());
-		//TODO yesterday, future, past, alw, ..., all Temporal Operators
+		if (fma instanceof Yesterday)
+			return hasProbExp(((Yesterday) fma).getFormula());
+		if (fma instanceof Futr)
+			return hasProbExp(((Futr) fma).getFormula());
+		if (fma instanceof Past)
+			return hasProbExp(((Past) fma).getFormula());
+		if (fma instanceof Dist)
+			return hasProbExp(((Dist) fma).getFormula());
+		if (fma instanceof Alw)
+			return hasProbExp(((Alw) fma).getFormula());
+		if (fma instanceof AlwF)
+			return hasProbExp(((AlwF) fma).getFormula());
+		if (fma instanceof AlwP)
+			return hasProbExp(((AlwP) fma).getFormula());
+		if (fma instanceof Som)
+			return hasProbExp(((Som) fma).getFormula());
+		if (fma instanceof SomF)
+			return hasProbExp(((SomF) fma).getFormula());
+		if (fma instanceof SomP)
+			return hasProbExp(((SomP) fma).getFormula());
+		if (fma instanceof WithinF)
+			return hasProbExp(((WithinF) fma).getFormula());
+		if (fma instanceof WithinP)
+			return hasProbExp(((WithinP) fma).getFormula());
+		if (fma instanceof Lasts)
+			return hasProbExp(((Lasts) fma).getFormula());
+		if (fma instanceof Lasted)
+			return hasProbExp(((Lasted) fma).getFormula());
+
 		return false;
 	}
 }

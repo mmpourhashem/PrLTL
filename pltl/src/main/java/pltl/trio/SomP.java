@@ -9,6 +9,10 @@ public class SomP implements Formula {
     public SomP(Formula f) {
         this.f = f;
     }
+    
+    public Formula getFormula() {
+    	return f;
+    }
 
     @Override
     public String toString() {

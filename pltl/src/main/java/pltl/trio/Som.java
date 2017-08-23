@@ -9,6 +9,10 @@ public class Som implements Formula {
     public Som(Formula f) {
         this.f = f;
     }
+    
+    public Formula getFormula() {
+    	return f;
+    }
 
     @Override
     public String toString() {

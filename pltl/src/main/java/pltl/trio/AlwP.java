@@ -9,6 +9,10 @@ public class AlwP implements Formula {
     public AlwP(Formula f) {
         this.f = f;
     }
+    
+    public Formula getFormula() {
+    	return f;
+    }
 
     @Override
     public String toString() {

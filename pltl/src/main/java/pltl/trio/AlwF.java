@@ -10,8 +10,12 @@ public class AlwF implements Formula {
         this.f = f;
     }
 
-    @Override
-    public String toString() {
-        return "(alwf " + f + ")";
-    }
+	public Formula getFormula() {
+		return f;
+	}
+	
+	@Override
+	public String toString() {
+		return "(alwf " + f + ")";
+	}
 }
