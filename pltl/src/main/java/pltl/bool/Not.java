@@ -8,6 +8,7 @@ import arith.Op;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.Probability;
+import pltl.trio.Dist;
 import pltl.trio.Predicate;
 import pltl.trio.Release;
 import pltl.trio.Until;
@@ -18,14 +19,18 @@ public class Not implements Formula {
 
 	public Not(Formula f) {
 		this.f = f;
+		//TODO del
+		if (f==null)
+			this.f=null;
 	}
 
 	public Formula getFormula(){
 		return f;
 	}
+
 	public String getSemantics(){
-//		return getPropSemantics(f) + getProbSemantics(f);
-		
+		//		return getPropSemantics(f) + getProbSemantics(f);
+
 		//TODO Do the same for all other operators (not to produce probability semantics for ProbExps.
 		String s = getPropSemantics(f);
 		if (! Probability.hasProbExp(f))
@@ -84,10 +89,10 @@ public class Not implements Formula {
 		}
 
 		if (f instanceof Implies)
-			return new And (((Implies) f).f1, new Not(((Implies) f).f2));
+			return new And (((Implies) f).getFormula1(), new Not(((Implies) f).getFormula2()));
 
 		if (f instanceof Until)
-			return new Release(new Not(((Until) f).f1), new Not(((Until) f).f2));
+			return new Release(new Not(((Until) f).getFormula1()), new Not(((Until) f).getFormula2()));
 
 
 
@@ -98,10 +103,15 @@ public class Not implements Formula {
 			'futr' | 'past' | 'withinf' | 'withinp' | 'lasts' | 'lasted'
 		 */
 
-		if (f instanceof Predicate)
+		if (f instanceof Predicate || f instanceof Dist)
 			return f;//new Not((Predicate) f);
 
+
 		return null;
+	}
+
+	public Formula get(int offset) {
+		return new Not(f.get(offset));
 	}
 
 	@Override
@@ -111,10 +121,10 @@ public class Not implements Formula {
 
 	@Override
 	public boolean equals(Object o){
-		if (o instanceof Not){
-			Not notO = (Not) o;
-			return f.equals(notO.f);
-		}
+		if (o instanceof Not)
+			return f.equals(((Not) o).getFormula());
+
 		return false;
 	}
+
 }

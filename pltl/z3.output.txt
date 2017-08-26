@@ -4,5 +4,38 @@ success
 success
 success
 success
-unsat
-(error "line 70 column 10: model is not available")
+sat
+(model 
+  (define-fun zot ((x!0 Int) (x!1 Int)) Bool
+    (ite (and (= x!0 0) (= x!1 4)) true
+    (ite (and (= x!0 0) (= x!1 (- 1))) true
+    (ite (and (= x!0 0) (= x!1 (- 2))) false
+    (ite (and (= x!0 1) (= x!1 (- 1))) true
+    (ite (and (= x!0 1) (= x!1 (- 2))) false
+    (ite (and (= x!0 2) (= x!1 (- 1))) true
+    (ite (and (= x!0 2) (= x!1 (- 2))) false
+    (ite (and (= x!0 0) (= x!1 2)) false
+    (ite (and (= x!0 1) (= x!1 2)) false
+    (ite (and (= x!0 2) (= x!1 2)) false
+    (ite (and (= x!0 0) (= x!1 3)) false
+    (ite (and (= x!0 1) (= x!1 3)) false
+    (ite (and (= x!0 2) (= x!1 3)) false
+      false))))))))))))))
+  (define-fun zot-p ((x!0 Int) (x!1 Int)) Real
+    (ite (and (= x!0 0) (= x!1 4)) 1.0
+    (ite (and (= x!0 0) (= x!1 (- 1))) 1.0
+    (ite (and (= x!0 0) (= x!1 (- 2))) 0.0
+    (ite (and (= x!0 1) (= x!1 (- 1))) 1.0
+    (ite (and (= x!0 1) (= x!1 (- 2))) 0.0
+    (ite (and (= x!0 2) (= x!1 (- 1))) 1.0
+    (ite (and (= x!0 2) (= x!1 (- 2))) 0.0
+    (ite (and (= x!0 0) (= x!1 0)) 0.5
+    (ite (and (= x!0 1) (= x!1 0)) 0.5
+    (ite (and (= x!0 2) (= x!1 0)) 0.5
+    (ite (and (= x!0 0) (= x!1 1)) 0.5
+    (ite (and (= x!0 1) (= x!1 1)) 0.5
+    (ite (and (= x!0 2) (= x!1 1)) 0.5
+    (ite (and (= x!0 1) (= x!1 4)) 1.0
+    (ite (and (= x!0 2) (= x!1 4)) 1.0
+      0.5))))))))))))))))
+)

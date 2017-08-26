@@ -5,30 +5,34 @@ import pltl.bool.Formula;
 public class Futr implements Formula {
 
     private Formula f;
-    private int t;
+    private int offset;
 
-    public Futr(Formula f, int t) {
+    public Futr(Formula f, int offset) {
         this.f = f;
-        this.t = t;
+        this.offset = offset;
     }
 
     public Formula getFormula() { 
     	return f;
     }
     
-    public int getInt() { 
-    	return t;
+    public int getOffset() { 
+    	return offset;
+    }
+    
+    public Formula get(int offset) {
+    	return f.get(offset + this.offset);
     }
     
     @Override
     public String toString() {
-        return "(futr " + f + " " + t + ")";
+        return "(futr " + f + " " + offset + ")";
     }
     
     @Override
 	public boolean equals(Object o) {
 		if (o instanceof Futr)
-			return (f.equals(((Futr) o).getFormula()) && t == ((Futr) o).getInt());
+			return (f.equals(((Futr) o).getFormula()) && offset == ((Futr) o).getOffset());
 		
 		return false;
 	}

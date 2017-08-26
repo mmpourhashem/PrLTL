@@ -223,4 +223,9 @@ public class Prob implements Formula {
 			return true;
 		return false;
 	}
+
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return new Prob(time + offset, index);
+	}
 }

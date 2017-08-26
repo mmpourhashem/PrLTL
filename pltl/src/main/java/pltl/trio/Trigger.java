@@ -4,8 +4,8 @@ import pltl.bool.Formula;
 
 public class Trigger implements Formula {
 
-    Formula f1;
-    Formula f2;
+	private Formula f1;
+	private Formula f2;
 
     public Trigger(Formula f1, Formula f2) {
         this.f1 = f1;
@@ -31,5 +31,10 @@ public class Trigger implements Formula {
 			return f1.equals(((Trigger) o).getFormula1()) && f2.equals(((Trigger) o).getFormula2());
 		
 		return false;
+	}
+
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

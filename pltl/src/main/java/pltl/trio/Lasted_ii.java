@@ -17,4 +17,9 @@ public class Lasted_ii implements Formula{
         return "(lasted_ii " + f + " " + t + ")";
     }
 
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

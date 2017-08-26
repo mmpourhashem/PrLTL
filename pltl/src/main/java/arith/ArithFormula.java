@@ -45,5 +45,9 @@ public class ArithFormula implements Formula{
 
 		return s + ")";
 	}
+
+	public Formula get(int offset) {
+		return null;
+	}
 	
 }

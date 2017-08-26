@@ -16,4 +16,9 @@ public class Since_ii implements Formula {
     public String toString() {
         return "(since_ii " + f1 + " " + f2 + ")";
     }
+
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

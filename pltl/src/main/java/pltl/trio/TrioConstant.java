@@ -2,6 +2,7 @@ package pltl.trio;
 
 import java.util.HashSet;
 import pltl.bool.Atom;
+import pltl.bool.Formula;
 
 public class TrioConstant implements Atom{
 
@@ -38,6 +39,11 @@ public class TrioConstant implements Atom{
 	@Override
 	public int hashCode(){
 		return this.getConstantName().hashCode();
+	}
+
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

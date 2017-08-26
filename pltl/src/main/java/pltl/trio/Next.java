@@ -14,6 +14,10 @@ public class Next implements Formula{
     	return f;
     }
     
+    public Formula get(int offset) {
+    	return f.get(offset + 1);
+    }
+    
 	@Override
     public String toString() {
         return "(next " + f + ")";     
@@ -26,4 +30,5 @@ public class Next implements Formula{
 		
 		return false;
 	}
+
 }

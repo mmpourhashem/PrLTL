@@ -12,6 +12,7 @@ import pltl.bool.Not;
 import pltl.bool.Or;
 import pltl.trio.Dist;
 import pltl.trio.Predicate;
+import pltl.trio.Yesterday;
 
 public class PltlFormula {
 
@@ -28,6 +29,15 @@ public class PltlFormula {
 	public static ArrayList<Prob> bayesNet = new ArrayList<Prob>();
 
 	public static int add(Formula fma) {
+//TODO <!-- del
+		int ff;		if (fma == null)
+			ff=0;
+		if (fma instanceof Not && ((Not) fma).getFormula() == null)
+			ff=1;
+		if (fma instanceof Yesterday)
+			ff=1;
+//		-->
+		fma = Probability.process(fma);
 		// <!-- To avoid (dist (dist (-p- a) i) j) and have (dist (-p- a) i+j) instead. 
 		if (fma instanceof Dist && ((Dist) fma).getFormula() instanceof Dist)
 			while (((Dist) fma).getFormula() instanceof Dist)
@@ -59,6 +69,12 @@ public class PltlFormula {
 		for (Formula f: formulae)
 			add(f);
 	}
+	
+	public static void add(ArrayList<Formula> formulae) {
+		for (Formula f: formulae)
+			add(f);		
+	}
+
 
 	public static void add(CProb cProb) {
 		for (CProb c: cProbsTBP)
@@ -395,6 +411,10 @@ public class PltlFormula {
 			return o instanceof True;
 		}
 
+		public Formula get(int offset) {
+			return this;
+		}
+
 	}
 
 	public static class False implements Formula {
@@ -408,6 +428,10 @@ public class PltlFormula {
 		public String toString(int time) {
 			return Smt2Formula.getzot(time, -2);
 		}
+		
+		public Formula get(int offset) {
+			return this;
+		}
 
 		@Override
 		public String toString() {
@@ -418,7 +442,9 @@ public class PltlFormula {
 		public boolean equals(Object o) {
 			return o instanceof False;
 		}
+		
 	}
+
 
 	/*		private static void addToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
 			ArrayList<BooleanFormulae> bfs = new ArrayList<BooleanFormulae>();

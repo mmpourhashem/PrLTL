@@ -2,6 +2,7 @@ package pltl.trio;
 
 
 import pltl.bool.Atom;
+import pltl.bool.Formula;
 
 public class LiteralInt implements Atom{
     int value;
@@ -14,5 +15,10 @@ public class LiteralInt implements Atom{
     public String toString() {
         return Integer.toString(value);
     }
+
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 }

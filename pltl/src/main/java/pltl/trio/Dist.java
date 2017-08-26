@@ -42,6 +42,10 @@ public class Dist implements Formula {
 		return s;
 	}
     
+    public Formula get(int offset) {
+    	return new Dist(formula, this.offset + offset);//TODO Is it possible to convert all formula to Probs here?
+    }
+    
     @Override
     public String toString() {
         return "(dist " + formula + " " + offset + ")";

@@ -49,18 +49,32 @@ public class Parser {
 			Probability.processDeps(0, 0, getTempDep(model.getTempDep()));
 		System.out.println(mainFormula.toString());
 		String probExpsAtT0 = assertProbExps(mainFormula);
-		Prob mainProb = Probability.processMainF(mainFormula);
+		//		Prob mainProb = Probability.processMainF(mainFormula);
+		mainFormula = Probability.processMainF(mainFormula);
 
+		
+		//		<!-- GS
+		String mainFormulaSemantics = "";
+		if (mainFormula != null) {
+			Formula slice0 = mainFormula.get(0);
+			Formula dnfSlice0 = PltlFormula.getDNF(slice0);
+			int mainFormulaIndex = PltlFormula.add(dnfSlice0);
+			mainFormulaSemantics= new ArithFormula(Op.EQ, new Prob(0, mainFormulaIndex), new Constant((float) 1)).toString() + " " + Smt2Formula.getzot(0, mainFormulaIndex);
+		}
+		//		-->
+
+		
 		String trueFalseSemantics = "";
 		for (int time = 0; time <= PltlFormula.bound; time++)
 			trueFalseSemantics += new PltlFormula.True().toString(time) + " " + new ArithFormula(Op.EQ, new Prob(time, -1), new Constant((float) 1)).toString() + " (not " + new PltlFormula.False().toString(time) + ") " + new ArithFormula(Op.EQ, new Prob(time, -2), new Constant((float) 0)).toString() + " ";
-		String semantics = "(assert (and " + trueFalseSemantics + probExpsAtT0;
-		if (mainProb != null) {
-			PltlFormula.mainF = mainProb.getIndex();
-			semantics += Smt2Formula.getzot(0, mainProb.getIndex()) + " " + new ArithFormula(Op.EQ, mainProb,new Constant((float) 1.0)) + "\n";
-		}
-
+		String semantics = "(assert (and \n" + mainFormulaSemantics + "\n" + trueFalseSemantics + "\n" + probExpsAtT0 + "\n";
+		//		if (mainProb != null) {
+		//			PltlFormula.mainF = mainProb.getIndex();
+		//			semantics += Smt2Formula.getzot(0, mainProb.getIndex()) + " " + new ArithFormula(Op.EQ, mainProb,new Constant((float) 1.0)) + "\n";
+		//		}
+		
 		semantics += Probability.getProbFormulae();
+
 		String fTable = ";Formula table:\n";
 		for (int i = 0; i < PltlFormula.instances.size(); i++)
 			fTable += ";" + i+"\t"+PltlFormula.instances.get(i).toString() + "\n";
@@ -134,11 +148,25 @@ public class Parser {
 		String s = "";
 		if (f instanceof And) {
 			for (Formula fma: ((And) f).getFormulae())
-				if (Probability.hasProbExp(fma))
-					s += Smt2Formula.getzot(0, PltlFormula.add(fma)) + " ";
+				if (Probability.hasProbExp(fma)) {
+//					s += Smt2Formula.getzot(0, PltlFormula.add(fma)) + " ";
+				PltlFormula.add(fma);
+				Formula temp = fma.get(0);
+				Smt2Formula.getzot(0, PltlFormula.add(temp));
+				s += fma.get(0);
+				}
 		}
-		else if (Probability.hasProbExp(f))
-			s += Smt2Formula.getzot(0, PltlFormula.add(f)) + " ";
+		else if (Probability.hasProbExp(f)) {
+//			s += Smt2Formula.getzot(0, PltlFormula.add(f)) + " ";
+
+//			PltlFormula.add(f);
+//			s += f.get(0);
+			
+			PltlFormula.add(f);
+			Formula temp = f.get(0);
+			Smt2Formula.getzot(0, PltlFormula.add(temp));
+			s += "error";
+		}
 
 		return s;
 	}
@@ -200,7 +228,8 @@ public class Parser {
 			br.close();
 			try{
 				PrintWriter writer = new PrintWriter("pltl.output.txt", "UTF-8");
-				writer.println(mainFormula.toString());
+				if (mainFormula != null)
+					writer.println(mainFormula.toString());
 				if (unsat)
 					writer.println("UNSAT");
 				else {
@@ -220,7 +249,7 @@ public class Parser {
 		}
 		return unsat;
 	}
-	
+
 	private String getFormulaString(int index) {
 		String s = PltlFormula.getFormulaString(index);
 		if (s.length() > 0)

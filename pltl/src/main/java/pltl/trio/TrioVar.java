@@ -1,9 +1,15 @@
 package pltl.trio;
 
 import pltl.bool.Atom;
+import pltl.bool.Formula;
 
 
 public class TrioVar implements Atom{
+
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 //
 //	public static HashSet<TrioVar> instances=new HashSet<TrioVar>();
 //    String varname;

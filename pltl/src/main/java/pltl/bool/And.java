@@ -246,6 +246,13 @@ public class And implements Formula{
 		prune();
 		return (f.size() == 1 && f.get(0).equals(new PltlFormula.False()));
 	}
+	
+	public Formula get(int offset) {
+		And and = new And();
+		for (Formula fma: f)
+			and.addFormula(fma.get(offset));
+		return and;
+	}
 
 	@Override
 	public String toString() {
@@ -272,102 +279,5 @@ public class And implements Formula{
 
 		return false;
 	}
-
-	//	public ArrayList<Integer> getProbSemantics(Set<BooleanFormulae> bfSet) {
-	//		String s = "";
-	//		ArrayList<E>
-	//		ArrayList<BooleanFormulae> bfa = new ArrayList<BooleanFormulae>();
-	//		for (BooleanFormulae bf: bfSet)
-	//			bfa.add(bf);
-	//		if (bfa.size() == 2) {
-	//			
-	//		}
-	//			
-	//		return s;
-	//	}
-
-	//	public String getProbSemantics() {
-	//		String s = "";
-	//		int mainF = PltlFormula.add(this);
-	//		ArrayList<Integer> indexes = new ArrayList<Integer>();
-	//		ArrayList<BooleanFormulae> tempF = new ArrayList<BooleanFormulae>();// [???] we are not producing probability analysis over probability formulae. The probability of probabilities is not supported in PLTL.
-	//		for (BooleanFormulae bf: f) {
-	//			indexes.add(PltlFormula.add(bf));
-	//			tempF.add(bf);
-	//		}
-	//
-	//		if (tempF.size() == 1)
-	//			return "";
-	//		if (tempF.size() == 2)
-	//			return getBinaryProbSemantics(indexes.get(0), indexes.get(1));
-	//		for (int i = 0; i < indexes.size(); i++) {
-	//			And newAnd = new And();
-	//			for (int j = 0; j < indexes.size(); j++) {
-	//				if (j != i) {
-	//					newAnd.addFormulae(PltlFormula.get(indexes.get(j)));
-	//				}
-	//			}
-	//			int newAndIndex = PltlFormula.add(newAnd); 
-	//			s += newAnd.getPropSemantics();
-	//			s += getBinaryProbSemantics(indexes.get(i), newAndIndex);
-	//		}
-	//
-	//		return s;
-	//	}
-
-	//	private String getBinaryProbSemantics(int f1, int f2) {
-	//		int mainF = PltlFormula.add(this);
-	//
-	//		int f1f2 = mainF;
-	//		String s = "";
-	//
-	//		//f1 = f1f2 + f1!f2
-	//		int nf2 = PltlFormula.add(new Not(PltlFormula.get(f2)));//to avoid !(!(fma))
-	//		And f1nf2f = new And (PltlFormula.get(f1), PltlFormula.get(nf2));
-	//		int f1nf2 = PltlFormula.add(f1nf2f);
-	//
-	//		//f2 = f2f1 + f2!f1
-	//		int nf1 = PltlFormula.add(new Not(PltlFormula.get(f1)));
-	//		And f2nf1f = new And (PltlFormula.get(f2), PltlFormula.get(nf1));
-	//		int f2nf1 = PltlFormula.add(f2nf1f);
-	//
-	//		//f1f2 + f1!f2 + !f1f2 + !f1!f2 = 1.0
-	//		And nf1nf2f = new And (PltlFormula.get(nf1), PltlFormula.get(nf2));
-	//		int nf1nf2 = PltlFormula.add(nf1nf2f);
-	//		for (int time = 0; time <= PltlFormula.bound; time++) {
-	//			s += Smt2Formula.getOp("=", Smt2Formula.getzotp(time, f1), Smt2Formula.getOp("+" , Smt2Formula.getzotp(time, f1f2), Smt2Formula.getzotp(time, f1nf2))) + "\n"; //f1 = f1f2 + f1!f2
-	//			s += Smt2Formula.getOp("=", Smt2Formula.getzotp(time, f2), Smt2Formula.getOp("+" , Smt2Formula.getzotp(time, f1f2), Smt2Formula.getzotp(time, f2nf1))) + "\n"; //f2 = f2f1 + f2!f1
-	//			s += Smt2Formula.getOp("=", "1.0", Smt2Formula.getSmt2Plus(Smt2Formula.getzotp(time, f1f2), Smt2Formula.getzotp(time, f1nf2), Smt2Formula.getzotp(time, f2nf1), Smt2Formula.getzotp(time, nf1nf2))) + "\n"; //f1f2 + f1!f2 + !f1f2 + !f1!f2 = 1.0
-	//		}
-	//
-	//		for (int time = 0; time <= PltlFormula.bound; time++) {
-	//			s += Smt2Formula.getOp("=>", Smt2Formula.getOp(">", Smt2Formula.getzotp(time, f2), "0.0"), Smt2Formula.getOp("=", Smt2Formula.getOp("+", Smt2Formula.getzotcp(time, f1, time, f2), Smt2Formula.getzotcp(time, nf1, time, f2)) , "1.0")) + "\n" ;
-	//			//			s += Smt2Formula.getOp("=>", Smt2Formula.getOp("and", Smt2Formula.getOp(">", Smt2Formula.getzotp(time, f2), "0.0"), Smt2Formula.getOp("<", Smt2Formula.getzotp(time, f2), "1.0")), Smt2Formula.getOp("=", Smt2Formula.getOp("+", Smt2Formula.getzotcp(time, f1, f2), Smt2Formula.getzotcp(time, f1, nf2)) , Smt2Formula.getzotp(time, f1))) + "\n" ;
-	//			s += Smt2Formula.getOp("=>", Smt2Formula.getOp(">", Smt2Formula.getzotp(time, f1), "0.0"), Smt2Formula.getOp("=", Smt2Formula.getOp("+", Smt2Formula.getzotcp(time, f2, time, f1), Smt2Formula.getzotcp(time, nf2, time, f1)) , "1.0")) + "\n" ;
-	//			//			s += Smt2Formula.getOp("=>", Smt2Formula.getOp("and", Smt2Formula.getOp(">", Smt2Formula.getzotp(time, f1), "0.0"), Smt2Formula.getOp("<", Smt2Formula.getzotp(time, f1), "1.0")), Smt2Formula.getOp("=", Smt2Formula.getOp("+", Smt2Formula.getzotcp(time, f2, f1), Smt2Formula.getzotcp(time, f2, nf1)) , Smt2Formula.getzotp(time, f2))) + "\n" ;
-	//		}
-	//
-	//		s += "; " + this.toString() + "=" + (new And(PltlFormula.get(f1), PltlFormula.get(f2))).toString() + "\n";
-	//		boolean independent = true;
-	//		for (int time = 0; time <= PltlFormula.bound; time++) {
-	//			if (independent)
-	//				s += Smt2Formula.getOp("=", Smt2Formula.getzotp(time, mainF), Smt2Formula.getOp("*", Smt2Formula.getzotp(time, f1), Smt2Formula.getzotp(time, f2))); 
-	//			else
-	//				s += Smt2Formula.getOp("and", 
-	//						Smt2Formula.getOp("or", 
-	//								Smt2Formula.getOp("and", 
-	//										Smt2Formula.getOp("=", Smt2Formula.getzotp(time, f2), "0.0") , 
-	//										Smt2Formula.getOp("=", Smt2Formula.getzotp(time, mainF), "0.0")), 
-	//								Smt2Formula.getOp("and", Smt2Formula.getOp(">", Smt2Formula.getzotp(time, f2), "0.0"), Smt2Formula.getOp("=", Smt2Formula.getzotp(time, mainF),
-	//										Smt2Formula.getOp("*", Smt2Formula.getzotcp(time, f1, time, f2), Smt2Formula.getzotp(time, f2))))), 
-	//						Smt2Formula.getOp("or", 
-	//								Smt2Formula.getOp("and", 
-	//										Smt2Formula.getOp("=", Smt2Formula.getzotp(time, f1), "0.0") , 
-	//										Smt2Formula.getOp("=", Smt2Formula.getzotp(time, mainF), "0.0")), 
-	//								Smt2Formula.getOp("and", Smt2Formula.getOp(">", Smt2Formula.getzotp(time, f1), "0.0"), Smt2Formula.getOp("=", Smt2Formula.getzotp(time, mainF),
-	//										Smt2Formula.getOp("*", Smt2Formula.getzotcp(time, f2, time, f1), Smt2Formula.getzotp(time, f1))))));
-	//		}
-	//		return s;
-	//	}
 
 }

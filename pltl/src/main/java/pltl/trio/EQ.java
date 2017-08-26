@@ -24,4 +24,8 @@ public class EQ implements Formula{
     public String toString() {
         return "([=] " + a + " " + b + ")";
     }
+
+	public Formula get(int offset) {
+		return null;
+	}
 }

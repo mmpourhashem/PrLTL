@@ -16,5 +16,10 @@ public class WithinP_ii implements Formula{
     public String toString() {
        return "(withinp_ii " + f + " " + t + ")";
     }
+
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

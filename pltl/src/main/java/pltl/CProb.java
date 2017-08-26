@@ -122,5 +122,9 @@ public class CProb implements Formula {
 
 		return false;
 	}
+
+	public Formula get(int offset) {
+		return null;
+	}
 }
 

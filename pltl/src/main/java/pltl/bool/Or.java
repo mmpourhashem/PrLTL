@@ -190,7 +190,7 @@ public class Or implements Formula{
 				cdr.addFormula(((Or) formula).getFormulae().get(i));
 				And tempAnd = new And(f1, ((Or) formula).getFormulae().get(i));
 				tempAnd.prune();
-//				f1cdr.addFormula(new And(f1, ((Or) formula).getFormulae().get(i)).getFlatAnd());
+				//				f1cdr.addFormula(new And(f1, ((Or) formula).getFormulae().get(i)).getFlatAnd());
 				f1cdr.addFormula(tempAnd.getFlatAnd());
 			}
 
@@ -232,7 +232,7 @@ public class Or implements Formula{
 					f.add(new PltlFormula.True());
 					return;
 				}
-		
+
 		ArrayList<Formula> newF = new ArrayList<Formula>();
 		for (Formula fma: f) {
 			if (fma instanceof And) {
@@ -274,17 +274,26 @@ public class Or implements Formula{
 		return (f.size() == 1 && f.get(0).equals(new PltlFormula.False()));
 	}
 
+	public Formula get(int offset) {
+		Or or = new Or();
+		for (Formula fma: f)
+			or.addFormula(fma.get(offset));
+		return or;
+	}
+
 	@Override
 	public String toString() {
-		if (f.isEmpty())
+		if (f.isEmpty() && p.isEmpty())
 			return "";
 
 		String s = "(||";
 		for (int i = 0; i < f.size(); i++)
 			s = s + " " + f.get(i).toString();
 
-		s = s + ")";
-		return s;
+		for (int i = 0; i < p.size(); i++)
+			s = s + " " + p.get(i).toString();
+
+		return s + ")";
 	}
 
 	@Override
@@ -295,6 +304,6 @@ public class Or implements Formula{
 			return Parser.bfArrayEqual(a1, a2);
 		}
 		return false;
-
 	}
+
 }

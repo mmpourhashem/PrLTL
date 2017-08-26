@@ -16,4 +16,9 @@ public class Multiply implements Formula{
     public String toString() {
         return "([*] "+a+" "+b+")";
     }
+
+	public Formula get(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

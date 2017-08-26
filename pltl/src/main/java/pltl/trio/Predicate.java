@@ -6,12 +6,13 @@ import java.util.HashSet;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.bool.Atom;
+import pltl.bool.Formula;
 
 public class Predicate implements Atom{
 
 	public static HashSet<Predicate> instances=new HashSet<Predicate>();
 
-	String predicatename;
+	private String predicatename;
 	public Predicate() {
 	}
 
@@ -38,6 +39,10 @@ public class Predicate implements Atom{
 
 			return s;
 	}
+	
+	public Formula get(int offset) {
+		return new Dist(this, offset);
+	}
 
 	@Override
 	public String toString() {
@@ -47,7 +52,7 @@ public class Predicate implements Atom{
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Predicate)
-			return ((Predicate) o).predicatename.toUpperCase().equals(predicatename.toUpperCase());
+			return (predicatename.toUpperCase().equals(((Predicate) o).getPredicateName().toUpperCase()));
 
 		return false;
 	}    

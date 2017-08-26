@@ -14,5 +14,9 @@ public class Constant implements Formula{
 	public String toString() {
 		return Float.toString(value);
 	}
+
+	public Formula get(int offset) {
+		return null;
+	}
 	
 }

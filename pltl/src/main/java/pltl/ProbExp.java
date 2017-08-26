@@ -16,16 +16,17 @@ public class ProbExp implements Formula{
 	public ProbExp(Op op, Formula f1, Formula f11, Formula f12, Formula f2, Formula f21, Formula f22, float r1, float r2) {
 		if (f1 != null)
 			PltlFormula.setFormulaString(f1, f1.toString());
-		if (f11 != null)
-			PltlFormula.setFormulaString(f11, f11.toString());
-		if (f12 != null)
-			PltlFormula.setFormulaString(f12, f12.toString());
+		//Conditional probability are not VIF.
+//		if (f11 != null)
+//			PltlFormula.setFormulaString(f11, f11.toString());
+//		if (f12 != null)
+//			PltlFormula.setFormulaString(f12, f12.toString());
 		if (f2 != null)
 			PltlFormula.setFormulaString(f2, f2.toString());
-		if (f21 != null)
-			PltlFormula.setFormulaString(f21, f21.toString());
-		if (f22 != null)
-			PltlFormula.setFormulaString(f22, f22.toString());
+//		if (f21 != null)
+//			PltlFormula.setFormulaString(f21, f21.toString());
+//		if (f22 != null)
+//			PltlFormula.setFormulaString(f22, f22.toString());
 
 		ProbExpSetter(op, f1, f11, f12, f2, f21, f22, r1, r2);
 	}
@@ -122,7 +123,12 @@ public class ProbExp implements Formula{
 
 		return new ArithFormula(op, fma1, fma2).toString();
 	}
-
+	
+	public Formula get(int offset) {
+//		return new Dist(this, offset);
+		return new Prob(offset, PltlFormula.add(this));
+	}
+	
 	@Override
 	public String toString() {
 		if (mainString != null)
@@ -153,5 +159,5 @@ public class ProbExp implements Formula{
 		
 		return false;
 	}
-	
+
 }

@@ -35,16 +35,17 @@ public class Probability {
 		for (int formulaIndex = fStartI; formulaIndex <= fEndI; formulaIndex++) {
 			Formula f = PltlFormula.instances.get(formulaIndex);
 
-			//If the formula is an inner formula of a ProbExp, it means that it is not processed nor converted to DNF. <!-- "processed" : this.process, "converted to DNF: PltlFormula.getDNF"-->
+			//<!-- VIF (Very Important Formula!): If the formula is an inner formula of a ProbExp, it means that it is not processed nor converted to DNF. <!-- "processed" : this.process, "converted to DNF: PltlFormula.getDNF"-->
+			//VIFs' process and transformation are postponed to preserve their original toString().
 			if (PltlFormula.getFormulaString(formulaIndex).length() > 0) {
 				Formula newF = PltlFormula.getDNF(process(f));
 				int newFIndex = PltlFormula.add(newF);
 				if (newFIndex != formulaIndex) {
-					s += getEqualitySemantics(formulaIndex, newFIndex);
+					s += getEqualitySemantics(formulaIndex, newFIndex) + "\n";
 					continue;
 				}
 			}
-
+			//-->
 			if (f instanceof And) {
 				for (Formula fma: ((And) f).getFormulae())
 					assertFalse(hasProbExp(fma)); // PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
@@ -74,6 +75,16 @@ public class Probability {
 
 			if (! hasProbExp(f))
 				s += Smt2Formula.getRangeConstraints(formulaIndex) + "\n";
+			
+			//
+			
+			
+			
+//			if (hasProbExp(f))
+				
+			
+			
+			//
 		}
 		//		s += "\n";
 		for (int formulaIndex = cStartI; formulaIndex <= cEndI; formulaIndex++) {
@@ -89,7 +100,7 @@ public class Probability {
 		for (int time = 0; time <= PltlFormula.bound; time++) {
 			s += "(= " + Smt2Formula.getzot(time, i1) + " " + Smt2Formula.getzot(time, i2) + " ) " + new ArithFormula(Op.EQ, new Prob(time, i1), new Prob(time, i2)) + " ";
 		}
-		
+
 		return s;
 	}
 
@@ -108,9 +119,9 @@ public class Probability {
 		else if (f instanceof Yesterday)
 			processDeps(left - 1, right - 1, ((Yesterday) f).getFormula());
 		else if (f instanceof Futr)
-			processDeps(left + ((Futr) f).getInt(), right + ((Futr) f).getInt(), ((Futr) f).getFormula());
+			processDeps(left + ((Futr) f).getOffset(), right + ((Futr) f).getOffset(), ((Futr) f).getFormula());
 		else if (f instanceof Past)
-			processDeps(left - ((Past) f).getInt(), right - ((Past) f).getInt(), ((Past) f).getFormula());
+			processDeps(left - ((Past) f).getOffset(), right - ((Past) f).getOffset(), ((Past) f).getFormula());
 		else if (f instanceof Dist)
 			processDeps(left + ((Dist) f).getOffset(), right + ((Dist) f).getOffset(), f);
 		else if (f instanceof Dep) {
@@ -177,17 +188,23 @@ public class Probability {
 		return result;
 	}
 
-	public static Prob processMainF(Formula f) {
+	//	public static Prob processMainF(Formula f) {
+	public static Formula processMainF(Formula f) {
+		ArrayList<Formula> probExps = new ArrayList<Formula>();
 		if (f instanceof And) {
 			And newAnd = new And();
 			for (Formula fma: ((And) f).getFormulae())
 				if (! hasProbExp(fma))
 					newAnd.addFormula(process(fma));
 				else
-					PltlFormula.add(fma);
+					//					PltlFormula.add(fma);
+					probExps.add(fma);
 			if (newAnd.size() > 0) {
-				Formula dnf = PltlFormula.getDNF(newAnd);
-				return new Prob(0, PltlFormula.add(dnf));
+				//				Formula dnf = PltlFormula.getDNF(newAnd);// Too early to convert to DNF, because there is a simplification phase that must be done.
+				//				return new Prob(0, PltlFormula.add(dnf));
+				//				return new Prob(0, PltlFormula.add(newAnd));
+				PltlFormula.add(probExps);
+				return newAnd;
 			}
 			else
 				return null;
@@ -196,33 +213,42 @@ public class Probability {
 			Or newOr = new Or();
 			for (Formula bf:((Or) f).getFormulae()) {
 				assertFalse(hasProbExp(bf));
-				newOr.addFormula(PltlFormula.getDNF(bf));
+				//				newOr.addFormula(PltlFormula.getDNF(bf));// Too early to convert to DNF, because there is a simplification phase that must be done.
+				newOr.addFormula(bf);
 			}
 
-			Formula dnf = PltlFormula.getDNF(newOr);
-			return new Prob(0, PltlFormula.add(dnf));
+			//			Formula dnf = PltlFormula.getDNF(newOr);// Too early to convert to DNF, because there is a simplification phase that must be done.
+			//			return new Prob(0, PltlFormula.add(dnf));
+			//			return new Prob(0, PltlFormula.add(newOr));
+			return newOr;
 		}
-		else
-			return processMainF(new And(f));
+		else if (hasProbExp(f)) {
+			PltlFormula.add(f);
+			return null;
+		}
+
+		//		else
+		//			return processMainF(new And(f));
+		return f;
 	}
 
 	/**
 	 * @param f
 	 * @return
-	 * Returns simplified formula. E.g. (|| (next (-p- a)) (next (next (-p- a)))) is returned for (withinf (-p- a) 2).
+	 * Returns simplified formula. E.g. (|| (dist (-p- a) 1) (dist (-p- a) 2)) is returned for (withinf (-p- a) 2).
 	 */
-	private static Formula process(Formula f) {
+	public static Formula process(Formula f) {
 		if (f instanceof Next)
-			return new Dist(process(((Next) f).getFormula()), 1);
-		
+			return processDist(new Dist(process(((Next) f).getFormula()), 1));
+
 		if (f instanceof Yesterday)
-			return new Dist(process(((Yesterday) f).getFormula()), -1);
-		
+			return processDist(new Dist(process(((Yesterday) f).getFormula()), -1));
+
 		if (f instanceof Futr)
-			return new Dist(process(((Futr) f).getFormula()), ((Futr) f).getInt());
+			return processDist(new Dist(process(((Futr) f).getFormula()), ((Futr) f).getOffset()));
 
 		if (f instanceof Past)
-			return new Dist(process(((Past) f).getFormula()), -((Past) f).getInt());
+			return processDist(new Dist(process(((Past) f).getFormula()), -((Past) f).getOffset()));
 
 		if (f instanceof WithinF) {
 			assertFalse(((WithinF) f).getInt() < 1);
@@ -241,9 +267,9 @@ public class Probability {
 		}
 
 		if (f instanceof Lasts) {
-			assertFalse(((Lasts) f).getInt() < 1);
+			assertFalse(((Lasts) f).getWindow() < 1);
 			And and = new And();
-			for (int window = 1; window <= ((Lasts) f).getInt(); window++)
+			for (int window = 1; window <= ((Lasts) f).getWindow(); window++)
 				and.addFormula(new Dist(process(((Lasts) f).getFormula()), window));
 			return and;
 		}
@@ -263,12 +289,14 @@ public class Probability {
 			And and = new And();
 			for (Formula fma:((And) f).getFormulae())
 				and.addFormula(process(fma));
+			return and;
 		}
 
 		if (f instanceof Or) {
 			Or or = new Or();
 			for (Formula fma:((Or) f).getFormulae())
 				or.addFormula(process(fma));
+			return or;
 		}
 
 		if (f instanceof Until)
@@ -283,13 +311,39 @@ public class Probability {
 		if (f instanceof Trigger)
 			return new Trigger(process(((Trigger) f).getFormula1()), process(((Trigger) f).getFormula2()));
 
-
 		return f;
+	}
+	
+	/**
+	 * @param fma
+	 * A Dist formula
+	 * @return
+	 * To avoid (dist (dist (-p- a) i) j) and have (dist (-p- a) i+j) instead. 
+	 */
+	private static Formula processDist(Dist fma) {
+		if (fma.getFormula() instanceof Dist)
+			while (fma.getFormula() instanceof Dist)
+				fma = new Dist(((Dist) fma.getFormula()).getFormula(), fma.getOffset() + ((Dist) fma.getFormula()).getOffset());
+		return fma;
 	}
 
 	public static boolean hasProbExp(Formula fma) {
 		if (fma instanceof ProbExp)
 			return true;
+		if (fma instanceof And) {
+			for (Formula f: ((And) fma).getFormulae())
+				if (hasProbExp(f))
+					return true;
+			return false;
+		}
+		
+		if (fma instanceof Or) {
+			for (Formula f: ((Or) fma).getFormulae())
+				if (hasProbExp(f))
+					return true;
+			return false;
+		}
+		
 		if (fma instanceof Not)
 			return hasProbExp(((Not) fma).getFormula());
 		if (fma instanceof Next)
