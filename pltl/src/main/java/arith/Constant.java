@@ -16,7 +16,11 @@ public class Constant implements Formula{
 	}
 
 	public Formula get(int offset) {
-		return null;
+		return null;// Not required.
+	}
+
+	public Formula getProp(int offset) {
+		return null;// Not required.
 	}
 	
 }

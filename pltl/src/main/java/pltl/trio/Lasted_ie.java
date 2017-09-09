@@ -22,4 +22,9 @@ public class Lasted_ie implements Formula{
 		return null;
 	}
 
+	public Formula getProp(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -1,7 +1,9 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
 import pltl.bool.And;
 import pltl.bool.Formula;
+import pltl.bool.PropAnd;
 
 public class AlwP implements Formula {
 
@@ -17,12 +19,23 @@ public class AlwP implements Formula {
     
     public Formula get(int offset) {
 		And and = new And();
-		for (int time = 0; time <= offset; time++) {
+		for (int time = offset; time >= 0; time--) {
 			and.addFormula(f.get(time));
 		}
 		
 		return and;
 	}
+    
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+    	
+    	PropAnd pAnd = new PropAnd();
+    	for (int time = offset; time >= 0; time--)
+    		pAnd.addFormula(f.getProp(time));
+    	
+    	return pAnd;
+    }
     
     @Override
     public String toString() {

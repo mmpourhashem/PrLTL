@@ -1,7 +1,9 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
 import pltl.bool.And;
 import pltl.bool.Formula;
+import pltl.bool.PropAnd;
 
 public class Lasts implements Formula{
 
@@ -28,6 +30,17 @@ public class Lasts implements Formula{
     	return and;
     }
 
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+
+    	PropAnd pAnd = new PropAnd();
+    	for (int time = 1; time <= window; time++)
+    		pAnd.addFormula(f.getProp(offset + time));
+    	
+    	return pAnd;
+    }
+    
     @Override
     public String toString() {
         return "(lasts " + f + " " + window + ")";
@@ -39,5 +52,5 @@ public class Lasts implements Formula{
 			return (f.equals(((Lasts) o).getFormula()) && window == ((Lasts) o).getWindow());
 		return false;
 	}
-    
+
 }

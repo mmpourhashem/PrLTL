@@ -10,6 +10,8 @@ import pltl.bool.Formula;
 import pltl.bool.Not;
 import pltl.bool.Or;
 import pltl.trio.Predicate;
+import pltl.trio.Release;
+import pltl.trio.Trigger;
 
 public class Functions {
 
@@ -87,6 +89,21 @@ public class Functions {
 		Formula output = PltlFormula.getDNF(input);
 		System.out.println(output);
 		assertTrue(output.equals(new PltlFormula.True()));
+	}
+	
+	@Test
+	public void getProp() {
+		Trigger t = new Trigger(new Predicate("a"), new Predicate("b"));
+//		Formula f = t.getProp(PltlFormula.bound);
+		Formula f = t.get(PltlFormula.bound);
+		Formula f1 = PltlFormula.getDNF(f);
+		int  i=0;
+		
+		Release r = new Release(new Predicate("a"), new Predicate("b"));
+//		Formula f = t.getProp(PltlFormula.bound);
+		Formula ff = r.get(0);
+		Formula ff1 = PltlFormula.getDNF(ff);
+		int  ti=0;
 	}
 	
 }

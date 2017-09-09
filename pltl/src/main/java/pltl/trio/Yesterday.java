@@ -32,4 +32,9 @@ public class Yesterday implements Formula {
 		return false;
 	}
 
+	public Formula getProp(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

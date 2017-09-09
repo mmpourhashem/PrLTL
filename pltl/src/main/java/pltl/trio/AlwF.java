@@ -3,6 +3,7 @@ package pltl.trio;
 import pltl.PltlFormula;
 import pltl.bool.And;
 import pltl.bool.Formula;
+import pltl.bool.PropAnd;
 
 public class AlwF implements Formula {
 
@@ -23,6 +24,17 @@ public class AlwF implements Formula {
 		}
 		
 		return and;
+	}
+	
+	public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+    	
+		PropAnd pAnd = new PropAnd();
+		for (int time = offset; time <= PltlFormula.bound; time++)
+			pAnd.addFormula(f.getProp(time));
+		
+		return pAnd;
 	}
 
 	@Override

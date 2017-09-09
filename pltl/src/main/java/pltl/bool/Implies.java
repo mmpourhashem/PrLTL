@@ -1,5 +1,7 @@
 package pltl.bool;
 
+import pltl.PltlFormula;
+
 public class Implies implements Formula{
 
     private Formula f1;
@@ -22,6 +24,17 @@ public class Implies implements Formula{
     	return new Implies(f1.get(offset), f2.get(offset));
     }
     
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+		
+    	PropOr pOr = new PropOr();
+    	pOr.addFormula(new PropNot(f1).getProp(offset));
+    	pOr.addFormula(f2.getProp(offset));
+
+    	return pOr;
+    }
+    
     @Override
     public String toString(){
         return "(-> " + f1 + " " + f2 + ")";
@@ -33,6 +46,7 @@ public class Implies implements Formula{
 			Implies implO = (Implies) o;
 			return (f1.equals(implO.getFormula1()) && f2.equals(implO.getFormula2()));
 		}
+		
 		return false;
 	}
     

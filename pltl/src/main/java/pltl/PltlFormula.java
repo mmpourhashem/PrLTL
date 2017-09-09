@@ -12,6 +12,7 @@ import pltl.bool.Not;
 import pltl.bool.Or;
 import pltl.trio.Dist;
 import pltl.trio.Predicate;
+import pltl.trio.Until;
 import pltl.trio.Yesterday;
 
 public class PltlFormula {
@@ -35,6 +36,8 @@ public class PltlFormula {
 		if (fma instanceof Not && ((Not) fma).getFormula() == null)
 			ff=1;
 		if (fma instanceof Yesterday)
+			ff=1;
+		if (fma instanceof Until)
 			ff=1;
 //		-->
 		fma = Probability.process(fma);
@@ -103,8 +106,6 @@ public class PltlFormula {
 		//			return getProb(time - ((Past) f).getInt(), ((Past) f).getFormula());
 		if (f instanceof Dist)
 			return getProb(time + ((Dist) f).getOffset(), ((Dist) f).getFormula());
-
-		// TODO Futr, Past, ...
 
 		return new Prob(time, add(f));
 	}
@@ -367,6 +368,10 @@ public class PltlFormula {
 
 		return formula;
 	}
+	
+	public static boolean outOfBound(int offset) {
+		return (offset > bound || offset < 0);
+	}
 
 	/**
 	 * @param formula
@@ -415,6 +420,10 @@ public class PltlFormula {
 			return this;
 		}
 
+		public Formula getProp(int offset) {
+			return new PropTrue();
+		}
+
 	}
 
 	public static class False implements Formula {
@@ -442,7 +451,61 @@ public class PltlFormula {
 		public boolean equals(Object o) {
 			return o instanceof False;
 		}
+
+		public Formula getProp(int offset) {
+			return new PropFalse();
+		}
 		
+	}
+	
+	public static class PropTrue implements Formula {
+		public String toString(int time) {
+			return "true"; // This is the "true" keyword for SMT solvers.
+		}
+
+		@Override
+		public String toString() {
+			return "true"; // This is the "true" keyword for SMT solvers.
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof PropTrue;
+		}
+
+		public Formula get(int offset) {
+			return this;
+		}
+
+		public Formula getProp(int offset) {
+			return this;
+		}
+
+	}
+
+	public static class PropFalse implements Formula {
+		public String toString(int time) {
+			return "false"; // This is the "false" keyword for SMT solvers.
+		}
+
+		@Override
+		public String toString() {
+			return "false"; // This is the "false" keyword for SMT solvers.
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o instanceof PropFalse;
+		}
+
+		public Formula get(int offset) {
+			return this;
+		}
+
+		public Formula getProp(int offset) {
+			return this;
+		}
+
 	}
 
 

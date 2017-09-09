@@ -1,5 +1,6 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
 import pltl.bool.Formula;
 
 public class Past implements Formula {
@@ -20,6 +21,17 @@ public class Past implements Formula {
     	return offset;
     }
     
+    public Formula get(int offset) {
+    	return f.get(offset - this.offset);
+    }
+    
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(this.offset) || PltlFormula.outOfBound(offset - this.offset))
+    		return new PltlFormula.PropFalse();
+    	
+    	return f.getProp(offset - this.offset);
+    }
+    
     @Override
     public String toString() {
         return "(past " + f + " " + offset + ")";
@@ -33,8 +45,4 @@ public class Past implements Formula {
 		return false;
 	}
 
-	public Formula get(int offset) {
-		return f.get(offset - this.offset);
-	}
-    
 }

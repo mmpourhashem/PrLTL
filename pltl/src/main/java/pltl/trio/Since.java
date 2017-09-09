@@ -1,6 +1,11 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
+import pltl.bool.And;
 import pltl.bool.Formula;
+import pltl.bool.Or;
+import pltl.bool.PropAnd;
+import pltl.bool.PropOr;
 
 public class Since implements Formula {
 
@@ -34,8 +39,37 @@ public class Since implements Formula {
 	}
 
 	public Formula get(int offset) {
-		// TODO Auto-generated method stub
-		return null;
+		if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+
+		Or or = new Or();
+		or.addFormula(f2.get(offset));
+		for (int time = offset - 1; time >= 0; time--) {
+			And and = new And();
+			for (int a = offset; a > time; a--)
+				and.addFormula(f1.get(a));
+			and.addFormula(f2.get(time));
+			or.addFormula(and);
+		}
+
+		return or;
+	}
+
+	public Formula getProp(int offset) {
+		if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.PropFalse();
+
+		PropOr pOr = new PropOr();
+		pOr.addFormula(f2.getProp(offset));
+		for (int time = offset - 1; time >= 0; time--) {
+			PropAnd pAnd = new PropAnd();
+			for (int a = offset; a > time; a--)
+				pAnd.addFormula(f1.getProp(a));
+			pAnd.addFormula(f2.getProp(time));
+			pOr.addFormula(pAnd);
+		}
+
+		return pOr;
 	}
 
 }

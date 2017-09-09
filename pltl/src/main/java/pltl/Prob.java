@@ -2,8 +2,6 @@ package pltl;
 
 import java.util.ArrayList;
 
-import com.sun.scenario.effect.Offset;
-
 import arith.ArithFormula;
 import arith.Op;
 import pltl.bool.And;
@@ -225,7 +223,10 @@ public class Prob implements Formula {
 	}
 
 	public Formula get(int offset) {
-		// TODO Auto-generated method stub
 		return new Prob(time + offset, index);
+	}
+
+	public Formula getProp(int offset) {
+		return null;// Not required.
 	}
 }

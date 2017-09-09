@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import pltl.PltlFormula;
 import pltl.Prob;
+import pltl.Prop;
 import pltl.bool.Atom;
 import pltl.bool.Formula;
 
@@ -42,6 +43,13 @@ public class Predicate implements Atom{
 	
 	public Formula get(int offset) {
 		return new Dist(this, offset);
+	}
+	
+	public Formula getProp(int offset) {
+		if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+		
+		return new Prop(offset, PltlFormula.add(this));
 	}
 
 	@Override

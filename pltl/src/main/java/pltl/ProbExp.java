@@ -4,7 +4,6 @@ import arith.ArithFormula;
 import arith.Constant;
 import arith.Op;
 import pltl.bool.Formula;
-import pltl.trio.Dist;
 
 public class ProbExp implements Formula{
 
@@ -127,6 +126,10 @@ public class ProbExp implements Formula{
 	public Formula get(int offset) {
 //		return new Dist(this, offset);
 		return new Prob(offset, PltlFormula.add(this));
+	}
+	
+	public Formula getProp(int offset) {
+		return new Prop(offset, PltlFormula.add(this));
 	}
 	
 	@Override

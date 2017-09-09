@@ -1,5 +1,7 @@
 package pltl.bool;
 
+import pltl.PltlFormula;
+
 public class Iff implements Formula{
 
 	private Formula f1;
@@ -35,6 +37,13 @@ public class Iff implements Formula{
 		}
 		
 		return false;
+	}
+
+	public Formula getProp(int offset) {
+		if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+		
+		return new PropIff(f1, f2).getProp(offset);
 	}
 
 	//	public String getSemantics(){

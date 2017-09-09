@@ -3,6 +3,7 @@ package pltl.trio;
 import pltl.PltlFormula;
 import pltl.bool.Formula;
 import pltl.bool.Or;
+import pltl.bool.PropOr;
 
 public class SomF implements Formula {
 
@@ -25,6 +26,17 @@ public class SomF implements Formula {
     	return or;
     }
     
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+    	
+		PropOr pOr = new PropOr();
+		for (int time = offset; time <= PltlFormula.bound; time++)
+			pOr.addFormula(f.getProp(time));
+		
+		return pOr;
+	}
+    
     @Override
     public String toString() {
         return "(somf " + f + ")";
@@ -37,4 +49,5 @@ public class SomF implements Formula {
 			return f.equals(((SomF) o).getFormula());
 		return false;
 	}
+
 }

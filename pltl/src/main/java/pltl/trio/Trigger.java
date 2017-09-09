@@ -1,6 +1,11 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
+import pltl.bool.And;
 import pltl.bool.Formula;
+import pltl.bool.Or;
+import pltl.bool.PropAnd;
+import pltl.bool.PropOr;
 
 public class Trigger implements Formula {
 
@@ -19,6 +24,26 @@ public class Trigger implements Formula {
     public Formula getFormula1() {
     	return f1;
     }
+    
+    public Formula get(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+    	
+    	if (offset == 0)
+    		return f2.get(0);
+    	
+    	return new And(f2.get(offset), new Or(f1.get(offset), this.get(offset - 1))); 
+    }
+
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.PropFalse();
+    	
+    	if (offset == 0)
+    		return f2.getProp(0);
+    	
+    	return new PropAnd(f2.getProp(offset), new PropOr(f1.getProp(offset), this.getProp(offset - 1))); 
+    }
 
     @Override
     public String toString() {
@@ -31,10 +56,5 @@ public class Trigger implements Formula {
 			return f1.equals(((Trigger) o).getFormula1()) && f2.equals(((Trigger) o).getFormula2());
 		
 		return false;
-	}
-
-	public Formula get(int offset) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

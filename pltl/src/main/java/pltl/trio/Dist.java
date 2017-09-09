@@ -31,7 +31,8 @@ public class Dist implements Formula {
 		int innerF = PltlFormula.add(formula);
 		for (int time = 0; time <= PltlFormula.bound; time++)
 			if (time + offset >= 0) {
-				s += Smt2Formula.getOp("=" , Smt2Formula.getzot(time, mainF), Smt2Formula.getzot(time + offset, innerF)) + "\n";//prop
+//				s += Smt2Formula.getOp("=" , Smt2Formula.getzot(time, mainF), Smt2Formula.getzot(time + offset, innerF)) + "\n";//prop
+				s += Smt2Formula.getOp("=" , Smt2Formula.getzot(time, mainF), PltlFormula.get(innerF).getProp(time + offset).toString()) + "\n";//prop
 				s += new ArithFormula(Op.EQ, new Prob(time, mainF), new Prob(time + offset, innerF)) + "\n";//prob
 			}
 			else {
@@ -44,6 +45,13 @@ public class Dist implements Formula {
     
     public Formula get(int offset) {
     	return new Dist(formula, this.offset + offset);//TODO Is it possible to convert all formula to Probs here?
+    }
+    
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(this.offset) || PltlFormula.outOfBound(this.offset + offset))
+    		return new PltlFormula.PropFalse();
+    	
+    	return formula.getProp(this.offset + offset);
     }
     
     @Override

@@ -19,4 +19,9 @@ public class SomP_e implements Formula {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public Formula getProp(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

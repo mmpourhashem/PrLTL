@@ -4,8 +4,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 
-import com.sun.org.glassfish.external.probe.provider.annotations.Probe;
-
 import arith.ArithFormula;
 import arith.Op;
 import pltl.bool.*;
@@ -35,7 +33,7 @@ public class Probability {
 		for (int formulaIndex = fStartI; formulaIndex <= fEndI; formulaIndex++) {
 			Formula f = PltlFormula.instances.get(formulaIndex);
 
-			//<!-- VIF (Very Important Formula!): If the formula is an inner formula of a ProbExp, it means that it is not processed nor converted to DNF. <!-- "processed" : this.process, "converted to DNF: PltlFormula.getDNF"-->
+			//<!-- <VIF> (Very Important Formula!): If the formula is an inner formula of a ProbExp, it means that it is not processed nor converted to DNF. <!-- "processed" : this.process, "converted to DNF: PltlFormula.getDNF"-->
 			//VIFs' process and transformation are postponed to preserve their original toString().
 			if (PltlFormula.getFormulaString(formulaIndex).length() > 0) {
 				Formula newF = PltlFormula.getDNF(process(f));
@@ -46,16 +44,10 @@ public class Probability {
 				}
 			}
 			//-->
-			if (f instanceof And) {
-				for (Formula fma: ((And) f).getFormulae())
-					assertFalse(hasProbExp(fma)); // PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
+			if (f instanceof And)
 				s += ((And) f).getSemantics();
-			}
-			else if (f instanceof Or) {
-				for (Formula fma: ((Or) f).getFormulae())
-					assertFalse(hasProbExp(fma)); // PorbExps (like (P((-p- a)) = 0.3) must be at the first level. 
+			else if (f instanceof Or)
 				s += ((Or) f).getSemantics();
-			}
 			else if (f instanceof ProbExp) {// ProbExps' simplifications are postponed in order to Parser.java.<Simplification rationale>.
 				ProbExp probExp = new ProbExp(((ProbExp) f).getOp(), process(((ProbExp) f).getF1()), process(((ProbExp) f).getF11()), process(((ProbExp) f).getF12()), process(((ProbExp) f).getF2()), process(((ProbExp) f).getF21()), process(((ProbExp) f).getF22()), ((ProbExp) f).getR1(), ((ProbExp) f).getR2(), ((ProbExp) f).toString());
 				s += probExp.getSemantics();
@@ -70,21 +62,20 @@ public class Probability {
 				s += ((PltlFormula.False) f).getSemantics();
 			else if (f instanceof Dist)
 				s += ((Dist) f).getSemantics();
-			else
-				s += f.toString() + " <Not Recognized!>";
+			else if (hasProbExp(f))
+				s += ""; // Nothing to add here. The semantics is added in Parser.java.assertProbExps().
+			else {
+				for (int time = 0; time <= PltlFormula.bound; time++) {
+					s += ";" + f.toString() + " at T" + time + "\n";
+					s += new ArithFormula(Op.EQ, new Prob(time, formulaIndex), new Prob(0, PltlFormula.add(f.get(time)))) + "\n";// <optimization> Can unnecessary prob be opt out here?
+					s += Smt2Formula.getOp("=" , Smt2Formula.getzot(time, formulaIndex), f.getProp(time).toString()) + "\n";// prop
+				}
+			}
+//			else
+//				s += "<" + f.toString() + "> <Not Recognized!>\n";
 
 			if (! hasProbExp(f))
 				s += Smt2Formula.getRangeConstraints(formulaIndex) + "\n";
-			
-			//
-			
-			
-			
-//			if (hasProbExp(f))
-				
-			
-			
-			//
 		}
 		//		s += "\n";
 		for (int formulaIndex = cStartI; formulaIndex <= cEndI; formulaIndex++) {
@@ -97,9 +88,8 @@ public class Probability {
 
 	private static String getEqualitySemantics(int i1, int i2) {
 		String s = ";" + PltlFormula.get(i1).toString() + " = " + PltlFormula.get(i2).toString() + "\n";
-		for (int time = 0; time <= PltlFormula.bound; time++) {
+		for (int time = 0; time <= PltlFormula.bound; time++)
 			s += "(= " + Smt2Formula.getzot(time, i1) + " " + Smt2Formula.getzot(time, i2) + " ) " + new ArithFormula(Op.EQ, new Prob(time, i1), new Prob(time, i2)) + " ";
-		}
 
 		return s;
 	}
@@ -275,9 +265,9 @@ public class Probability {
 		}
 
 		if (f instanceof Lasted) {
-			assertFalse(((Lasted) f).getInt() < 1);
+			assertFalse(((Lasted) f).getWindow() < 1);
 			And and = new And();
-			for (int window = 1; window <= ((Lasted) f).getInt(); window++)
+			for (int window = 1; window <= ((Lasted) f).getWindow(); window++)
 				and.addFormula(new Dist(process(((Lasted) f).getFormula()), -window));
 			return and;
 		}

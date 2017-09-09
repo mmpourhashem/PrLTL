@@ -1,5 +1,6 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
 import pltl.bool.Formula;
 
 public class Next implements Formula{
@@ -16,6 +17,13 @@ public class Next implements Formula{
     
     public Formula get(int offset) {
     	return f.get(offset + 1);
+    }
+    
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset) || PltlFormula.outOfBound(offset + 1))
+    		return new PltlFormula.PropFalse();
+    	
+    	return f.getProp(offset + 1);
     }
     
 	@Override

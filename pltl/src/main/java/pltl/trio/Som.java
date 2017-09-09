@@ -2,6 +2,7 @@ package pltl.trio;
 
 import pltl.PltlFormula;
 import pltl.bool.Or;
+import pltl.bool.PropOr;
 import pltl.bool.Formula;
 
 public class Som implements Formula {
@@ -21,6 +22,17 @@ public class Som implements Formula {
     	for (int time = 0; time <= PltlFormula.bound; time++)
     		or.addFormula(f.get(time));
     	return or;
+    }
+    
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+    	
+    	PropOr pOr = new PropOr();
+    	for (int time = 0; time <= PltlFormula.bound; time++)
+    		pOr.addFormula(f.getProp(time));
+    	
+    	return pOr;
     }
 
     @Override

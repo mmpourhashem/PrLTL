@@ -18,8 +18,6 @@ import org.eclipse.xtext.resource.XtextResourceSet;
 
 import java.util.ArrayList;
 
-import javax.management.InstanceAlreadyExistsException;
-
 import org.eclipse.emf.common.util.URI;
 import com.google.inject.Injector;
 
@@ -52,7 +50,7 @@ public class Parser {
 		//		Prob mainProb = Probability.processMainF(mainFormula);
 		mainFormula = Probability.processMainF(mainFormula);
 
-		
+
 		//		<!-- GS
 		String mainFormulaSemantics = "";
 		if (mainFormula != null) {
@@ -63,7 +61,7 @@ public class Parser {
 		}
 		//		-->
 
-		
+
 		String trueFalseSemantics = "";
 		for (int time = 0; time <= PltlFormula.bound; time++)
 			trueFalseSemantics += new PltlFormula.True().toString(time) + " " + new ArithFormula(Op.EQ, new Prob(time, -1), new Constant((float) 1)).toString() + " (not " + new PltlFormula.False().toString(time) + ") " + new ArithFormula(Op.EQ, new Prob(time, -2), new Constant((float) 0)).toString() + " ";
@@ -72,10 +70,10 @@ public class Parser {
 		//			PltlFormula.mainF = mainProb.getIndex();
 		//			semantics += Smt2Formula.getzot(0, mainProb.getIndex()) + " " + new ArithFormula(Op.EQ, mainProb,new Constant((float) 1.0)) + "\n";
 		//		}
-		
+
 		semantics += Probability.getProbFormulae();
 
-		String fTable = ";Formula table:\n";
+		String fTable = ";K="+ PltlFormula.bound + ";Formula table:\n";
 		for (int i = 0; i < PltlFormula.instances.size(); i++)
 			fTable += ";" + i+"\t"+PltlFormula.instances.get(i).toString() + "\n";
 		fTable += ";Conditional probability table:\n";
@@ -145,30 +143,22 @@ public class Parser {
 	}
 
 	private String assertProbExps(Formula f) {
-		String s = "";
+		String s = ";<ProbExp at T0>\n";
 		if (f instanceof And) {
 			for (Formula fma: ((And) f).getFormulae())
 				if (Probability.hasProbExp(fma)) {
-//					s += Smt2Formula.getzot(0, PltlFormula.add(fma)) + " ";
-				PltlFormula.add(fma);
-				Formula temp = fma.get(0);
-				Smt2Formula.getzot(0, PltlFormula.add(temp));
-				s += fma.get(0);
+					PltlFormula.add(fma);
+					Formula temp = fma.getProp(0);
+					s += ";" + fma.toString() + "\n" + temp.toString() + "\n";
 				}
 		}
-		else if (Probability.hasProbExp(f)) {
-//			s += Smt2Formula.getzot(0, PltlFormula.add(f)) + " ";
-
-//			PltlFormula.add(f);
-//			s += f.get(0);
-			
+		else if (Probability.hasProbExp(f)) {// There cannot be an Or between LTL and ProbExp. If the code reaches here, it means the main formula is a ProbExp.
 			PltlFormula.add(f);
-			Formula temp = f.get(0);
-			Smt2Formula.getzot(0, PltlFormula.add(temp));
-			s += "error";
+			Formula temp = f.getProp(0);
+			s += ";" + f.toString() + "\n" + temp.toString() + "\n";
 		}
 
-		return s;
+		return s + "\n;</ProbExp at T0>\n";
 	}
 
 	public boolean parseOutput() {
@@ -365,6 +355,10 @@ public class Parser {
 	private Float getFloat(DataType f) {
 		if (f == null)
 			throw new IllegalArgumentException("Wrong format for float number. int.int is expected here.");
+		
+		if (f.getFloat() == null)
+			return (float) f.getI();
+		
 		return f.getI() + Float.parseFloat("0" + f.getFloat()) ;
 	}
 

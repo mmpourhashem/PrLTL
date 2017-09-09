@@ -100,7 +100,6 @@ public class BasicProb {
 		mustBeUNSAT(s);
 	}
 
-//TODO Take care of dist dists while preprocessing formulae for LTL transformations (lasts (-p- a) 2) => (&& (futr (-p- a) 1) (futr (-p- a) 2))
 	@Test
 	public void yesterday() {
 		String s = "FORMULA:"
@@ -114,13 +113,15 @@ public class BasicProb {
 	}
 	
 	@Test
-	public void yesterdayDep() {/////////////////////////////////////////////////fix
+	public void yesterdayDep() {
 		String s = "(alw (dep (-p- a) (yesterday (-p- a))))"
 				+ "FORMULA:"
 				+ "(&&"//there must be an alw here
 				+ "(alw (= (zot-cp (-p- a) (yesterday (-p- a))) 0.4))"
 				+ "(alw (= (zot-cp (-p- a) (!! (yesterday (-p- a)))) 0.9))"
-//				+ "(!! (= (zot-p (-p- a)) 0.9))"
+				+ "(|| (!! (= (zot-p (-p- a)) 0.9))"
+				+ "(!! (= (zot-p (next (-p- a))) 0.45))"
+				+ "(!! (= (zot-p (futr (-p- a) 2)) 0.675)))"
 				+ ")";
 		
 		mustBeUNSAT(s);
@@ -150,14 +151,56 @@ public class BasicProb {
 	}
 	
 	@Test
-	public void alw() {////////////////////////////////////////////////////////
+	public void alw() {
 		String s = "FORMULA:"
-//				+ "(alw (= (zot-p (-p- a)) 1.0)"
-				+ "(alw (&& (= (zot-p (-p- a)) 1.0) (= (zot-p (-p- b)) 1.0))"
+				+ "(&& (alw (&& (= (zot-p (-p- a)) 1.0) (= (zot-p (&& (-p- a) (-p- b))) 0.98765)))"
+				+ "(!! (= (zot-p (-p- b)) 0.98765))"
 				+ ")";
 
 		mustBeUNSAT(s);
 	}
+	
+	@Test
+	public void until1() {
+		String s = "FORMULA:"
+				+ "(&& (until (-p- a) (-p- b))"
+				+ "(!! (= (zot-p (until (-p- a) (-p- b))) 1))"
+				+ ")";
+
+		mustBeUNSAT(s);
+	}
+	
+	@Test
+	public void until2() {
+		String s = "FORMULA:"
+				+ "(&& (until (-p- a) (-p- b))"
+				+ "(!! (= (zot-p (next (until (-p- a) (-p- b)))) 1))"
+				+ ")";
+
+		mustBeUNSAT(s);
+	}
+	
+	@Test
+	public void until3() {
+		String s = "FORMULA:"
+				+ "(&& (until (-p- a) (-p- b))"
+				+ "(!! (next (= (zot-p (until (-p- a) (-p- b))) 1)))"
+				+ ")";
+
+		mustBeUNSAT(s);
+	}
+//TODO since 	
+	//TODO UNTIL, AS A PART OF LTL FORMULA
+	
+	@Test
+	public void trigger1() {
+		String s = "FORMULA:"
+				+ "(&& (until (-p- a) (-p- b))"
+				+ "(!! (next (= (zot-p (until (-p- a) (-p- b))) 1)))"
+				+ ")";
+
+		mustBeUNSAT(s);
+	}	
 	
 	private void mustBeUNSAT(String s) {
 		Parser p = new Parser();

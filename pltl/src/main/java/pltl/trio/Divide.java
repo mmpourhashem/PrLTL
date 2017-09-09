@@ -1,5 +1,6 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
 import pltl.bool.*;
 
 public class Divide implements Formula{
@@ -18,6 +19,14 @@ public class Divide implements Formula{
     }
 
 	public Formula get(int offset) {
+		return null;
+	}
+
+	public Formula getProp(int offset) {
+//		if (PltlFormula.outOfBound(offset))
+//    		return new PltlFormula.PropFalse();
+//		
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

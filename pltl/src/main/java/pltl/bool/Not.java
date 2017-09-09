@@ -19,9 +19,6 @@ public class Not implements Formula {
 
 	public Not(Formula f) {
 		this.f = f;
-		//TODO del
-		if (f==null)
-			this.f=null;
 	}
 
 	public Formula getFormula(){
@@ -29,17 +26,11 @@ public class Not implements Formula {
 	}
 
 	public String getSemantics(){
-		//		return getPropSemantics(f) + getProbSemantics(f);
-
-		//TODO Do the same for all other operators (not to produce probability semantics for ProbExps.
-		String s = getPropSemantics(f);
-		if (! Probability.hasProbExp(f))
-			s += getProbSemantics(f);
-		return s;
+		return getPropSemantics(f) + getProbSemantics(f);
 	}
 
 	public String getTheNegSemantics(){
-		if (getTheNeg() != null){
+		if (getTheNeg() != null) {
 			if (getTheNeg().equals(this))
 				return getSemantics();
 			else if (PltlFormula.add(getTheNeg()) == -1)
@@ -49,11 +40,13 @@ public class Not implements Formula {
 	}
 
 	private String getProbSemantics(Formula fma) {
+		if (Probability.hasProbExp(fma))
+			return "";
 		String s = "";
 		int mainF = PltlFormula.add(this);
 		int innerF = PltlFormula.add(fma);
 		for (int time = 0; time <= PltlFormula.bound; time++)
-			s += new ArithFormula(Op.EQ, new Constant((float) 1.0), new ArithFormula(Op.PLUS, new Prob(time, mainF), new Prob(time, innerF))).toString();
+			s += new ArithFormula(Op.EQ, new Constant((float) 1.0), new ArithFormula(Op.PLUS, new Prob(time, mainF), new Prob(time, innerF))).toString() + "\n";
 
 		return s;
 	}
@@ -112,6 +105,13 @@ public class Not implements Formula {
 
 	public Formula get(int offset) {
 		return new Not(f.get(offset));
+	}
+
+	public Formula getProp(int offset) {
+		if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+		
+		return new PropNot(f.getProp(offset));
 	}
 
 	@Override

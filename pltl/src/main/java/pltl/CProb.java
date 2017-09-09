@@ -126,5 +126,9 @@ public class CProb implements Formula {
 	public Formula get(int offset) {
 		return null;
 	}
+
+	public Formula getProp(int offset) {
+		return null;// Not required.
+	}
 }
 

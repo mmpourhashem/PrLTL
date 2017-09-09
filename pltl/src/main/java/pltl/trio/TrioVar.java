@@ -45,5 +45,10 @@ public class TrioVar implements Atom{
 //	public int hashCode(){
 //		return this.getVariableName().hashCode();
 //	}
+
+	public Formula getProp(int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -2,9 +2,6 @@ package pltl.bool;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import arith.ArithFormula;
 import arith.Op;
 import pltl.CProb;
@@ -12,6 +9,7 @@ import pltl.Parser;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.ProbComparator;
+import pltl.Probability;
 
 public class And implements Formula{
 	ArrayList<Formula> f = new ArrayList<Formula>();
@@ -102,16 +100,15 @@ public class And implements Formula{
 	}
 
 	public String getSemantics() {
+		if (Probability.hasProbExp(this))
+			return getPropSemantics();
 		String s = "";
 		int index = PltlFormula.add(this);
 		for (int time = 0; time <= PltlFormula.bound; time++) {
 			Prob mainF = new Prob(time, index);
-			s += new ArithFormula(Op.EQ, mainF, getSemantics(time)).toString();
+			s += new ArithFormula(Op.EQ, mainF, getSemantics(time)).toString() + "\n";
 		}
 		
-		Set<Formula> bfSet = new HashSet<Formula>();
-		for (Formula bf: f)
-			bfSet.add(bf);
 		return getPropSemantics() + s;
 	}
 
@@ -198,6 +195,8 @@ public class And implements Formula{
 	}
 
 	public void prune() {
+		if (Probability.hasProbExp(this))
+			return;
 		f = getFlatAnd().getFormulae();
 		for (Formula fma1: f)
 			for (Formula fma2: f)
@@ -252,6 +251,16 @@ public class And implements Formula{
 		for (Formula fma: f)
 			and.addFormula(fma.get(offset));
 		return and;
+	}
+	
+	public Formula getProp(int offset) {
+		if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+		
+		PropAnd pAnd = new PropAnd();
+		for (Formula fma: f)
+			pAnd.addFormula(fma.getProp(offset));
+		return pAnd;
 	}
 
 	@Override

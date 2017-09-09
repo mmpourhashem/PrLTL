@@ -7,6 +7,7 @@ import arith.Op;
 import pltl.Parser;
 import pltl.PltlFormula;
 import pltl.Prob;
+import pltl.Probability;
 
 public class Or implements Formula{
 	ArrayList<Formula> f = new ArrayList<Formula>();
@@ -121,29 +122,9 @@ public class Or implements Formula{
 	}
 
 	public String getProbSemantics() {
+		if (Probability.hasProbExp(this))
+			return "";
 		String s = "";
-		//		int mainF = PltlFormula.add(this);
-		//		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		//		ArrayList<Formula> tempF = new ArrayList<Formula>();// [???] we are not producing probability analysis over probability formulae. The probability of probabilities is not supported in PLTL. E.g. if we have a => P(b) = r1, then we ignore the probability formula for (!a || P(b) = r1). 
-		//		for (Formula bf: f) {
-		//			indexes.add(PltlFormula.add(bf));
-		//			tempF.add(bf);
-		//		}
-		//		if (tempF.size() == 1)
-		//			return "";
-		//		if (tempF.size() == 2)
-		//			return getBinaryProbSemantics(indexes.get(0), indexes.get(1));
-		//		for (int i = 0; i < indexes.size(); i++) {
-		//			Or newOr = new Or();
-		//			for (int j = 0; j < indexes.size(); j++) {
-		//				if (j != i) {
-		//					newOr.addFormula(PltlFormula.get(indexes.get(j)));
-		//				}
-		//			}
-		//			int newOrIndex = PltlFormula.add(newOr); 
-		//			s += newOr.getPropSemantics();
-		//			s += getBinaryProbSemantics(indexes.get(i), newOrIndex);
-		//		}
 		for (int time = 0; time <= PltlFormula.bound; time++) {
 			Prob mainProb = new Prob(time, PltlFormula.add(this));
 			if (collapsedToFalse())
@@ -154,18 +135,6 @@ public class Or implements Formula{
 				s += new ArithFormula(Op.EQ, mainProb, getRecOr(this, time)).toString();
 		}
 
-		return s;
-	}
-
-	@Deprecated
-	private String getBinaryProbSemantics(int f1, int f2) {
-		int mainF = PltlFormula.add(this);
-		int f1f2 = PltlFormula.add(new And (PltlFormula.get(f1), PltlFormula.get(f2)));
-		String s = "; " + this.toString() + "=" + (new Or(PltlFormula.get(f1), PltlFormula.get(f2))).toString() + "\n";
-
-		for (int time = 0; time <= PltlFormula.bound; time++)
-			//				s += "(= (zot-p " + time + " " + mainF + ") (- (+ " + "(zot-p " + time + " " + f1 + ") (zot-p " + time + " " + f2 + ")) (zot-p " + time + " " + f1f2 + ")))\n";
-			s += new ArithFormula(Op.EQ, new Prob(time, mainF), new ArithFormula(Op.MINUS, new ArithFormula(Op.PLUS, new Prob(time, f1), new Prob(time, f2)), new Prob(time, f1f2))) + "\n";
 		return s;
 	}
 
@@ -224,6 +193,8 @@ public class Or implements Formula{
 	}
 
 	public void prune() {
+		if (Probability.hasProbExp(this))
+			return;
 		f = getFlatOr().getFormulae();
 		for (Formula fma1: f)
 			for (Formula fma2: f)
@@ -279,6 +250,16 @@ public class Or implements Formula{
 		for (Formula fma: f)
 			or.addFormula(fma.get(offset));
 		return or;
+	}
+	
+	public Formula getProp(int offset) {
+		if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+		
+		PropOr pOr = new PropOr();
+		for (Formula fma: f)
+			pOr.addFormula(fma.getProp(offset));
+		return pOr;
 	}
 
 	@Override

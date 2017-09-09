@@ -1,8 +1,9 @@
 package pltl.trio;
 
-import pltl.bool.And;
+import pltl.PltlFormula;
 import pltl.bool.Formula;
 import pltl.bool.Or;
+import pltl.bool.PropOr;
 
 public class SomP implements Formula {
 
@@ -18,12 +19,23 @@ public class SomP implements Formula {
     
     public Formula get(int offset) {
 		Or or = new Or();
-		for (int time = 0; time <= offset; time++) {
+		for (int time = offset; time >= 0; time--) {
 			or.addFormula(f.get(time));
 		}
 		
 		return or;
 	}
+    
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+    	
+    	PropOr pOr = new PropOr();
+    	for (int time = offset; time >= 0; time--)
+    		pOr.addFormula(f.getProp(time));
+    	
+    	return pOr;
+    }
     
     @Override
     public String toString() {

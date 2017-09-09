@@ -48,4 +48,8 @@ public class Dep implements Formula{
 		return null;
 	}
 
+	public Formula getProp(int offset) {
+		return null;// Not required.
+	}
+
 }

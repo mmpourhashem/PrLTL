@@ -1,9 +1,11 @@
 package pltl.trio;
 
+import pltl.PltlFormula;
 import pltl.bool.And;
 import pltl.bool.Formula;
+import pltl.bool.PropAnd;
 
-public class Lasted implements Formula{
+public class Lasted implements Formula {
 
     Formula f;
     int window;
@@ -17,20 +19,38 @@ public class Lasted implements Formula{
     	return f;
     }
     
-    public int getInt() {
+    public int getWindow() {
     	return window;
+    }
+    
+    public Formula get(int offset) {
+    	And and = new And();
+    	for (int time = 1; time <= window; time++)
+    		and.addFormula(f.get(offset - time));
+    	return and;
+    }
+    
+    public Formula getProp(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+    		return new PltlFormula.PropFalse();
+
+    	PropAnd pAnd = new PropAnd();
+    	for (int time = 1; time <= window; time++)
+    		pAnd.addFormula(f.getProp(offset - time));
+    	
+    	return pAnd;
     }
     
     @Override
     public String toString() {
         return "(lasted " + f + " " + window + ")";
     }
-
-	public Formula get(int offset) {
-		And and = new And();
-		for (int time = 1; time <= window; time++)
-			and.addFormula(f.get(offset - time));
-		return and;
+    
+    @Override
+	public boolean equals(Object o) {
+		if (o instanceof Lasted)
+			return f.equals(((Lasted) o).getFormula()) && window == ((Lasted) o).getWindow();
+		return false;
 	}
 
 }
