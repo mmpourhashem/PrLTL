@@ -21,6 +21,9 @@ public class Implies implements Formula{
     }
     
     public Formula get(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+		
     	return new Implies(f1.get(offset), f2.get(offset));
     }
     

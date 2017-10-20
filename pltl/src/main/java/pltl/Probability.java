@@ -67,12 +67,12 @@ public class Probability {
 			else {
 				for (int time = 0; time <= PltlFormula.bound; time++) {
 					s += ";" + f.toString() + " at T" + time + "\n";
-					s += new ArithFormula(Op.EQ, new Prob(time, formulaIndex), new Prob(0, PltlFormula.add(f.get(time)))) + "\n";// <optimization> Can unnecessary prob be opt out here?
+					s += new ArithFormula(Op.EQ, new Prob(time, formulaIndex), new Prob(0, PltlFormula.add(f.get(time)))) + "\n";// <optimization> Can unnecessary prob be opt out here? [Try YYa -> a k=3] 
 					s += Smt2Formula.getOp("=" , Smt2Formula.getzot(time, formulaIndex), f.getProp(time).toString()) + "\n";// prop
 				}
 			}
-//			else
-//				s += "<" + f.toString() + "> <Not Recognized!>\n";
+			//			else
+			//				s += "<" + f.toString() + "> <Not Recognized!>\n";
 
 			if (! hasProbExp(f))
 				s += Smt2Formula.getRangeConstraints(formulaIndex) + "\n";
@@ -117,13 +117,16 @@ public class Probability {
 		else if (f instanceof Dep) {
 			Dep d = (Dep) f;
 			for (int time = left; time <= right; time++) {
-				int depFI = PltlFormula.add(d.getDepF());
-				Prob depTI = PltlFormula.getProb(time, depFI);
+				//				int depFI = PltlFormula.add(d.getDepF());
+				//				Prob depTI = PltlFormula.getProb(time, depFI);
+				Prob depProb = ((DepTempFormula) d.getDepF()).getProbForDep(time, false);
 				for (int i = 0; i < d.getParentsF().size(); i++) {
-					int parentFI = PltlFormula.add(d.getParentsF().get(i));
-					depTI.addParent(PltlFormula.getProb(time, parentFI));
+					//					int parentFI = PltlFormula.add(d.getParentsF().get(i));
+					//					depProb.addParent(PltlFormula.getProb(time, parentFI));
+					Prob parentProb = ((DepTempFormula) d.getParentsF().get(i)).getProbForDep(time, false);
+					depProb.addParent(parentProb);//FIXME yesterdayDep
 				}
-				PltlFormula.addBayes(depTI);
+				PltlFormula.addBayes(depProb);
 			}
 		}
 	}
@@ -224,27 +227,45 @@ public class Probability {
 
 	/**
 	 * @param f
+	 * @backwardCoupon
+	 * The number of steps a formula can look back. For example (yesterday fma1) has -1 backwardCoupon, such that it cannot simplified with inner temporal operators (like next). It is there in order to avoid simplifications like (yesterday (next (-p- a))) => (-p- a). But the next in (next (yesterday (-p- a))) has one backwardCoupon, so it can be mixed with the inner temporal operator.
 	 * @return
 	 * Returns simplified formula. E.g. (|| (dist (-p- a) 1) (dist (-p- a) 2)) is returned for (withinf (-p- a) 2).
 	 */
 	public static Formula process(Formula f) {
+		Formula result = processRec(f, 0);
+
+		if (result instanceof Dist)
+			return PltlFormula.processDist((Dist) result);
+
+		return result;
+	}
+
+	public static Formula processRec(Formula f, int backwardCoupon) {
 		if (f instanceof Next)
-			return processDist(new Dist(process(((Next) f).getFormula()), 1));
+			return new Dist(processRec(((Next) f).getFormula(), backwardCoupon + 1), 1);
 
 		if (f instanceof Yesterday)
-			return processDist(new Dist(process(((Yesterday) f).getFormula()), -1));
+			if (backwardCoupon >= 1)
+				return new Dist(processRec(((Yesterday) f).getFormula(), backwardCoupon - 1), -1);//FIXME yesterday and past at the first time instant
+			else
+				return f;
 
 		if (f instanceof Futr)
-			return processDist(new Dist(process(((Futr) f).getFormula()), ((Futr) f).getOffset()));
+			if (((Futr) f).getOffset() > PltlFormula.bound)
+				return new PltlFormula.False();
+			else
+				return new Dist(processRec(((Futr) f).getFormula(), backwardCoupon + ((Futr) f).getOffset()), ((Futr) f).getOffset());
 
 		if (f instanceof Past)
-			return processDist(new Dist(process(((Past) f).getFormula()), -((Past) f).getOffset()));
+			if (backwardCoupon >= ((Past) f).getOffset())
+				return new Dist(processRec(((Past) f).getFormula(), backwardCoupon - ((Past) f).getOffset()), -((Past) f).getOffset());
 
 		if (f instanceof WithinF) {
 			assertFalse(((WithinF) f).getInt() < 1);
 			Or or = new Or();
 			for (int window = 1; window <= ((WithinF) f).getInt(); window++)
-				or.addFormula(new Dist(process(((WithinF) f).getFormula()), window));
+				or.addFormula(new Dist(processRec(((WithinF) f).getFormula(), backwardCoupon), window));
 			return or;
 		}
 
@@ -252,7 +273,7 @@ public class Probability {
 			assertFalse(((WithinP) f).getInt() < 1);
 			Or or = new Or();
 			for (int window = 1; window <= ((WithinP) f).getInt(); window++)
-				or.addFormula(new Dist(process(((WithinP) f).getFormula()), -window));
+				or.addFormula(new Dist(processRec(((WithinP) f).getFormula(), backwardCoupon), -window));
 			return or;
 		}
 
@@ -260,7 +281,7 @@ public class Probability {
 			assertFalse(((Lasts) f).getWindow() < 1);
 			And and = new And();
 			for (int window = 1; window <= ((Lasts) f).getWindow(); window++)
-				and.addFormula(new Dist(process(((Lasts) f).getFormula()), window));
+				and.addFormula(new Dist(processRec(((Lasts) f).getFormula(), backwardCoupon), window));
 			return and;
 		}
 
@@ -268,53 +289,47 @@ public class Probability {
 			assertFalse(((Lasted) f).getWindow() < 1);
 			And and = new And();
 			for (int window = 1; window <= ((Lasted) f).getWindow(); window++)
-				and.addFormula(new Dist(process(((Lasted) f).getFormula()), -window));
+				and.addFormula(new Dist(processRec(((Lasted) f).getFormula(), backwardCoupon), -window));
 			return and;
 		}
 
 		if (f instanceof Not)
-			return new Not(process(((Not) f).getFormula()));
+			return new Not(PltlFormula.processDist(processRec(((Not) f).getFormula(), backwardCoupon)));
 
 		if (f instanceof And) {
 			And and = new And();
 			for (Formula fma:((And) f).getFormulae())
-				and.addFormula(process(fma));
+				and.addFormula(PltlFormula.processDist(processRec(fma, backwardCoupon)));
 			return and;
 		}
 
 		if (f instanceof Or) {
 			Or or = new Or();
 			for (Formula fma:((Or) f).getFormulae())
-				or.addFormula(process(fma));
+				or.addFormula(PltlFormula.processDist(processRec(fma, backwardCoupon)));
 			return or;
 		}
 
 		if (f instanceof Until)
-			return new Until(process(((Until) f).getFormula1()), process(((Until) f).getFormula2()));
+			return new Until(processRec(((Until) f).getFormula1(), backwardCoupon), processRec(((Until) f).getFormula2(), backwardCoupon));
 
 		if (f instanceof Release)
-			return new Release(process(((Release) f).getFormula1()), process(((Release) f).getFormula2()));
+			return new Release(processRec(((Release) f).getFormula1(), backwardCoupon), processRec(((Release) f).getFormula2(), backwardCoupon));
 
 		if (f instanceof Since)
-			return new Since(process(((Since) f).getFormula1()), process(((Since) f).getFormula2()));
+			return new Since(processRec(((Since) f).getFormula1(), backwardCoupon), processRec(((Since) f).getFormula2(), backwardCoupon));
 
 		if (f instanceof Trigger)
-			return new Trigger(process(((Trigger) f).getFormula1()), process(((Trigger) f).getFormula2()));
+			return new Trigger(processRec(((Trigger) f).getFormula1(), backwardCoupon), processRec(((Trigger) f).getFormula2(), backwardCoupon));
+
+		if (f instanceof Dist)
+			if (((Dist) f).getOffset() > PltlFormula.bound)
+				return new PltlFormula.False();
+			else
+				if (((Dist) f).getOffset() > 0 || backwardCoupon >= - ((Dist) f).getOffset())
+					return new Dist(processRec(((Dist) f).getFormula(), backwardCoupon + ((Dist) f).getOffset()), ((Dist) f).getOffset());
 
 		return f;
-	}
-	
-	/**
-	 * @param fma
-	 * A Dist formula
-	 * @return
-	 * To avoid (dist (dist (-p- a) i) j) and have (dist (-p- a) i+j) instead. 
-	 */
-	private static Formula processDist(Dist fma) {
-		if (fma.getFormula() instanceof Dist)
-			while (fma.getFormula() instanceof Dist)
-				fma = new Dist(((Dist) fma.getFormula()).getFormula(), fma.getOffset() + ((Dist) fma.getFormula()).getOffset());
-		return fma;
 	}
 
 	public static boolean hasProbExp(Formula fma) {
@@ -326,14 +341,14 @@ public class Probability {
 					return true;
 			return false;
 		}
-		
+
 		if (fma instanceof Or) {
 			for (Formula f: ((Or) fma).getFormulae())
 				if (hasProbExp(f))
 					return true;
 			return false;
 		}
-		
+
 		if (fma instanceof Not)
 			return hasProbExp(((Not) fma).getFormula());
 		if (fma instanceof Next)

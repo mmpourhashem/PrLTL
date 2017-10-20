@@ -18,6 +18,9 @@ public class Alw implements Formula{
 	}
 
     public Formula get(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+    	
     	And and = new And();
     	for (int time = 0; time <= PltlFormula.bound; time++)
     		and.addFormula(f.get(time));

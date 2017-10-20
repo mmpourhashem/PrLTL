@@ -246,6 +246,9 @@ public class Or implements Formula{
 	}
 
 	public Formula get(int offset) {
+		if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+		
 		Or or = new Or();
 		for (Formula fma: f)
 			or.addFormula(fma.get(offset));

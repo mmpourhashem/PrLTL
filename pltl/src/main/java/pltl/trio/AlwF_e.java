@@ -18,6 +18,9 @@ public class AlwF_e implements Formula {
     }
 
 	public Formula get(int offset) {
+		if (PltlFormula.outOfBound(offset + 1))
+			return new PltlFormula.False();
+		
 		// TODO Auto-generated method stub
 		return null;
 	}

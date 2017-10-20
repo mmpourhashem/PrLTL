@@ -177,6 +177,33 @@ public class Prob implements Formula {
 			
 		return null;//The dependent formula can be either a predicate, a (dist predicate), or its neg.
 	}
+	
+	
+	/**
+	 * It is used for dangerous parent Probs who may suffer from Yesterday syndrome(@<Yesterday0>).
+	 * For example, if (dep (-p- a) (yesterday (-p- a))), while processing (&& (-p- a) (!! (yesterday (-p- a)))), the corresponding CProb (at T0) should not be (zot-cp 0 0 0 9), where 0 is index of (-p- a) and 9 is index of (!! (dist (-P- a) -1)). Instead, I need to see it in the unified form (zot-cp 0 0 -1 7), where the index refers either to an AP or its negation (7 is the index of (!! (-p- a))). Note that all user defined conditional probabilities regarding given dependencies are processed in this form.
+	 * See @<YesterdayDep>
+	 * Here, "this" can refer either to an AP, dist Ap, or negated dist AP.
+	 * @return
+	 */
+	public Prob getAtomicProb() {
+		Formula tempF = PltlFormula.get(index);
+		if (tempF instanceof Predicate)
+			return this;
+		
+		if (tempF instanceof Dist)
+			return new Prob(time + ((Dist) tempF).getOffset(), PltlFormula.add(((Dist) tempF).getFormula()));
+		
+		if (tempF instanceof Not) {
+			tempF = ((Not) tempF).getFormula();
+			if (tempF instanceof Predicate)
+				return this;
+			
+			return new Prob(time + ((Dist) tempF).getOffset(), PltlFormula.add(new Not(((Dist) tempF).getFormula())));
+		}
+
+		throw new IllegalArgumentException("A parent is not processed properly.");
+	}
 
 	public boolean allAreParents(Prob p) {
 		if (p.getPlainFormula() instanceof And) {
@@ -206,6 +233,13 @@ public class Prob implements Formula {
 		return result;
 	}
 	
+	/*
+	 * To avoid processing a conjunction that has a prob with a time and an index that collapses to false like (prob i j), where i=0 and j is the index of (dist (-p- a) -1)
+	 */
+	public boolean isFalse() {
+		return (getPlainFormula() instanceof Dist && PltlFormula.outOfBound(((Dist) getPlainFormula()).getOffset() + time));
+	}
+	
 	public String toSeqString() {
 		return time + " " + index;
 	}
@@ -223,10 +257,13 @@ public class Prob implements Formula {
 	}
 
 	public Formula get(int offset) {
+		if (PltlFormula.outOfBound(offset) || PltlFormula.outOfBound(time + offset))
+			return new PltlFormula.False();
+		
 		return new Prob(time + offset, index);
 	}
 
-	public Formula getProp(int offset) {
-		return null;// Not required.
+	public Formula getProp(int offset) {// Not required.
+		return null;
 	}
 }

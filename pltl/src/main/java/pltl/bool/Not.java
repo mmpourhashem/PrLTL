@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import arith.ArithFormula;
 import arith.Constant;
 import arith.Op;
+import pltl.DepTempFormula;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.Probability;
@@ -13,7 +14,7 @@ import pltl.trio.Predicate;
 import pltl.trio.Release;
 import pltl.trio.Until;
 
-public class Not implements Formula {
+public class Not implements Formula, DepTempFormula {
 
 	private Formula f;
 
@@ -62,7 +63,7 @@ public class Not implements Formula {
 	}
 
 	public Formula getTheNeg(){
-		if (f instanceof Not)//(!! (!! (zot-p i))) = (zot-p i)// We do not need this, since the semantics are already produced.
+		if (f instanceof Not)//(!! (!! (zot-p i))) = (zot-p i)// I do not need this, since the semantics are already produced.
 			return f;
 
 		if (f instanceof And){
@@ -102,8 +103,19 @@ public class Not implements Formula {
 
 		return null;
 	}
+	
+	public Prob getProbForDep(int offset, boolean neg) {
+    	return ((DepTempFormula) f).getProbForDep(offset, !neg);
+    }
 
 	public Formula get(int offset) {
+		if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.True();
+		
+		Formula temp = f.get(offset);
+		if (temp.equals(new PltlFormula.False()))
+			return new PltlFormula.True();
+		
 		return new Not(f.get(offset));
 	}
 

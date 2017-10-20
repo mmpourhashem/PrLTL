@@ -59,7 +59,7 @@ public class Release implements Formula {
 	//	}
 
 	public Formula get(int offset) {
-		if (PltlFormula.outOfBound(offset))
+		if (PltlFormula.outOfBound(offset)) //FIXME Check if I need to put true at the time instances after the bound.
 			return new PltlFormula.False();
 
 		if (offset == PltlFormula.bound)

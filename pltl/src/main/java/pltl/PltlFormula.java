@@ -39,12 +39,16 @@ public class PltlFormula {
 			ff=1;
 		if (fma instanceof Until)
 			ff=1;
+		if (fma instanceof Or)
+			ff=2;
 //		-->
-		fma = Probability.process(fma);
+		fma = Probability.process(fma); //check getProp for all formulae not to convert (yesterday (next a)) to a!//FIXME
 		// <!-- To avoid (dist (dist (-p- a) i) j) and have (dist (-p- a) i+j) instead. 
-		if (fma instanceof Dist && ((Dist) fma).getFormula() instanceof Dist)
-			while (((Dist) fma).getFormula() instanceof Dist)
-				fma = new Dist(((Dist) ((Dist) fma).getFormula()).getFormula(), ((Dist) fma).getOffset() + ((Dist) ((Dist) fma).getFormula()).getOffset());
+//		if (fma instanceof Dist && ((Dist) fma).getFormula() instanceof Dist)
+//			while (((Dist) fma).getFormula() instanceof Dist)
+//				fma = new Dist(((Dist) ((Dist) fma).getFormula()).getFormula(), ((Dist) fma).getOffset() + ((Dist) ((Dist) fma).getFormula()).getOffset());
+		if (fma instanceof Dist)
+			fma = processDist((Dist) fma);
 		//-->
 		// <!-- To avoid (dist (-p- a) 0) and have (-p- a) instead.
 		if (fma instanceof Dist && ((Dist) fma).getOffset() == 0)
@@ -56,12 +60,6 @@ public class PltlFormula {
 				return add(((Not) ((Not) fma).getFormula()).getFormula());
 			instances.add(fma);
 			instancesString.add("");
-			//			if (fma instanceof ProbAtom) {
-			//				if (((ProbAtom) fma).getF11() != null)
-			//					addToDepCluster(((ProbAtom) fma).getF11(), ((ProbAtom) fma).getF12());
-			//				if (((ProbAtom) fma).getF21() != null)
-			//					addToDepCluster(((ProbAtom) fma).getF21(), ((ProbAtom) fma).getF22());
-			//			}
 			return instances.size() - 1;
 		}
 		else
@@ -110,48 +108,13 @@ public class PltlFormula {
 		return new Prob(time, add(f));
 	}
 
-	public static Prob getProb(int time, int index) {
-		return getProb(time, PltlFormula.get(index));
-	}
+//	public static Prob getProb(int time, int index) {
+//		return getProb(time, PltlFormula.get(index));
+//	}
 
 	public static void addDep(Formula f) {
 		deps.add(f);
 	}
-
-	//	@Deprecated
-	//	private static ArrayList<Formula> getAtoms(Formula f) {
-	//		ArrayList<Formula> bfs = new ArrayList<Formula>();
-	//		if (f instanceof And)
-	//			for (Formula bf:((And) f).getFormulae())
-	//				bfs.addAll(getAtoms(bf));
-	//
-	//		else if (f instanceof Or)
-	//			for (Formula bf:((Or) f).getFormulae())
-	//				bfs.addAll(getAtoms(bf));
-	//
-	//		else if (f instanceof Not)
-	//			bfs.addAll(getAtoms(((Not) f).getFormula()));
-	//
-	////		else if (f instanceof Next) {
-	////			bfs.addAll(getAtoms(((Next) f).getFormula()));
-	////			bfs.add((Next) f);
-	////		}
-	//		else if (f instanceof Futr) {
-	//			bfs.addAll(getAtoms(((Futr) f).getFormula()));
-	//			bfs.add((Futr) f);
-	//		}
-	//		
-	//		else if (f instanceof Past) {
-	//			bfs.addAll(getAtoms(((Past) f).getFormula()));
-	//			bfs.add((Past) f);
-	//		}
-	//
-	//		else if (f instanceof Predicate)
-	//			bfs.add((Predicate) f);
-	//		//TODO until, since, ...
-	//
-	//		return bfs;
-	//	}
 
 	public static int getIndex(Formula fma) {
 		for (int i = 0; i < instances.size(); i++)
@@ -372,6 +335,32 @@ public class PltlFormula {
 	public static boolean outOfBound(int offset) {
 		return (offset > bound || offset < 0);
 	}
+	
+	/**
+	 * @param fma
+	 * A Dist formula
+	 * @return
+	 * To avoid (dist (dist (-p- a) i) j) and have (dist (-p- a) i+j) instead. 
+	 */
+	public static Formula processDist(Formula f) {
+		if (! (f instanceof Dist))
+			return f;
+		Dist fma = ((Dist) f);
+//		if (PltlFormula.outOfBound(fma.getOffset()) || fma.getFormula() instanceof PltlFormula.False) // to false is commented because it recognizes (yesterday (-p- a)) as false.
+//			return new PltlFormula.False();
+		
+		if (fma.getFormula() instanceof Dist) {
+//			if (PltlFormula.outOfBound(fma.getOffset() + ((Dist) fma.getFormula()).getOffset()) || ((Dist) fma.getFormula()).getFormula() instanceof PltlFormula.False)
+//				return new PltlFormula.False();
+			while (fma.getFormula() instanceof Dist) {
+//				if (PltlFormula.outOfBound(fma.getOffset() + ((Dist) fma.getFormula()).getOffset()) || ((Dist) fma.getFormula()).getFormula() instanceof PltlFormula.False)
+//					return new PltlFormula.False();
+				fma = new Dist(((Dist) fma.getFormula()).getFormula(), fma.getOffset() + ((Dist) fma.getFormula()).getOffset());
+			}
+		}
+		
+		return fma;
+	}
 
 	/**
 	 * @param formula
@@ -417,7 +406,8 @@ public class PltlFormula {
 		}
 
 		public Formula get(int offset) {
-			return this;
+//			return this;
+			return new Prob(0, -1);
 		}
 
 		public Formula getProp(int offset) {
@@ -439,7 +429,8 @@ public class PltlFormula {
 		}
 		
 		public Formula get(int offset) {
-			return this;
+//			return this;
+			return new Prob(0,-2);
 		}
 
 		@Override
@@ -474,6 +465,9 @@ public class PltlFormula {
 		}
 
 		public Formula get(int offset) {
+			if (PltlFormula.outOfBound(offset))
+				return new PltlFormula.False();
+			
 			return this;
 		}
 
@@ -507,107 +501,13 @@ public class PltlFormula {
 		}
 
 	}
-
-
-	/*		private static void addToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
-			ArrayList<BooleanFormulae> bfs = new ArrayList<BooleanFormulae>();
-			bfs.addAll(getAtoms(f1));
-			bfs.addAll(getAtoms(f2));
-			for (int i = 0; i < bfs.size() - 1; i++)
-				addPairToDepCluster(bfs.get(i), bfs.get(i + 1));
-		}
-
-		private static void addPairToDepCluster(BooleanFormulae f1, BooleanFormulae f2) {
-			if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) == -1) {
-				ArrayList<BooleanFormulae> temp = new ArrayList<BooleanFormulae>();
-				temp.add(f1);
-				temp.add(f2);
-				depCluster.add(temp);
-			}
-			else if (getDepClusterIndex(f1) > -1 && getDepClusterIndex(f2) == -1) {
-				depCluster.get(getDepClusterIndex(f1)).add(f2);
-			}
-			else if (getDepClusterIndex(f1) == -1 && getDepClusterIndex(f2) > -1) {
-				depCluster.get(getDepClusterIndex(f2)).add(f1);
-			}
-			else{
-				int ai = getDepClusterIndex(f1);
-				int bi = getDepClusterIndex(f2);
-				if (ai != bi) {
-					for (BooleanFormulae bf: depCluster.get(bi))
-						depCluster.get(ai).add(bf);
-					depCluster.remove(bi);
-				}
-			}
-		}
-		private static int getDepClusterIndex(BooleanFormulae f) {
-			for (int i = 0; i < depCluster.size(); i++) {
-				for (int j = 0; j < depCluster.get(i).size(); j++) { //It returns f's negation index if it exists. 
-					if (f.equals(depCluster.get(i).get(j)) || (f instanceof Not && ((Not) f).getFormula().equals(depCluster.get(i).get(j))) || new Not(f).equals(depCluster.get(i).get(j)))
-						return i;
-				}
-			}
-
-			return -1;
-		}
-	//Returns ture, if it is expressible by zot-px.
-		public static boolean isSimpleType(BooleanFormulae f) {
-			return ()
-		}
-		private class FInstance{
-			BooleanFormulae f;
-			boolean probDone;
-			boolean theNegDone;
-			public FInstance(BooleanFormulaeZ) {
-				this.f = f;
-				this.probDone = fNumber;
-				this.value = value;
-			}
-		}
-	//Converts a formula to its bitvector representative with X (don't care) bits.
-	public static String getZotpx(int time, BooleanFormulae f) {
-		String s = "(zot-px " + time + " #b";
-		StringBuilder bv1 = new StringBuilder("");
-		StringBuilder bv2 = new StringBuilder("");
-		for (int ins = instances.size() -1; ins >= 0 ; ins--) {
-			bv1.append("1");
-			bv2.append("1");
-		}
-		int n = instances.size();
-		int fIndex = getIndex(f);
-
-		if (fIndex != -1) {
-			bv1.setCharAt(n - fIndex - 1, '1');
-			bv2.setCharAt(n - fIndex - 1, '0');
-		}
-		else if (f instanceof And) {
-			And and = (And) f;
-			for (BooleanFormulae andFF:and.getFormulae()) {
-				fIndex = getIndex(andFF);
-				char andFFChar = '1';
-				if (fIndex == -1) {
-					if (andFF instanceof Not) {
-						fIndex = getIndex(((Not) andFF).f);
-						andFFChar = '0';
-					}
-					else
-						System.out.println("The formula is not found in the PltlFormulae.instaces.");
-				}
-				bv1.setCharAt(n - fIndex - 1, andFFChar);
-				bv2.setCharAt(n - fIndex - 1, '0');
-			}
-		}
-
-		else if (f instanceof Or) {
-		}
-
-		else if (f instanceof Not) {
-
-		}
-
-
-		return s + bv1 + " #b" + bv2 + ")";
+	
+	public static void reset() {
+		instances.clear();
+		instancesString.clear();
+		cProbsTBP.clear();
+		deps.clear();
+		bayesNet.clear();
+		mainF = 0;
 	}
-	 */
-
 }

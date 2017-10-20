@@ -3,12 +3,13 @@ package pltl.trio;
 import arith.ArithFormula;
 import arith.Constant;
 import arith.Op;
+import pltl.DepTempFormula;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.Smt2Formula;
 import pltl.bool.Formula;
 
-public class Dist implements Formula {
+public class Dist implements Formula, DepTempFormula {
 
     private Formula formula;
     private int offset;
@@ -43,7 +44,14 @@ public class Dist implements Formula {
 		return s;
 	}
     
+    public Prob getProbForDep(int offset, boolean neg) {
+    	return ((DepTempFormula) formula).getProbForDep(offset + this.offset, neg);
+    }
+    
     public Formula get(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+    	
     	return new Dist(formula, this.offset + offset);//TODO Is it possible to convert all formula to Probs here?
     }
     

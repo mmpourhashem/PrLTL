@@ -1,9 +1,11 @@
 package pltl.trio;
 
+import pltl.DepTempFormula;
 import pltl.PltlFormula;
+import pltl.Prob;
 import pltl.bool.Formula;
 
-public class Past implements Formula {
+public class Past implements Formula, DepTempFormula {
 
     private Formula f;
     private int offset;
@@ -21,7 +23,14 @@ public class Past implements Formula {
     	return offset;
     }
     
+    public Prob getProbForDep(int offset, boolean neg) {
+    	return ((DepTempFormula) f).getProbForDep(offset - this.offset, neg);
+    }
+    
     public Formula get(int offset) {
+    	if (PltlFormula.outOfBound(offset) || PltlFormula.outOfBound(offset - this.offset))
+			return new PltlFormula.False();
+    	
     	return f.get(offset - this.offset);
     }
     

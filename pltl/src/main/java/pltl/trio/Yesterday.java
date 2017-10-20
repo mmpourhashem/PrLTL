@@ -1,8 +1,11 @@
 package pltl.trio;
 
+import pltl.DepTempFormula;
+import pltl.PltlFormula;
+import pltl.Prob;
 import pltl.bool.Formula;
 
-public class Yesterday implements Formula {
+public class Yesterday implements Formula, DepTempFormula{
 
 	Formula f;
 
@@ -13,10 +16,24 @@ public class Yesterday implements Formula {
 	public Formula getFormula(){ 
 		return f;
 	}
+
+	public Prob getProbForDep(int offset, boolean neg) {
+    	return ((DepTempFormula) f).getProbForDep(offset - 1, neg);
+    }
 	
 	public Formula get(int offset) {
-    	return f.get(offset - 1);
-    }
+		if (PltlFormula.outOfBound(offset) || PltlFormula.outOfBound(offset - 1))
+			return new PltlFormula.False();
+		
+		return f.get(offset - 1);
+	}
+
+	public Formula getProp(int offset) {
+		if (PltlFormula.outOfBound(offset) || PltlFormula.outOfBound(offset - 1))
+			return new PltlFormula.PropFalse();
+		
+		return f.getProp(offset - 1);
+	}
 
 	@Override
 	public String toString() {
@@ -30,11 +47,6 @@ public class Yesterday implements Formula {
 		}
 
 		return false;
-	}
-
-	public Formula getProp(int offset) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

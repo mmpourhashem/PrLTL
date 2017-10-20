@@ -28,6 +28,7 @@ public class Until implements Formula {
 	public Formula get(int offset) {
 		if (PltlFormula.outOfBound(offset))
 			return new PltlFormula.False();
+		
 		if (offset == PltlFormula.bound)
 			return f2.get(offset);
 		

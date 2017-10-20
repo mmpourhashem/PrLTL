@@ -29,6 +29,7 @@ public class Parser {
 	private Model model;
 	private Formula mainFormula;
 	public boolean Parse(String script) {
+		PltlFormula.reset();
 		String fileName = "z3.input.smt2";
 		Injector injector = new ZotStandaloneSetup().createInjectorAndDoEMFRegistration();
 		XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
@@ -73,7 +74,7 @@ public class Parser {
 
 		semantics += Probability.getProbFormulae();
 
-		String fTable = ";K="+ PltlFormula.bound + ";Formula table:\n";
+		String fTable = ";K="+ PltlFormula.bound + "\n;Formula table:\n";
 		for (int i = 0; i < PltlFormula.instances.size(); i++)
 			fTable += ";" + i+"\t"+PltlFormula.instances.get(i).toString() + "\n";
 		fTable += ";Conditional probability table:\n";
@@ -320,8 +321,11 @@ public class Parser {
 		throw new IllegalArgumentException("Invalid temporal formula/probability expression format.");
 	}
 
-	// <Simplification rationale> In ProbF we avoid TRIO to LTL simplification (only in parsing), in order to be able to show the original formula when user is interested in knowing its probability.
+	// <Simplification rationale> In ProbF I avoid TRIO to LTL simplification (only in parsing), in order to be able to show the original formula when user is interested in knowing its probability.
 	private Formula getProbF(ProbF probF) {
+		//TODO Take care of P | CP > r * (P | CP)
+		// can I add other arithmetic operators? 
+		// P(a||b) = P(a) + P(b) - P(a&&b)
 		if (probF == null)
 			throw new IllegalArgumentException("Invalid probability formula.");
 		Op pOP = PltlFormula.getProbOp(probF.getProbOp());

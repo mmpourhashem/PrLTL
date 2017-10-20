@@ -5,13 +5,15 @@ import java.util.Collections;
 import arith.ArithFormula;
 import arith.Op;
 import pltl.CProb;
+import pltl.DepTempFormula;
 import pltl.Parser;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.ProbComparator;
 import pltl.Probability;
+import pltl.trio.Dist;
 
-public class And implements Formula{
+public class And implements Formula, DepTempFormula{
 	ArrayList<Formula> f = new ArrayList<Formula>();
 	ArrayList<Prob> p = new ArrayList<Prob>();
 
@@ -133,6 +135,10 @@ public class And implements Formula{
 	private Formula processProbAnd(ArrayList<Prob> probs) {
 		if (probs.size() == 0)
 			return null;
+		
+		for (Prob p: probs)// <Yesterday0> It is here not to let (&& (-p- a) (!! (yesterday (-p- a)))) expand, when (Dep (-p- a) (yesterday (-p- a)))
+			if (PltlFormula.outOfBound(p.getTime()) || p.isFalse())
+				return new PltlFormula.False().get(0);
 
 		if (probs.size() == 1)
 			return probs.get(0);
@@ -140,7 +146,7 @@ public class And implements Formula{
 		ArrayList<Formula> firstPParents = new ArrayList<Formula>();// The parents of the first Prob.
 		for (Prob p: probs)
 			if (probs.get(0).hasParent(p))
-				firstPParents.add(p);
+				firstPParents.add(p.getAtomicProb());// Here I force (0, (!! (dist (-p- a) -1)) to be converted to (-1, (!! (-p- a))). Yesterday syndrome is handled @<Yesterday0>.
 
 		Formula left = probs.get(0);
 		if (firstPParents.size() == 1)
@@ -246,7 +252,17 @@ public class And implements Formula{
 		return (f.size() == 1 && f.get(0).equals(new PltlFormula.False()));
 	}
 	
+	public Prob getProbForDep(int offset, boolean neg) {
+		And and = new And(); 
+		for (Formula fma: getFormulae())
+			and.addProb(((DepTempFormula) fma).getProbForDep(offset, neg));
+		return and.getProb();
+	}
+	
 	public Formula get(int offset) {
+		if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+		
 		And and = new And();
 		for (Formula fma: f)
 			and.addFormula(fma.get(offset));

@@ -21,6 +21,9 @@ public class Iff implements Formula{
 	}
 	
 	public Formula get(int offset) {
+		if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+		
 		return new Iff(f1.get(offset), f2.get(offset));
 	}
 

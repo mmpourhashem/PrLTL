@@ -18,6 +18,9 @@ public class Som implements Formula {
     }
     
     public Formula get(int offset) {
+    	if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+    	
     	Or or = new Or();
     	for (int time = 0; time <= PltlFormula.bound; time++)
     		or.addFormula(f.get(time));

@@ -3,13 +3,15 @@ package pltl.trio;
 
 import java.util.HashSet;
 
+import pltl.DepTempFormula;
 import pltl.PltlFormula;
 import pltl.Prob;
 import pltl.Prop;
 import pltl.bool.Atom;
 import pltl.bool.Formula;
+import pltl.bool.Not;
 
-public class Predicate implements Atom{
+public class Predicate implements Atom, DepTempFormula{
 
 	public static HashSet<Predicate> instances=new HashSet<Predicate>();
 
@@ -41,7 +43,17 @@ public class Predicate implements Atom{
 			return s;
 	}
 	
+	public Prob getProbForDep(int offset, boolean neg) {
+		if (neg)
+			return new Prob(offset, PltlFormula.add(new Not(this)));
+		
+    	return new Prob(offset, PltlFormula.add(this));
+    }
+	
 	public Formula get(int offset) {
+		if (PltlFormula.outOfBound(offset))
+			return new PltlFormula.False();
+		
 		return new Dist(this, offset);
 	}
 	

@@ -35,7 +35,7 @@ public class CProb implements Formula {
 		s += Smt2Formula.getRangeConstraints(this);
 
 		//		 If the CProb is produced automatically, the right side of it must be all parents.
-		//		assertTrue(prob1.allAreParents(prob2)); We should not see a conjunction of non-parents here, unless user inserted an abnormal formulae like P(fma1|fma2), where fma2 is not a parent of fma1.
+		//		assertTrue(prob1.allAreParents(prob2)); I should not see a conjunction of non-parents here, unless user inserted an abnormal formulae like P(fma1|fma2), where fma2 is not a parent of fma1.
 
 		assertFalse(prob1.getPlainFormula() instanceof And || prob1.getPlainFormula() instanceof Or);
 		assertFalse(prob2.getPlainFormula() instanceof Or);
@@ -48,7 +48,7 @@ public class CProb implements Formula {
 			if (prob1.allAreParents(prob2Probs)) // If prob2 is a conjunction of prob1's parents, there is nothing to add.
 				return s;
 
-			// We should not see a conjunction of non-parents here, unless user inserted an abnormal formulae like P(fma1|fma2), where fma2 is not a parent of fma1.
+			// I should not see a conjunction of non-parents here, unless user inserted an abnormal formulae like P(fma1|fma2), where fma2 is not a parent of fma1.
 			ArrayList<Formula> onlyParents = new ArrayList<Formula>();
 			for (Prob p: prob2Probs)
 				if (prob1.hasParent(p))
@@ -68,7 +68,7 @@ public class CProb implements Formula {
 		//If prob1 and prob2 are unrelated and not complex formulae P(prob1|prob2) = P(prob1)
 		if (! prob1.hasParent(prob2))
 			return s + new ArithFormula(Op.EQ, this, prob1);
-		assertFalse(prob2.hasParent(prob1)); //They must be ordered. We should only see P(child|parent) here.
+		assertFalse(prob2.hasParent(prob1)); //They must be ordered. I should only see P(child|parent) here.
 
 		// P(fma1|fma2) + P(!fma1|fma2) = 1
 		Not notprob1F = new Not(prob1.getPlainFormula());
@@ -89,7 +89,7 @@ public class CProb implements Formula {
 	 * 
 	 * @return
 	 * Returns complementary semantics if required.
-	 * For example, if we are processing (fma1|fma2) and (!fma1|fma2) is used somewhere,
+	 * For example, if I am processing (fma1|fma2) and (!fma1|fma2) is used somewhere,
 	 * it returns (fma1|fma2) + (!fma1|fma2) = 1.0
 	 */
 	private String getComplementarySemantics() {
