@@ -14,9 +14,9 @@ public class BayesNetwork {
 				+ "		(dep (-p- b) (-p- a))"
 				+ "		(dep (-p- c) (-p- a))"
 				+ ")"
-//				+ "FORMULA:"
+				+ "FORMULA:"
 //						+ "(&& "
-//						+ "(> (zot-p (&& (-p- a) (-p- b))) (zot-p (-p- a)))"
+						+ "(> (zot-p (&& (-p- c) (-p- b))) (zot-p (-p- a)))"
 //						+ ")"
 ;
 		Parser p = new Parser();

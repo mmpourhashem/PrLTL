@@ -1,3 +1,7 @@
+/**
+ * @author Mohammad Mehdi Pourhashem Kallehbasti
+ */
+
 package pltl;
 
 import static org.junit.Assert.*;
@@ -275,6 +279,20 @@ public class BasicProb {
 		String s = "FORMULA:"
 				+ "(&&"
 				+ "(-p- a) (!! (futr (-p- a) 0))"
+				+ ")";
+
+		mustBeUNSAT(s);
+	}
+	
+	@Test
+	public void bayes() {
+		PltlFormula.bound = 0;
+		String s = "(&& (dep (-p- b) (-p- a))"
+				+ "(dep (-p- c) (-p- a))"
+				+ ")"
+				+ "FORMULA:"
+				+ "(&&"
+				+ "(> (zot-p (&& (-p- b) (-p- c))) 0)"
 				+ ")";
 
 		mustBeUNSAT(s);

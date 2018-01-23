@@ -1,3 +1,7 @@
+/**
+ * @author Mohammad Mehdi Pourhashem Kallehbasti
+ */
+
 package pltl.trio;
 
 import pltl.bool.*;

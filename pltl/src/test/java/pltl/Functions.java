@@ -1,3 +1,7 @@
+/**
+ * @author Mohammad Mehdi Pourhashem Kallehbasti
+ */
+
 package pltl;
 
 import static org.junit.Assert.*;
@@ -24,7 +28,9 @@ public class Functions {
 		Formula f2 = new Predicate("b");
 		input.add(new Not(f1));
 		input.add(f2);
-		result = Probability.populateFormulae(input);
+		//<uncomment>
+//		result = Probability.populateFormulae(input);
+		//<uncomment>		
 		expResult.add(new And(new Not(f1), new Not(f2))); 	//00
 		expResult.add(new And(new Not(f1), f2));			//01
 		expResult.add(new And(f1, new Not(f2)));			//10
